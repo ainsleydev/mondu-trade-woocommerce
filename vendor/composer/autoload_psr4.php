@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Ainsleydev\\ResinboundMonduTradeAccount\\' => array($baseDir . '/src'),
+    'Rakit\\Validation\\' => array($vendorDir . '/rakit/validation/src'),
 );

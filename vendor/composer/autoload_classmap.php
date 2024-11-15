@@ -7,4 +7,12 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'MonduTrade\\Actions\\Form' => $baseDir . '/src/Actions/Action.php',
+    'MonduTrade\\Actions\\SubmitTradeAccount' => $baseDir . '/src/Actions/SubmitTradeAccount.php',
+    'MonduTrade\\WooCommerce\\MonduCustomer' => $baseDir . '/src/WooCommerce/Customer.php',
+    'MonduTrade\\WooCommerce\\PaymentGateway' => $baseDir . '/src/WooCommerce/PaymentGateway.php',
+    'Mondu\\MonduAPI' => $baseDir . '/src/Mondu/API.php',
+    'Plugin' => $baseDir . '/src/Plugin.php',
+    'Settings' => $baseDir . '/src/Admin/Admin.php',
+    'util\\Util' => $baseDir . '/src/Util.php',
 );

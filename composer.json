@@ -1,17 +1,22 @@
 {
-    "name": "ainsleydev/resinbound-mondu-trade-account",
-    "description": "Wordpress Plugin for integrating trade accounts into the Resinbound.online Website via the Mondu API",
-    "license": "proprietary",
-    "autoload": {
-        "psr-4": {
-            "Ainsleydev\\ResinboundMonduTradeAccount\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Ainsley",
-            "email": "hello@ainsley.dev"
-        }
-    ],
-    "require": {}
+  "name": "ainsleydev/resinbound-mondu-trade-account",
+  "description": "Wordpress Plugin for integrating trade accounts into the Resinbound.online Website via the Mondu API",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Ainsley",
+      "email": "hello@ainsley.dev"
+    }
+  ],
+  "require": {
+    "rakit/validation": "^1.4"
+  },
+  "autoload": {
+    "classmap": ["src/"]
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  }
 }

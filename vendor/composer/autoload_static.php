@@ -7,21 +7,29 @@ namespace Composer\Autoload;
 class ComposerStaticInitac9b00ee9947decd41c1b8a55bdff8b9
 {
     public static $prefixLengthsPsr4 = array (
-        'A' => 
+        'R' => 
         array (
-            'Ainsleydev\\ResinboundMonduTradeAccount\\' => 39,
+            'Rakit\\Validation\\' => 17,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Ainsleydev\\ResinboundMonduTradeAccount\\' => 
+        'Rakit\\Validation\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src',
+            0 => __DIR__ . '/..' . '/rakit/validation/src',
         ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'MonduTrade\\Actions\\Form' => __DIR__ . '/../..' . '/src/Actions/Action.php',
+        'MonduTrade\\Actions\\SubmitTradeAccount' => __DIR__ . '/../..' . '/src/Actions/SubmitTradeAccount.php',
+        'MonduTrade\\WooCommerce\\MonduCustomer' => __DIR__ . '/../..' . '/src/WooCommerce/Customer.php',
+        'MonduTrade\\WooCommerce\\PaymentGateway' => __DIR__ . '/../..' . '/src/WooCommerce/PaymentGateway.php',
+        'Mondu\\MonduAPI' => __DIR__ . '/../..' . '/src/Mondu/API.php',
+        'Plugin' => __DIR__ . '/../..' . '/src/Plugin.php',
+        'Settings' => __DIR__ . '/../..' . '/src/Admin/Admin.php',
+        'util\\Util' => __DIR__ . '/../..' . '/src/Util.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
