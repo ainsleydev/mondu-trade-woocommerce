@@ -1,17 +1,18 @@
 <?php
 
 /**
- * Mondu Customer
+ * WooCommerce Mondu Customer
  *
  * @package MonduTrade
  * @author ainsley.dev
  */
+
 namespace MonduTrade\WooCommerce;
 
 use WC_Customer;
 
-if (!defined('ABSPATH')) {
-	die('Direct access not allowed');
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Direct access not allowed' );
 }
 
 /**
@@ -53,8 +54,8 @@ class MonduCustomer extends WC_Customer {
 	 *
 	 * @throws \Exception
 	 */
-	public function __construct(int $id = 0) {
-		parent::__construct($id);
+	public function __construct( int $id = 0 ) {
+		parent::__construct( $id );
 	}
 
 	/**
@@ -63,7 +64,7 @@ class MonduCustomer extends WC_Customer {
 	 * @return string
 	 */
 	public function get_mondu_trade_account_uuid(): string {
-		return $this->get_meta('mondu_trade_account_uuid', true);
+		return $this->get_meta( 'mondu_trade_account_uuid', true );
 	}
 
 	/**
@@ -71,8 +72,8 @@ class MonduCustomer extends WC_Customer {
 	 *
 	 * @param string $uuid
 	 */
-	public function set_mondu_trade_account_uuid(string $uuid) {
-		$this->update_meta_data('mondu_trade_account_uuid', sanitize_text_field($uuid));
+	public function set_mondu_trade_account_uuid( string $uuid ) {
+		$this->update_meta_data( 'mondu_trade_account_uuid', sanitize_text_field( $uuid ) );
 	}
 
 	/**
@@ -81,7 +82,7 @@ class MonduCustomer extends WC_Customer {
 	 * @return string
 	 */
 	public function get_mondu_trade_account_status(): string {
-		return $this->get_meta('mondu_trade_account_status', true);
+		return $this->get_meta( 'mondu_trade_account_status', true );
 	}
 
 	/**
@@ -89,10 +90,10 @@ class MonduCustomer extends WC_Customer {
 	 *
 	 * @param string $status
 	 */
-	public function set_mondu_trade_account_status(string $status) {
-		if (!in_array($status, self::$valid_statuses, true)) {
-			throw new \InvalidArgumentException('Invalid status value provided.');
+	public function set_mondu_trade_account_status( string $status ) {
+		if ( ! in_array( $status, self::$valid_statuses, true ) ) {
+			throw new \InvalidArgumentException( 'Invalid status value provided.' );
 		}
-		$this->update_meta_data('mondu_trade_account_status', sanitize_text_field($status));
+		$this->update_meta_data( 'mondu_trade_account_status', sanitize_text_field( $status ) );
 	}
 }

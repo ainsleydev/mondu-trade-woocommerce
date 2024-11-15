@@ -1,14 +1,16 @@
 <?php
 
 /**
- * Plugin
+ * Actions - Submit Trade Account
  *
- * @package MonduTradeAccount
+ * @package MonduTrade
  * @author ainsley.dev
  */
+
 namespace MonduTrade\Actions;
 
 use Mondu\MonduAPI;
+use MonduTrade\Admin\Options;
 use util\Util;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,13 +21,16 @@ class SubmitTradeAccount extends Form {
 
 	private MonduAPI $api;
 
+	private Options $admin_options;
+
 	/**
 	 * Trade Account constructor.
 	 */
 	public function __construct() {
-		$this->action = 'trade_account_submit';
-		$this->api    = new MonduAPI();
-		$this->rules  = [
+		$this->action        = 'trade_account_submit';
+		$this->api           = new MonduAPI();
+		$this->admin_options = new Options();
+		$this->rules         = [
 			'address_line1' => 'required',
 			'country_code'  => 'required',
 			'city'          => 'required',
@@ -46,9 +51,9 @@ class SubmitTradeAccount extends Form {
 		try {
 			$payload = [
 				"redirect_urls"         => [
-					"success_url"  => "https://yoursite.com/buyer_success",
-					"cancel_url"   => "https://yoursite.com/buyer_cancel",
-					"declined_url" => "https://yoursite.com/buyer_declined",
+					"success_url"  => $this->admin_options->get_redirect_accepted_url(),
+					"cancel_url"   => $this->admin_options->get_redirect_declined_url(),
+					"declined_url" => $this->admin_options->get_redirect_declined_url(),
 				],
 				"company_details"       => [
 					"registration_address" => $this->get_data(),
@@ -67,6 +72,7 @@ class SubmitTradeAccount extends Form {
 					'details' => $data,
 				] );
 				$this->respond( 400, $data, 'Bad request. Please check the submitted data.' );
+
 				return;
 			}
 

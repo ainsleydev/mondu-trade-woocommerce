@@ -10,3 +10,4 @@ node_modules/
 .idea
 .env
 vendor/
+composer.lock

@@ -9,6 +9,7 @@
  */
 namespace MonduTrade\WooCommerce;
 
+use MonduTrade\Admin\Options;
 use WC_Payment_Gateway;
 
 if (!defined('ABSPATH')) {
@@ -17,6 +18,13 @@ if (!defined('ABSPATH')) {
 
 class PaymentGateway extends WC_Payment_Gateway {
 
+	/**
+	 * Admin user defined options.
+	 *
+	 * @var Options
+	 */
+	private Options $admin_options;
+
 	public function __construct() {
 		$this->id                 = 'mondu-ainsley-dev-trade-account';
 		$this->has_fields         = true;
@@ -24,10 +32,12 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$this->method_description = 'Allows payments using Mondu Trade Account';
 		$this->icon               = 'https://checkout.mondu.ai/logo.svg';
 
+		$this->admin_options = new Options();
+
 		$this->init_form_fields();
 		$this->init_settings();
 
-		$this->enabled     = $this->get_option( 'enabled' );
+		$this->enabled     = $this->is_enabled() ? 'yes' : 'no';
 		$this->title       = $this->get_option( 'title' );
 		$this->description = $this->get_option( 'description' );
 
@@ -37,6 +47,15 @@ class PaymentGateway extends WC_Payment_Gateway {
 			'products',
 			'refunds',
 		];
+	}
+
+	/**
+	 * Check if the payment gateway should be enabled.
+	 *
+	 * @return bool True if the gateway is enabled and all redirect pages are set, false otherwise.
+	 */
+	public function is_enabled() {
+		return 'yes' === $this->get_option( 'enabled' ) && $this->admin_options->has_redirect_pages();
 	}
 
 	/**

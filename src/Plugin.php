@@ -6,11 +6,12 @@
  * @package MonduTradeAccount
  */
 
+use MonduTrade\Admin\Settings;
 use MonduTrade\Actions\SubmitTradeAccount;
 use MonduTrade\WooCommerce\PaymentGateway;
 
-if (!defined('ABSPATH')) {
-	die('Direct access not allowed');
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Direct access not allowed' );
 }
 
 class Plugin {
@@ -29,14 +30,11 @@ class Plugin {
 	}
 
 	private function init() {
-		if (is_admin()) {
+		if ( is_admin() ) {
 			new Settings();
 		}
 		add_filter( 'woocommerce_payment_gateways', [ PaymentGateway::class, 'add' ] );
-
-
 		new SubmitTradeAccount();
-//		new WooCommerce_Mondu_Payment_Gateway();
 	}
 
 	/**
@@ -53,11 +51,11 @@ class Plugin {
 		}
 
 		// Check the plugins are activated.
-//		if (!is_plugin_active('woocommerce/woocommerce.php') ||
-//			!is_plugin_active('mondu-buy-now-pay-later/mondu-buy-now-pay-later.php')) {
-//			add_action('admin_notices', [$this, 'dependency_error_notice']);
-//			return false;
-//		}
+		if (!is_plugin_active('woocommerce/woocommerce.php') ||
+			!is_plugin_active('mondu-buy-now-pay-later/mondu-buy-now-pay-later.php')) {
+			add_action('admin_notices', [$this, 'dependency_error_notice']);
+			return false;
+		}
 
 		return true;
 	}
@@ -72,5 +70,6 @@ class Plugin {
 				<p>Mondu Trade Account requires WooCommerce and Mondu Buy Now Pay Later plugins to be activated.</p>
 			</div>';
 	}
-
 }
+
+

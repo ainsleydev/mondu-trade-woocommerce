@@ -1,26 +1,21 @@
 <?php
 
 /**
- * Form
+ * Actions Base Class
  *
- * Validates form actions for admin ajax endpoints.
- * Describes the process ofr form actions.
- *
- * @author      ainsley.dev
- * @class       Menu
- * @category    Class
+ * @package MonduTrade
+ * @author ainsley.dev
  */
 
 namespace MonduTrade\Actions;
 
-if (!defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
 use Rakit\Validation\Validator as Validator;
 
-abstract class Form
-{
+abstract class Form {
 	/**
 	 * The action of the form
 	 *
@@ -46,13 +41,12 @@ abstract class Form
 	 * Add action for form and create a new
 	 * form validator.
 	 */
-	public function __construct()
-	{
+	public function __construct() {
 		// Create validator.
 		$this->validator = new Validator();
 		// Add action
-		add_action('wp_ajax_' . $this->action, [$this, 'process']);
-		add_action('wp_ajax_nopriv_' . $this->action, [$this, 'process']);
+		add_action( 'wp_ajax_' . $this->action, [ $this, 'process' ] );
+		add_action( 'wp_ajax_nopriv_' . $this->action, [ $this, 'process' ] );
 	}
 
 	/**
@@ -70,15 +64,15 @@ abstract class Form
 	 * @param $data
 	 * @param string $message
 	 */
-	protected function respond(int $status, $data, string $message) {
+	protected function respond( int $status, $data, string $message ) {
 		$data = [
-			'status' => $status,
+			'status'  => $status,
 			'message' => $message,
-			'data' => $data,
-			'error' => !($status >= 200 && $status < 300),
+			'data'    => $data,
+			'error'   => ! ( $status >= 200 && $status < 300 ),
 		];
-		http_response_code($status);
-		echo json_encode($data);
+		http_response_code( $status );
+		echo json_encode( $data );
 		die();
 	}
 
@@ -86,8 +80,8 @@ abstract class Form
 	 * Check for security invalidation.
 	 */
 	protected function security_check() {
-		if (!wp_verify_nonce($_REQUEST['nonce'], "ajax_nonce") || !empty($_POST['url'])) {
-			$this->respond(400, [], "Error: Security Invalid");
+		if ( ! wp_verify_nonce( $_REQUEST['nonce'], "ajax_nonce" ) || ! empty( $_POST['url'] ) ) {
+			$this->respond( 400, [], "Error: Security Invalid" );
 		}
 	}
 
@@ -95,9 +89,9 @@ abstract class Form
 	 * Validate form fields with rules.
 	 */
 	protected function validate() {
-		$validation = $this->validator->validate($_POST, $this->rules);
-		if ($validation->fails()) {
-			$this->respond(400, $validation->errors()->toArray(), "Validation failed");
+		$validation = $this->validator->validate( $_POST, $this->rules );
+		if ( $validation->fails() ) {
+			$this->respond( 400, $validation->errors()->toArray(), "Validation failed" );
 		}
 	}
 
@@ -105,12 +99,14 @@ abstract class Form
 	 * Strips variables
 	 *
 	 * @param $text
+	 *
 	 * @return string
 	 */
-	protected function clean_vars($text): string {
-		if ($text == null) {
+	protected function clean_vars( $text ): string {
+		if ( $text == null ) {
 			$text = '';
 		}
-		return preg_replace("/[^A-Za-z0-9.@ ]/", '', $text);
+
+		return preg_replace( "/[^A-Za-z0-9.@ ]/", '', $text );
 	}
 }
