@@ -9,6 +9,7 @@ namespace MonduTrade;
 
 use MonduTrade\Admin\Settings;
 use MonduTrade\Actions\SubmitTradeAccount;
+use MonduTrade\Controllers\WebhooksController;
 use MonduTrade\WooCommerce\PaymentGateway;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,7 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Plugin {
 
-
+	/**
+	 * The text domain of the plugin.
+	 */
 	const DOMAIN = 'mondu-trade-account';
 
 	/**
@@ -39,6 +42,14 @@ class Plugin {
 		}
 		add_filter( 'woocommerce_payment_gateways', [ PaymentGateway::class, 'add' ] );
 		new SubmitTradeAccount();
+
+		/**
+		 * Adds the Buyer Trade Webhooks.
+		 */
+		add_action('rest_api_init', function () {
+			$webhooks = new WebhooksController();
+			$webhooks->register_routes();
+		});
 	}
 
 	/**

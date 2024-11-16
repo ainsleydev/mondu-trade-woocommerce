@@ -4,7 +4,7 @@ setup: # Setup
 .PHONY: setup
 
 serve: # Serve Wordpress & Local Tunnel
-	cd ../../../ && concurrently --names "wordpress,localtunnel" --prefix-colors "blue,green" "php -S localhost:8000" "lt --port 8000 --subdomain mondu-resinbound-ainsleydev"
+	cd ../../../ && concurrently --names "wordpress,localtunnel" --prefix-colors "blue,green" "APP_ENV=dev php -S localhost:8000" "lt --port 8000 --subdomain mondu-resinbound-ainsleydev"
 .PHONY: serve
 
 todo: # Show to-do items per file
