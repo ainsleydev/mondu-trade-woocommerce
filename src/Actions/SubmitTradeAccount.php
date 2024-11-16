@@ -9,9 +9,10 @@
 
 namespace MonduTrade\Actions;
 
-use Mondu\MonduAPI;
+use Exception;
+use Mondu\Mondu\Support\Helper;
 use MonduTrade\Admin\Options;
-use util\Util;
+use MonduTrade\Mondu\API;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -19,8 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class SubmitTradeAccount extends Form {
 
-	private MonduAPI $api;
+	/**
+	 * The API to interact with Mondu.
+	 *
+	 * @var
+	 */
+	private API $api;
 
+	/**
+	 * Admin user defined options.
+	 *
+	 * @var Options
+	 */
 	private Options $admin_options;
 
 	/**
@@ -28,16 +39,18 @@ class SubmitTradeAccount extends Form {
 	 */
 	public function __construct() {
 		$this->action        = 'trade_account_submit';
-		$this->api           = new MonduAPI();
+		$this->api           = new Api();
 		$this->admin_options = new Options();
 		$this->rules         = [
-			'address_line1' => 'required',
-			'country_code'  => 'required',
-			'city'          => 'required',
-			'zip_code'      => 'required',
+			'data-protection' => 'required|true',
 		];
 		parent::__construct();
 	}
+
+
+	/**
+	 * {"topic":"buyer/accepted", "buyer":{"uuid":"bb9e3083-59a3-4f31-b34b-577b38f6ad90", "state":"accepted", "external_reference_id":"buyer-02", "first_name":"Ainsley", "last_name":"Clark", "company_name":"123456 ABERDEEN LIMITED"}}
+	 */
 
 	/**
 	 *
@@ -55,50 +68,19 @@ class SubmitTradeAccount extends Form {
 					"cancel_url"   => $this->admin_options->get_redirect_declined_url(),
 					"declined_url" => $this->admin_options->get_redirect_declined_url(),
 				],
-				"company_details"       => [
-					"registration_address" => $this->get_data(),
-				],
-				"external_reference_id" => "buyer-01",
+				// TODO, get the wordpress ID (user).
+				"external_reference_id" => "buyer-02",
 			];
 
-			$response      = $this->api->post( '/trade_account', $payload );
-			$response_code = wp_remote_retrieve_response_code( $response );
-
-			$body = wp_remote_retrieve_body( $response );
-			$data = json_decode( $body, true );
-			if ( $response_code !== 200 && $response_code !== 201 ) {
-				Util::log( [
-					'error'   => 'Bad Request',
-					'details' => $data,
-				] );
-				$this->respond( 400, $data, 'Bad request. Please check the submitted data.' );
-
-				return;
-			}
-
-			$this->respond( 200, $data, 'Successfully created trade account.' );
+			$response      = $this->api->create_trade_account( $payload );
+			$this->respond( 200, $response, 'Successfully created trade account.' );
 		} catch ( Exception $e ) {
-			Util::log( [
+			Helper::log( [
 				'error' => $e->getMessage(),
 			] );
 			$this->respond( 500, [], $e->getMessage() );
 		}
 
-		die();
-	}
-
-	/**
-	 * Returns the registration address used to create
-	 * the trade account.
-	 *
-	 * @return array
-	 */
-	private function get_data(): array {
-		return [
-			'country_code'  => $this->clean_vars( $_POST['country_code'] ?? '' ),
-			'city'          => $this->clean_vars( $_POST['city'] ?? '' ),
-			'zip_code'      => $this->clean_vars( $_POST['zip_code'] ?? '' ),
-			'address_line1' => $this->clean_vars( $_POST['address_line1'] ?? '' ),
-		];
+		exit;
 	}
 }

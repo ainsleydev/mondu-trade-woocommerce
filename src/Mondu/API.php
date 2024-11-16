@@ -1,78 +1,75 @@
 <?php
+
 /**
  * Mondu API
  *
  * @package MonduTradeAccount
  */
-namespace Mondu;
+namespace MonduTrade\Mondu;
 
-use util\Util;
+use Mondu\Exceptions\MonduException;
+use Mondu\Exceptions\ResponseException;
+use Mondu\Mondu\Support\Helper;
+use Mondu\Plugin;
+
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Direct access not allowed' );
+}
 
 /**
  * Class MonduAPI
  *
  * Handles communication with the Mondu API.
  */
-class MonduAPI {
+class API extends \Mondu\Mondu\Api {
 	/**
-	 * Global settings retrieved from the WordPress options.
+	 * Global settings
 	 *
 	 * @var array
 	 */
-	//private $global_settings;
+	private $global_settings;
 
 	/**
-	 * MonduAPI constructor.
+	 * MonduAPI constructor
 	 */
 	public function __construct() {
-		//$this->global_settings = get_option('mondu_trade_account_options');
-	}
-
-
-	/**
-	 * Sends a POST request to the Mondu API.
-	 *
-	 * @param string $path API endpoint path.
-	 * @param array|null $body Data to be sent in the POST request.
-	 * @return array Response from the API.
-	 * @throws MonduException
-	 * @throws ResponseException
-	 */
-	public function post($path, array $body = null) {
-		return $this->request($path, 'POST', $body);
+		parent::__construct();
+		$this->global_settings = get_option(Plugin::OPTION_NAME);
 	}
 
 	/**
-	 * Sends a GET request to the Mondu API.
+	 * Creates an order via a trade account
 	 *
-	 * @param string $path API endpoint path.
-	 * @return array Response from the API.
-	 * @throws MonduException
+	 * @see https://docs.mondu.ai/reference/get_api-v1-orders
+	 *
 	 * @throws ResponseException
+	 * @throws MonduException
 	 */
-	public function get($path) {
-		return $this->request($path, 'GET');
+	public function create_trade_account(array $params ) {
+		$result = $this->request('/trade_account', 'POST', $params);
+		return json_decode($result['body'], true);
 	}
 
 	/**
-	 * General request function for sending HTTP requests to the Mondu API.
+	 * Send Request
 	 *
-	 * @param string $path API endpoint path.
-	 * @param string $method HTTP method (GET, POST, PUT, DELETE).
-	 * @param array|null $body Data to be sent in the request.
-	 * @return array Response from the API.
+	 * @param $path
+	 * @param $method
+	 * @param $body
+	 * @return array
 	 * @throws MonduException
 	 * @throws ResponseException
 	 */
-	protected function request($path, $method = 'GET', $body = null) {
-		$url = 'https://api.demo.mondu.ai/api/v1';
+	private function request( $path, $method = 'GET', $body = null ) {
+		$url  = Helper::is_production() ? MONDU_PRODUCTION_URL : MONDU_SANDBOX_URL;
 		$url .= $path;
 
 		$headers = [
 			'Content-Type'     => 'application/json',
-			'Api-Token'    => '1GNPFVLDAGDY1CLQ88J4UEZHNALRAN2Q',
-			'X-Plugin-Name'    => 'woocommerce-trade-account',
-			'X-Plugin-Version' => MONDU_TRADE_ACCOUNT_PLUGIN_VERSION,
+			'Api-Token'        => $this->global_settings['api_token'],
+			'X-Plugin-Name'    => 'woocommerce',
+			'X-Plugin-Version' => MONDU_PLUGIN_VERSION,
 		];
 
 		$args = [
@@ -81,40 +78,51 @@ class MonduAPI {
 			'timeout' => 30,
 		];
 
-		if ($body !== null) {
+		if ( null !== $body ) {
 			$args['body'] = wp_json_encode($body);
 		}
 
-		// Log the request for debugging
-		Util::log([
+		Helper::log([
 			'method' => $method,
 			'url'    => $url,
-			'body'   => $args['body'] ?? null,
+			'body'   => isset($args['body']) ? $args['body'] : null,
 		]);
 
-		$response = wp_remote_request($url, $args);
-		return $this->validate_response($url, $response);
+		return $this->validate_remote_result($url, wp_remote_request($url, $args));
 	}
 
 	/**
-	 * Validates the API response from Mondu, throwing errors if needed.
+	 * Validate Result
 	 *
-	 * @param string $url API URL for the request.
-	 * @param array|WP_Error $response Response from wp_remote_request.
-	 * @return array Validated response.
+	 * @param $url
+	 * @param $result
+	 * @return array
 	 * @throws MonduException
 	 * @throws ResponseException
 	 */
-	private function validate_response($url, $response) {
-		if (is_wp_error($response)) {
-			throw new Exception($response->get_error_message(), $response->get_error_code());
+	private function validate_remote_result( $url, $result ) {
+		if ( $result instanceof \WP_Error ) {
+			throw new MonduException($result->get_error_message(), $result->get_error_code());
+		} else {
+			Helper::log([
+				'code'     => isset($result['response']['code']) ? $result['response']['code'] : null,
+				'url'      => $url,
+				'response' => isset($result['body']) ? $result['body'] : null,
+			]);
 		}
 
-//		if (empty($response['response']['code']) || strpos((string)$response['response']['code'], '2') !== 0) {
-//			$error_message = isset($response['body']) ? json_decode($response['body'], true)['message'] : 'Unexpected API error';
-//			throw new Exception($error_message, $response['response']['code']);
-//		}
+		if ( !is_array($result) || !isset($result['response'], $result['body']) || !isset($result['response']['code'], $result['response']['message']) ) {
+			throw new MonduException(__('Unexpected API response format.', 'mondu'));
+		}
+		if ( strpos($result['response']['code'], '2') !== 0 ) {
+			$message = $result['response']['message'];
+			if ( isset($result['body']['errors'], $result['body']['errors']['title']) ) {
+				$message = $result['body']['errors']['title'];
+			}
 
-		return $response;
+			throw new ResponseException($message, $result['response']['code'], json_decode($result['body'], true));
+		}
+
+		return $result;
 	}
 }

@@ -18,11 +18,7 @@ function submitTradeAccountApplication(event) {
 
 	formData.append('action', 'trade_account_submit');
 	formData.append('nonce', localisedData.ajax_nonce);
-	formData.append('address_line1', document.getElementById('a-dev-address-line1')?.value ?? '');
-	formData.append('city', document.getElementById('a-dev-city')?.value ?? '');
-	formData.append('zip_code', document.getElementById('a-dev-zip-code')?.value ?? '');
-	formData.append('country_code', document.getElementById('a-dev-country-code').value ?? '');
-	formData.append('security', localisedData.nonce);
+	formData.append('data-protection', document.getElementById('a-dev-data-protection').checked);
 
 	// AJAX request to backend (use WordPress ajaxurl if needed)
 	fetch(localisedData.ajax_url, {
@@ -38,7 +34,7 @@ function submitTradeAccountApplication(event) {
 				// Display validation errors
 				displayErrorMessages(res.data);
 			} else if (res?.data?.hosted_page_url) {
-				window.open(res.data.hosted_page_url, '_blank');
+				window.location.href = res.data.hosted_page_url;
 			} else {
 				alert("There was an error processing the form.");
 			}
@@ -64,19 +60,28 @@ function clearErrorMessages() {
 /**
  * Displays error messages next to the relevant form fields.
  *
- * @param {Object} errors
+ * @param {Record<string, string[]>} errors
  * @returns void
  */
 function displayErrorMessages(errors) {
-	for (const [field, message] of Object.entries(errors)) {
+	for (const [field, messages] of Object.entries(errors)) {
 		const fieldElement = document.querySelector(`[name="${field}"]`);
 		if (!fieldElement) {
 			continue;
 		}
+
+		const fieldGroup = fieldElement.closest('.form-row')
+		if (!fieldGroup) {
+			continue
+		}
+
 		const errorLabel = document.createElement('span');
 		errorLabel.className = 'error-label';
 		errorLabel.style.color = 'red';
-		errorLabel.textContent = message.required;
-		fieldElement.parentNode.appendChild(errorLabel);
+		errorLabel.textContent = Object.values(messages)[0]
+			.replaceAll('-', ' ')
+			.replaceAll('The', '');
+
+		fieldGroup.appendChild(errorLabel);
 	}
 }

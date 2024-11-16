@@ -7,16 +7,43 @@
  * @author ainsley.dev
  *
  */
+
 namespace MonduTrade\WooCommerce;
 
+use Mondu\Exceptions\ResponseException;
+use Mondu\Mondu\Api;
+use Mondu\Mondu\MonduGateway;
 use MonduTrade\Admin\Options;
+use MonduTrade\Mondu\RequestWrapper;
+use WC_Order;
 use WC_Payment_Gateway;
 
-if (!defined('ABSPATH')) {
-	die('Direct access not allowed');
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Direct access not allowed' );
 }
 
 class PaymentGateway extends WC_Payment_Gateway {
+
+	/**
+	 * Mondu API
+	 *
+	 * @var Api
+	 */
+	private Api $api;
+
+	/**
+	 * Base Mondu Gateway found.
+	 *
+	 * @var MonduGateway
+	 */
+	private MonduGateway $mondu_gateway;
+
+	/**
+	 * Mondu Request Wrapper.
+	 *
+	 * @var RequestWrapper
+	 */
+	private RequestWrapper $mondu_request_wrapper;
 
 	/**
 	 * Admin user defined options.
@@ -32,7 +59,10 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$this->method_description = 'Allows payments using Mondu Trade Account';
 		$this->icon               = 'https://checkout.mondu.ai/logo.svg';
 
-		$this->admin_options = new Options();
+		$this->api                   = new Api();
+		$this->mondu_gateway         = new MonduGateway();
+		$this->mondu_request_wrapper = new RequestWrapper();
+		$this->admin_options         = new Options();
 
 		$this->init_form_fields();
 		$this->init_settings();
@@ -40,6 +70,9 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$this->enabled     = $this->is_enabled() ? 'yes' : 'no';
 		$this->title       = $this->get_option( 'title' );
 		$this->description = $this->get_option( 'description' );
+
+		add_action( 'woocommerce_thankyou_' . $this->id, [ $this, 'thankyou_page' ] );
+		add_action( 'woocommerce_email_before_order_table', [ $this, 'email_instructions' ], 10, 3 );
 
 		$this->register_scripts();
 
@@ -65,7 +98,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function payment_fields() {
-
 		wp_enqueue_script( 'a-dev-mondu-checkout-js', MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/checkout.js', [], null, true );
 		parent::payment_fields();
 		include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout.php';
@@ -80,6 +112,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 */
 	public static function add( array $methods ) {
 		array_unshift( $methods, static::class );
+
 		return $methods;
 	}
 
@@ -109,22 +142,71 @@ class PaymentGateway extends WC_Payment_Gateway {
 		];
 	}
 
+	/**
+	 * Process payment
+	 *
+	 * @param $order_id
+	 *
+	 * @return array|void
+	 * @throws ResponseException
+	 * @throws \WC_Data_Exception
+	 */
 	public function process_payment( $order_id ) {
-		$order = wc_get_order( $order_id );
+		$order       = wc_get_order( $order_id );
+		$success_url = $this->get_return_url( $order );
+		$mondu_order = $this->mondu_request_wrapper->create_order_with_account( $order, $success_url );
 
-		$order->update_status( 'on-hold', 'Awaiting Mondu payment' );
-		wc_reduce_stock_levels( $order_id );
-		WC()->cart->empty_cart();
+		if ( ! $mondu_order ) {
+			wc_add_notice( __( 'Error placing an order. Please try again.', 'mondu' ), 'error' );
+
+			return;
+		}
 
 		return [
 			'result'   => 'success',
-			'redirect' => $this->get_return_url( $order ),
+			'redirect' => $mondu_order['hosted_checkout_url'],
 		];
 	}
 
-	public function receipt_page( $order_id ) {
-		echo '<p>Click the button below to proceed with Mondu payment:</p>';
-		echo '<button onclick="alert(\'Proceeding with Mondu payment\')">Pay with Mondu</button>';
+	/**
+	 * Output for the order received page.
+	 */
+	public function thankyou_page() {
+		$this->mondu_gateway->thankyou_page();
+	}
+
+	/**
+	 * Add content to the WC emails.
+	 *
+	 * @param WC_Order $order
+	 */
+	public function email_instructions( WC_Order $order ) {
+		$this->mondu_gateway->email_instructions( $order );
+	}
+
+	/**
+	 * Checks if the order can be refunded.
+	 *
+	 * @param WC_Order $order
+	 *
+	 * @return bool
+	 */
+	public function can_refund_order( $order ): bool {
+		return $this->mondu_gateway->can_refund_order( $order );
+	}
+
+	/**
+	 * Processes the mondu refund and sends a credit
+	 * note to Mondu.
+	 *
+	 * @param $order_id
+	 * @param $amount
+	 * @param string $reason
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function process_refund( $order_id, $amount = null, $reason = '' ) {
+		return $this->mondu_gateway->process_refund( $order_id, $amount, $reason );
 	}
 
 	/**
@@ -139,7 +221,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Registers
+	 * Registers Javascript checkout script.
 	 *
 	 * @return void
 	 */
@@ -158,12 +240,12 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$scriptID = 'a-dev-mondu-checkout-js';
 
 		// TODO: Localise API Key
-		wp_register_script( $scriptID, MONDU_TRADE_ACCOUNT_ASSETS_PATH . '/js/checkout.js', ['jquery'], null, true );
-		wp_localize_script($scriptID, 'aDevTradeAccountData', [
-			'ajax_url'           => admin_url('admin-ajax.php'),
-			'ajax_nonce'         => wp_create_nonce('ajax_nonce'),
-			'home_url'           => home_url(),
-		]);
-		wp_enqueue_script('a-dev-mondu-checkout-js');
+		wp_register_script( $scriptID, MONDU_TRADE_ACCOUNT_ASSETS_PATH . '/js/checkout.js', [ 'jquery' ], null, true );
+		wp_localize_script( $scriptID, 'aDevTradeAccountData', [
+			'ajax_url'   => admin_url( 'admin-ajax.php' ),
+			'ajax_nonce' => wp_create_nonce( 'ajax_nonce' ),
+			'home_url'   => home_url(),
+		] );
+		wp_enqueue_script( 'a-dev-mondu-checkout-js' );
 	}
 }

@@ -12,7 +12,9 @@
     "rakit/validation": "^1.4"
   },
   "autoload": {
-    "classmap": ["src/"]
+    "psr-4": {
+      "MonduTrade\\": "src/"
+    }
   },
   "config": {
     "allow-plugins": {

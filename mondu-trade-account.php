@@ -27,4 +27,4 @@ define( 'MONDU_TRADE_ACCOUNT_PUBLIC_PATH', plugin_dir_url( MONDU_TRADE_ACCOUNT_P
 define( 'MONDU_TRADE_ACCOUNT_ASSETS_PATH', plugins_url( 'assets', MONDU_TRADE_ACCOUNT_PLUGIN_FILE ) );
 define( 'MONDU_TRADE_ACCOUNT_VIEW_PATH', MONDU_TRADE_ACCOUNT_PLUGIN_PATH . '/views' );
 
-new Plugin();
+new \MonduTrade\Plugin();

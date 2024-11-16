@@ -13,6 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Rakit\Validation\Rule;
+use Rakit\Validation\RuleQuashException;
 use Rakit\Validation\Validator as Validator;
 
 abstract class Form {
@@ -40,10 +42,14 @@ abstract class Form {
 	/**
 	 * Add action for form and create a new
 	 * form validator.
+	 *
+	 * @throws RuleQuashException
 	 */
 	public function __construct() {
 		// Create validator.
 		$this->validator = new Validator();
+		$this->add_custom_validation_rules();
+
 		// Add action
 		add_action( 'wp_ajax_' . $this->action, [ $this, 'process' ] );
 		add_action( 'wp_ajax_nopriv_' . $this->action, [ $this, 'process' ] );
@@ -108,5 +114,22 @@ abstract class Form {
 		}
 
 		return preg_replace( "/[^A-Za-z0-9.@ ]/", '', $text );
+	}
+
+	/**
+	 * Adds custom 'true' validation for checkboxes.
+	 *
+	 * @throws RuleQuashException
+	 */
+	private function add_custom_validation_rules(): void {
+		// Add a custom rule for "true" validation
+		$this->validator->addValidator('true', new class extends Rule {
+			protected $message = ":attribute must be checked";
+
+			public function check($value): bool
+			{
+				return $value === true || $value === 'true' || $value === 1 || $value === '1';
+			}
+		});
 	}
 }

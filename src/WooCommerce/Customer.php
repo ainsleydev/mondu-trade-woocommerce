@@ -9,6 +9,9 @@
 
 namespace MonduTrade\WooCommerce;
 
+use Exception;
+use MonduTrade\Mondu\BuyerStatus;
+use MonduTrade\OrderStatus;
 use WC_Customer;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -31,28 +34,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * echo $customer->get_mondu_trade_account_status();
  *
  */
-class MonduCustomer extends WC_Customer {
-	const STATUS_PENDING = 'pending';
-	const STATUS_ACCEPTED = 'accepted';
-	const STATUS_DECLINED = 'declined';
-
-	/**
-	 * List of valid status codes for a customer state.
-	 *
-	 * @var string[]
-	 */
-	private static $valid_statuses = [
-		self::STATUS_PENDING,
-		self::STATUS_ACCEPTED,
-		self::STATUS_DECLINED,
-	];
-
+class Customer extends WC_Customer {
 	/**
 	 * Constructor for the extended customer class.
 	 *
 	 * @param int $id
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function __construct( int $id = 0 ) {
 		parent::__construct( $id );
@@ -88,10 +76,10 @@ class MonduCustomer extends WC_Customer {
 	/**
 	 * Set the Mondu Trade Account Status.
 	 *
-	 * @param string $status
+	 * @param BuyerStatus $status
 	 */
 	public function set_mondu_trade_account_status( string $status ) {
-		if ( ! in_array( $status, self::$valid_statuses, true ) ) {
+		if (!BuyerStatus::is_valid($status)) {
 			throw new \InvalidArgumentException( 'Invalid status value provided.' );
 		}
 		$this->update_meta_data( 'mondu_trade_account_status', sanitize_text_field( $status ) );

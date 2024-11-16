@@ -5,6 +5,7 @@
  *
  * @package MonduTradeAccount
  */
+namespace MonduTrade;
 
 use MonduTrade\Admin\Settings;
 use MonduTrade\Actions\SubmitTradeAccount;
@@ -15,6 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class Plugin {
+
+
+	const DOMAIN = 'mondu-trade-account';
 
 	/**
 	 * Initialises the Mondu Trade Account Plugin
