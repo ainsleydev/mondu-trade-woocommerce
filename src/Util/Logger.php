@@ -70,7 +70,7 @@ final class Logger {
 	 *      'debug': Debug-level messages.
 	 * @param string $message The message to log.
 	 */
-	private static function log( string $level = 'debug', string $message, array $data = [] ) {
+	private static function log( string $level, string $message, array $data = [] ) {
 		$logger = wc_get_logger();
 		$lines  = [
 			'level'   => $level,
@@ -85,7 +85,7 @@ final class Logger {
 		$logger->log( $level, $out, [ 'source' => self::$context ] );
 
 		if ( Environment::is_development() ) {
-			error_log( json_encode( $lines ), true );
+			error_log( json_encode( $lines ) );
 		}
 	}
 }

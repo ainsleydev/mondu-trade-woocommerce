@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Admin Settings
+ * Admin - Settings
  *
- * @package MonduTrade
- * @author ainsley.dev
+ * @package     MonduTradeAccount
+ * @category    Admin
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\Admin;
@@ -108,9 +109,8 @@ class Settings {
 	/**
 	 * Sanitize settings callback.
 	 *
-	 * @param array $input The input values to be sanitized.
-	 *
-	 * @return array The sanitized values.
+	 * @param array $input
+	 * @return array
 	 */
 	public function sanitize_settings( array $input ): array {
 		$sanitized = [];

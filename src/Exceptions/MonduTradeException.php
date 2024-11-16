@@ -1,8 +1,11 @@
 <?php
+
 /**
- * Mondu Exception
+ * Exceptions - Mondu Trade Exception
  *
- * @package Mondu
+ * @package     MonduTradeAccount
+ * @category    Exceptions
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\Exceptions;
@@ -14,9 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Exception;
 
 /**
- * Class MonduTradeException
- *
- * @package Mondu
+ * Mondu Trade Exception is a generic exception for
+ * when an error occurred within the plugin.
  */
 class MonduTradeException extends Exception {
 }

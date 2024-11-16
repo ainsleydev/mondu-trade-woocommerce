@@ -9,6 +9,7 @@ namespace MonduTrade;
 
 use MonduTrade\Admin\Settings;
 use MonduTrade\Actions\SubmitTradeAccount;
+use MonduTrade\Controllers\TradeAccountController;
 use MonduTrade\Controllers\WebhooksController;
 use MonduTrade\WooCommerce\PaymentGateway;
 
@@ -44,9 +45,16 @@ class Plugin {
 		new SubmitTradeAccount();
 
 		/**
-		 * Adds the Buyer Trade Webhooks.
+		 * Require hooks & actions.
+		 */
+		require_once __DIR__ . '/Frontend/checkout.php';
+
+		/**
+		 * Adds the REST controller routes.
 		 */
 		add_action('rest_api_init', function () {
+			$trade_account = new TradeAccountController();
+			$trade_account->register_routes();
 			$webhooks = new WebhooksController();
 			$webhooks->register_routes();
 		});

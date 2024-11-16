@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Mondu Trade Payment Gateway
+ * WooCommerce - Payment Gateway
  *
- * @package MonduTrade
- * @author ainsley.dev
- *
+ * @package     MonduTradeAccount
+ * @category    WooCommerce
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\WooCommerce;
@@ -22,6 +22,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
 }
 
+/**
+ * Payment Gateway - TODO
+ */
 class PaymentGateway extends WC_Payment_Gateway {
 
 	/**

@@ -3,8 +3,8 @@
 		<a href="<?php echo get_permalink( wc_get_page_id( 'myaccount' ) ); ?>">Log in</a> to register to Pay using a
 		Mondu Trade Account.
 	</div>
-<?php elseif (true): ?>
-	<h4>You have 2 grand in your account</h4>
+<?php //elseif (true): ?>
+<!--	<h4>You have 2 grand in your account</h4>-->
 <?php else: ?>
 	<fieldset id="wc-a-dev-trade-account" class="wc-credit-card-form wc-payment-form" style="background:transparent;">
 		<div class="form-row form-row-wide">

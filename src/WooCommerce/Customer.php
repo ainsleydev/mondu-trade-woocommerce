@@ -1,18 +1,18 @@
 <?php
 
 /**
- * WooCommerce Mondu Customer
+ * WooCommerce - Customer
  *
- * @package MonduTrade
- * @author ainsley.dev
+ * @package     MonduTradeAccount
+ * @category    WooCommerce
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\WooCommerce;
 
 use Exception;
-use MonduTrade\Mondu\BuyerStatus;
-use MonduTrade\OrderStatus;
 use WC_Customer;
+use MonduTrade\Mondu\BuyerStatus;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -32,7 +32,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * echo $customer->get_mondu_trade_account_uuid();
  * echo $customer->get_mondu_trade_account_status();
- *
  */
 class Customer extends WC_Customer {
 	/**
@@ -76,7 +75,7 @@ class Customer extends WC_Customer {
 	/**
 	 * Set the Mondu Trade Account Status.
 	 *
-	 * @param BuyerStatus $status
+	 * @param string $status
 	 */
 	public function set_mondu_trade_account_status( string $status ) {
 		if (!BuyerStatus::is_valid($status)) {

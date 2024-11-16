@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Environment
+ * Util - Environment
  *
- * @package MonduTradeAccount
- * @author ainsley.dev
+ * @package     MonduTradeAccount
+ * @category    Util
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\Util;
@@ -24,7 +25,6 @@ final class Environment {
 	 *
 	 * @param string $key
 	 * @param mixed $default
-	 *
 	 * @return mixed
 	 */
 	public static function get( string $key, $default = null ) {
@@ -36,7 +36,6 @@ final class Environment {
 	 *
 	 * @param string $key
 	 * @param string $value
-	 *
 	 * @return void
 	 */
 	public static function set( string $key, string $value ): void {
@@ -45,8 +44,9 @@ final class Environment {
 
 	/**
 	 * Check if the current environment is development.
+	 * Returns true if APP_ENV is set to 'dev', false otherwise.
 	 *
-	 * @return bool True if APP_ENV is set to 'dev', false otherwise.
+	 * @return bool
 	 */
 	public static function is_development(): bool {
 		return self::get( 'APP_ENV' ) === 'dev';
@@ -54,17 +54,16 @@ final class Environment {
 
 	/**
 	 * Check if the current environment is production.
+	 * Returns true if APP_ENV is set to 'production' or an
+	 * empty string, false otherwise.
 	 *
-	 * @note Returns true if APP_ENV is unset.
-	 *
-	 * @return bool True if APP_ENV is set to 'production', false otherwise.
+	 * @return bool
 	 */
 	public static function is_production(): bool {
 		$env = self::get( 'APP_ENV' );
 		if ( $env === '' ) {
 			return true;
 		}
-
 		return $env === 'production';
 	}
 }

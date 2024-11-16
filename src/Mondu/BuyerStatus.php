@@ -1,9 +1,11 @@
 <?php
 
 /**
- * Mondu Buyer Status
+ * Mondu - Buyer Status
  *
- * @package MonduTradeAccount
+ * @package     MonduTradeAccount
+ * @category    Mondu
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\Mondu;
@@ -38,7 +40,6 @@ final class BuyerStatus
 	 * Determines if an Buyer Status is valid.
 	 *
 	 * @param string $value
-	 *
 	 * @return bool
 	 */
 	public static function is_valid(string $value): bool

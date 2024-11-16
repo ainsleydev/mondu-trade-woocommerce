@@ -1,20 +1,21 @@
 <?php
 
 /**
- * WooCommerce Mondu Customer
+ * Mondu - Request Wrapper
  *
- * @package MonduTrade
- * @author ainsley.dev
+ * @package     MonduTradeAccount
+ * @category    Mondu
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\Mondu;
 
-use Exception;
-use Mondu\Exceptions\ResponseException;
-use Mondu\Mondu\MonduRequestWrapper;
-use Mondu\Mondu\Support\OrderData;
-use Mondu\Plugin;
 use WC_Order;
+use Exception;
+use Mondu\Plugin;
+use Mondu\Mondu\Support\OrderData;
+use Mondu\Mondu\MonduRequestWrapper;
+use Mondu\Exceptions\ResponseException;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -26,7 +27,7 @@ class RequestWrapper extends MonduRequestWrapper {
 	 *
 	 * @var Api
 	 */
-	private $api;
+	private API $api;
 
 	/**
 	 * MonduRequestWrapper constructor.

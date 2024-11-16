@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Actions Base Class
+ * Actions - Form
  *
- * @package MonduTrade
- * @author ainsley.dev
+ * @package     MonduTradeAccount
+ * @category    Actions
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\Actions;
@@ -14,9 +15,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Rakit\Validation\Rule;
-use Rakit\Validation\RuleQuashException;
+use MonduTrade\Util\Logger;
 use Rakit\Validation\Validator as Validator;
 
+/**
+ * Form is a base class for any admin ajax interaction
+ * from the front-end.
+ *
+ * Inheritors must implement the process function.
+ */
 abstract class Form {
 	/**
 	 * The action of the form
@@ -40,10 +47,7 @@ abstract class Form {
 	protected array $rules = [];
 
 	/**
-	 * Add action for form and create a new
-	 * form validator.
-	 *
-	 * @throws RuleQuashException
+	 * Add action for form and create a new form validator.
 	 */
 	public function __construct() {
 		// Create validator.
@@ -105,7 +109,6 @@ abstract class Form {
 	 * Strips variables
 	 *
 	 * @param $text
-	 *
 	 * @return string
 	 */
 	protected function clean_vars( $text ): string {
@@ -119,17 +122,22 @@ abstract class Form {
 	/**
 	 * Adds custom 'true' validation for checkboxes.
 	 *
-	 * @throws RuleQuashException
+	 * @retun void
 	 */
 	private function add_custom_validation_rules(): void {
-		// Add a custom rule for "true" validation
-		$this->validator->addValidator('true', new class extends Rule {
-			protected $message = ":attribute must be checked";
+		try {
+			// Add a custom rule for "true" validation
+			$this->validator->addValidator( 'true', new class extends Rule {
+				protected $message = ":attribute must be checked";
 
-			public function check($value): bool
-			{
-				return $value === true || $value === 'true' || $value === 1 || $value === '1';
-			}
-		});
+				public function check( $value ): bool {
+					return $value === true || $value === 'true' || $value === 1 || $value === '1';
+				}
+			} );
+		} catch ( \Exception $e ) {
+			Logger::error( 'Error creating custom validation rule', [
+				'error' => $e->getMessage(),
+			] );
+		}
 	}
 }

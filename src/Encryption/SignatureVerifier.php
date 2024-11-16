@@ -1,9 +1,11 @@
 <?php
 
 /**
- * Signature Verifier
+ * Encryption - Signature Verifier
  *
- * @package MonduTrade
+ * @package     MonduTradeAccount
+ * @category    Encryption
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\Encryption;
@@ -13,23 +15,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Signature Verifier to validate the webhooks
- * to ensure there is no man-in-the-middle
- * attacks.
+ * Signature Verifier to validate the webhooks to
+ * ensure there is no man-in-the-middle attacks.
  */
 class SignatureVerifier {
-	/** @var string $secret */
+
+	/**
+	 * Webhook secret.
+	 *
+	 * @var false|mixed|null
+	 */
 	private $secret;
 
 	/**
-	 * Constructor
+	 * Signature constructor.
 	 */
 	public function __construct() {
 		$this->secret = get_option( '_mondu_webhook_secret' );
 	}
 
 	/**
-	 * Get secret
+	 * Get secret.
 	 *
 	 * @return string
 	 */
@@ -38,23 +44,21 @@ class SignatureVerifier {
 	}
 
 	/**
-	 * Set secret
+	 * Set secret.
 	 *
 	 * @param string $secret Secret.
-	 *
-	 * @return $this
+	 * @return SignatureVerifier
 	 */
-	public function set_secret( string $secret ): Signature {
+	public function set_secret( string $secret ): SignatureVerifier {
 		$this->secret = $secret;
 
 		return $this;
 	}
 
 	/**
-	 * Create HMAC
+	 * Create HMAC.
 	 *
 	 * @param string $payload Payload.
-	 *
 	 * @return string
 	 */
 	public function create_hmac( $payload ): string {
@@ -62,10 +66,9 @@ class SignatureVerifier {
 	}
 
 	/**
-	 * Verify signature
+	 * Verify signature.
 	 *
 	 * @param $signature
-	 *
 	 * @return bool
 	 */
 	public function verify( $signature ): bool {

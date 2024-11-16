@@ -1,68 +1,70 @@
 <?php
 
 /**
- * Mondu API
+ * Mondu - API
  *
- * @package MonduTradeAccount
+ * @package     MonduTradeAccount
+ * @category    Mondu
+ * @author      ainsley.dev
  */
+
 namespace MonduTrade\Mondu;
 
-use Mondu\Exceptions\MonduException;
-use Mondu\Exceptions\ResponseException;
-use Mondu\Mondu\Support\Helper;
 use Mondu\Plugin;
-
+use Mondu\Mondu\Support\Helper;
+use Mondu\Exceptions\ResponseException;
+use MonduTrade\Exceptions\MonduTradeException;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
 }
 
 /**
- * Class MonduAPI
- *
- * Handles communication with the Mondu API.
+ * API handles communication with the Mondu API by
+ * extending the base API class.
  */
 class API extends \Mondu\Mondu\Api {
 	/**
-	 * Global settings
+	 * Global settings.
 	 *
 	 * @var array
 	 */
 	private $global_settings;
 
 	/**
-	 * MonduAPI constructor
+	 * API constructor.
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->global_settings = get_option(Plugin::OPTION_NAME);
+		$this->global_settings = get_option( Plugin::OPTION_NAME );
 	}
 
 	/**
-	 * Creates an order via a trade account
+	 * Creates an order via a trade account.
 	 *
-	 * @see https://docs.mondu.ai/reference/get_api-v1-orders
-	 *
+	 * @param array $params
+	 * @return mixed
+	 * @throws MonduTradeException
 	 * @throws ResponseException
-	 * @throws MonduException
+	 * @see https://docs.mondu.ai/reference/get_api-v1-orders
 	 */
-	public function create_trade_account(array $params ) {
-		$result = $this->request('/trade_account', 'POST', $params);
-		return json_decode($result['body'], true);
+	public function create_trade_account( array $params ) {
+		$result = $this->request( '/trade_account', 'POST', $params );
+
+		return json_decode( $result['body'], true );
 	}
 
 	/**
-	 * Send Request
+	 * Send Request.
 	 *
 	 * @param $path
 	 * @param $method
 	 * @param $body
 	 * @return array
-	 * @throws MonduException
-	 * @throws ResponseException
+	 * @throws ResponseException|MonduTradeException
 	 */
 	private function request( $path, $method = 'GET', $body = null ) {
-		$url  = Helper::is_production() ? MONDU_PRODUCTION_URL : MONDU_SANDBOX_URL;
+		$url = Helper::is_production() ? MONDU_PRODUCTION_URL : MONDU_SANDBOX_URL;
 		$url .= $path;
 
 		$headers = [
@@ -79,16 +81,16 @@ class API extends \Mondu\Mondu\Api {
 		];
 
 		if ( null !== $body ) {
-			$args['body'] = wp_json_encode($body);
+			$args['body'] = wp_json_encode( $body );
 		}
 
-		Helper::log([
+		Helper::log( [
 			'method' => $method,
 			'url'    => $url,
-			'body'   => isset($args['body']) ? $args['body'] : null,
-		]);
+			'body'   => isset( $args['body'] ) ? $args['body'] : null,
+		] );
 
-		return $this->validate_remote_result($url, wp_remote_request($url, $args));
+		return $this->validate_remote_result( $url, wp_remote_request( $url, $args ) );
 	}
 
 	/**
@@ -97,30 +99,31 @@ class API extends \Mondu\Mondu\Api {
 	 * @param $url
 	 * @param $result
 	 * @return array
-	 * @throws MonduException
 	 * @throws ResponseException
+	 * @throws MonduTradeException
 	 */
 	private function validate_remote_result( $url, $result ) {
 		if ( $result instanceof \WP_Error ) {
-			throw new MonduException($result->get_error_message(), $result->get_error_code());
+			throw new MonduTradeException( $result->get_error_message(), $result->get_error_code() );
 		} else {
-			Helper::log([
-				'code'     => isset($result['response']['code']) ? $result['response']['code'] : null,
+			Helper::log( [
+				'code'     => isset( $result['response']['code'] ) ? $result['response']['code'] : null,
 				'url'      => $url,
-				'response' => isset($result['body']) ? $result['body'] : null,
-			]);
+				'response' => isset( $result['body'] ) ? $result['body'] : null,
+			] );
 		}
 
-		if ( !is_array($result) || !isset($result['response'], $result['body']) || !isset($result['response']['code'], $result['response']['message']) ) {
-			throw new MonduException(__('Unexpected API response format.', 'mondu'));
+		if ( ! is_array( $result ) || ! isset( $result['response'], $result['body'] ) || ! isset( $result['response']['code'], $result['response']['message'] ) ) {
+			throw new MonduTradeException( __( 'Unexpected API response format.', 'mondu' ) );
 		}
-		if ( strpos($result['response']['code'], '2') !== 0 ) {
+
+		if ( strpos( $result['response']['code'], '2' ) !== 0 ) {
 			$message = $result['response']['message'];
-			if ( isset($result['body']['errors'], $result['body']['errors']['title']) ) {
+			if ( isset( $result['body']['errors'], $result['body']['errors']['title'] ) ) {
 				$message = $result['body']['errors']['title'];
 			}
 
-			throw new ResponseException($message, $result['response']['code'], json_decode($result['body'], true));
+			throw new ResponseException( $message, $result['response']['code'], json_decode( $result['body'], true ) );
 		}
 
 		return $result;
