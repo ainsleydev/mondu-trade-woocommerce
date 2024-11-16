@@ -4,7 +4,7 @@
  * Logger
  *
  * @package MonduTradeAccount
- * @author ainsley.dev
+ * @author  ainsley.dev
  */
 
 namespace MonduTrade\Util;

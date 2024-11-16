@@ -3,20 +3,31 @@
 /**
  * Plugin
  *
- * @package MonduTradeAccount
+ * @package     MonduTradeAccount
+ * @category    Plugin
+ * @author      ainsley.dev
+ * @copyright   2024 ainsley.dev
+ * @link        https://github.com/ainsleydev/woocommerce-mondu-trade-gateway
  */
+
 namespace MonduTrade;
 
+use Dotenv\Dotenv;
 use MonduTrade\Admin\Settings;
 use MonduTrade\Actions\SubmitTradeAccount;
+use MonduTrade\Util\Environment;
+use MonduTrade\WooCommerce\PaymentGateway;
 use MonduTrade\Controllers\TradeAccountController;
 use MonduTrade\Controllers\WebhooksController;
-use MonduTrade\WooCommerce\PaymentGateway;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
 }
 
+/**
+ * Plugin defines the main entry point of the Mondu -> WooCommerce
+ * Payment Gateway.
+ */
 class Plugin {
 
 	/**
@@ -28,21 +39,33 @@ class Plugin {
 	 * Initialises the Mondu Trade Account Plugin
 	 */
 	public function __construct() {
+		// If dependencies are not met, return early and don't initialize the plugin.
 		if ( ! $this->check_dependencies() ) {
-			// If dependencies are not met, return early and don't initialize the plugin
 			return;
 		}
 
-		// Continue with your plugin initialization code here
+		// Continue with initialisation.
 		$this->init();
 	}
 
+	/**
+	 *
+	 *
+	 * @return void
+	 */
 	private function init() {
-		if ( is_admin() ) {
-			new Settings();
-		}
-		add_filter( 'woocommerce_payment_gateways', [ PaymentGateway::class, 'add' ] );
-		new SubmitTradeAccount();
+		/**
+		 * Bootstrap classes, filters & actions.
+		 */
+		add_action( 'init', function () {
+			// Register forms (actions).
+			new SubmitTradeAccount();
+
+			// Add the admin options in the sidebar.
+			if ( is_admin() ) {
+				new Settings();
+			}
+		} );
 
 		/**
 		 * Require hooks & actions.
@@ -50,33 +73,48 @@ class Plugin {
 		require_once __DIR__ . '/Frontend/checkout.php';
 
 		/**
+		 * We should use the .env file in the plugin base dir
+		 * if we're in dev. Safe Load doesn't throw an
+		 * exception if it's not found.
+		 */
+		$dotenv = Dotenv::createImmutable( MONDU_TRADE_ACCOUNT_PLUGIN_PATH );
+		$dotenv->safeLoad();
+
+		/**
 		 * Adds the REST controller routes.
 		 */
-		add_action('rest_api_init', function () {
+		add_action( 'rest_api_init', function () {
 			$trade_account = new TradeAccountController();
 			$trade_account->register_routes();
 			$webhooks = new WebhooksController();
 			$webhooks->register_routes();
-		});
+		} );
+
+		/**
+		 * Load the main Mondu Trade Gateway.
+		 */
+		add_filter( 'woocommerce_payment_gateways', [ PaymentGateway::class, 'add' ] );
 	}
 
 	/**
 	 * Checks if the following plugins are installed:
+	 *
 	 * - WooCommerce
 	 * - Mondu Buy Now pay Later
 	 *
 	 * @return bool
 	 */
-	private function check_dependencies() {
+	private function check_dependencies(): bool {
 		// Load the plugin helper functions if not already loaded.
 		if ( ! function_exists( 'is_plugin_active' ) ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
 		// Check the plugins are activated.
-		if (!is_plugin_active('woocommerce/woocommerce.php') ||
-			!is_plugin_active('mondu-buy-now-pay-later/mondu-buy-now-pay-later.php')) {
-			add_action('admin_notices', [$this, 'dependency_error_notice']);
+		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) ||
+		     ! is_plugin_active( 'mondu-buy-now-pay-later/mondu-buy-now-pay-later.php' ) ) {
+			add_action( 'admin_notices', [ $this, 'dependency_error_notice' ] );
+
 			return false;
 		}
 

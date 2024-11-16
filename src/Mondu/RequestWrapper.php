@@ -10,6 +10,7 @@
 
 namespace MonduTrade\Mondu;
 
+use MonduTrade\Util\Environment;
 use WC_Order;
 use Exception;
 use Mondu\Plugin;
@@ -18,7 +19,6 @@ use Mondu\Mondu\Support\OrderData;
 use Mondu\Mondu\MonduRequestWrapper;
 use MonduTrade\WooCommerce\Customer;
 use Mondu\Exceptions\ResponseException;
-use MonduTrade\Exceptions\MonduTradeException;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -30,7 +30,7 @@ class RequestWrapper extends MonduRequestWrapper {
 	 *
 	 * @var Api
 	 */
-	private API $api;
+	public API $api;
 
 	/**
 	 * MonduRequestWrapper constructor.
@@ -102,9 +102,16 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * @throws ResponseException
 	 */
 	public function register_buyer_webhooks() {
+		$path    = '/wp-json/mondu-trade/v1/webhooks';
+		$base = rest_url();
+
+		if ( Environment::is_development() ) {
+			$base = Environment::get( 'WEBHOOK_ADDRESS' );
+		}
+
 		$params = [
 			'topic'   => 'buyer',
-			'address' => 'https://mondu-resinbound-ainsleydev.loca.lt/wp-json/mondu-trade/v1/webhooks'
+			'address' => $base . $path,
 		];
 
 		$response = $this->wrap_with_mondu_log_event( 'register_webhook', [ $params ] );

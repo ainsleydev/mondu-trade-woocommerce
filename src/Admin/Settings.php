@@ -11,9 +11,8 @@
 namespace MonduTrade\Admin;
 
 use MonduTrade\Plugin;
-use MonduTrade\Util\Logger;
+use MonduTrade\Util\Environment;
 use WP_Filesystem_Base;
-use MonduTrade\Mondu\RequestWrapper;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -25,23 +24,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Settings {
 	/**
-	 * Mondu Request Wrapper.
+	 * Webhook Register.
 	 *
-	 * @var RequestWrapper
+	 * @var WebhookRegister
 	 */
-	private RequestWrapper $mondu_request_wrapper;
-
+	private WebhookRegister $webhook_register;
 
 	/**
 	 * Initialize the class and set its properties.
 	 */
 	public function __construct() {
-		$this->mondu_request_wrapper = new RequestWrapper();
+		$this->webhook_register = new WebhookRegister();
+		new LogManager();
 
 		add_action( 'admin_init', [ $this, 'register_settings' ] );
 		add_action( 'admin_menu', [ $this, 'add_settings_section' ], 99 );
-		add_action( 'admin_post_mondu_trade_register_webhooks', [ $this, 'register_webhooks' ] );
-		add_action( 'admin_post_mondu_trade_download_logs', [ $this, 'download_logs' ] );
 	}
 
 	/**
@@ -63,7 +60,7 @@ class Settings {
 		// Add a new section to the Mondu settings page
 		add_settings_section(
 			'mondu_trade_account_section',
-			__( 'Mondu Trade Account', 'ainsley-dev' ),
+			__( 'Settings', Plugin::DOMAIN ),
 			[ $this, 'section_callback' ],
 			'mondu-trade-account'
 		);
@@ -87,9 +84,24 @@ class Settings {
 	 * Render the Trade Account page content.
 	 */
 	public function render() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.' ) );
+		Util::validate_user_permissions();
+
+		$webhooks_list_error = null;
+
+		// Fetch the current webhooks to display to the
+		// user (just for debugging).
+		if (Environment::is_development()) {
+			try {
+				$webhooks = $this->webhook_register->get();
+			} catch ( \Exception $e ) {
+				$webhooks            = [];
+				$webhooks_list_error = $e->getMessage();
+			}
 		}
+
+		$message = $this->webhook_register->get_message();
+		$webhooks_registered = get_option( '_mondu_trade_webhooks_registered' );
+
 		include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/admin.php';
 	}
 
@@ -113,95 +125,6 @@ class Settings {
 	 * Section callback
 	 */
 	public function section_callback() {
-		echo '<p>' . esc_html__( 'Configure the trade account settings for Mondu here.', 'ainsley-dev' ) . '</p>';
-	}
-
-	/**
-	 * @return void
-	 */
-	public function register_webhooks() {
-		$this->validate_nonce_or_error('mondu-trade-register-webhooks');
-
-		try {
-			$this->mondu_request_wrapper->register_buyer_webhooks();
-			Logger::debug('Successfully registered buyer webhooks');
-		} catch ( \Exception $exception ) {
-			Logger::error('Registering buyer webhooks', [
-				'error' => $exception->getMessage(),
-			]);
-		}
-	}
-
-	/**
-	 * Download Mondu logs.
-	 *
-	 * @return void
-	 * @noinspection DuplicatedCode
-	 */
-	public function download_logs() {
-		/**
-		 * @var WP_Filesystem_Base $wp_filesystem
-		 */
-		global $wp_filesystem;
-		WP_Filesystem();
-
-		$this->validate_nonce_or_error('mondu-trade-download-logs');
-
-		$date = isset( $_POST['date'] ) ? sanitize_text_field( $_POST['date'] ) : null;
-
-		if ( null === $date ) {
-			status_header( 400 );
-			exit( esc_html__( 'Date is required.' ) );
-		}
-
-		$file = $this->get_file( $date );
-
-		if ( null === $file ) {
-			status_header( 404 );
-			exit(esc_html__( 'Log not found.' ) );
-		}
-
-		$filename = 'mondu-trade-' . $date . '.log';
-
-		header( 'Content-Type: text/plain' );
-		header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
-		echo wp_kses_post(str_replace('>', '', $wp_filesystem->get_contents($file)));
-		die;
-	}
-
-	/**
-	 * Get file.
-	 *
-	 * @param $date
-	 * @return string
-	 */
-	private function get_file( $date ) {
-		$base_dir = WP_CONTENT_DIR . '/uploads/wc-logs/';
-		$dir      = opendir( $base_dir );
-		if ( $dir ) {
-			while ( $file = readdir( $dir ) ) { //phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-				if ( str_starts_with( $file, 'mondu-trade-' . $date ) && str_ends_with( $file, '.log' ) ) {
-					return $base_dir . $file;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Validate a nonce for a given action and handle errors.
-	 *
-	 * @param string $action
-	 * @param string $query_arg
-	 */
-	public function validate_nonce_or_error( string $action, string $query_arg = 'security' ) {
-		$is_nonce_valid = check_admin_referer( $action, $query_arg );
-
-		if ( ! $is_nonce_valid ) {
-			wp_die(
-				esc_html__( 'Invalid security token. Please try again.', 'plugin-domain' ),
-				esc_html__( 'Bad Request', 'plugin-domain' ),
-				[ 'response' => 400, 'back_link' => true ]
-			);
-		}
+		echo '<p>' . esc_html__( 'Configure the trade account settings for Mondu here.', Plugin::DOMAIN ) . '</p>';
 	}
 }

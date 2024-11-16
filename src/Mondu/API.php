@@ -66,6 +66,12 @@ class API extends \Mondu\Mondu\Api {
 		return json_decode( $result['body'], true );
 	}
 
+	public function delete_webhook( array $params ) {
+		$result = $this->request( sprintf( '/webhooks/%s', $params['uuid'] ), 'DELETE' );
+
+		return json_decode( $result['body'], true );
+	}
+
 	/**
 	 * Send Request.
 	 *

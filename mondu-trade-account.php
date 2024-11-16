@@ -10,7 +10,7 @@
  * Domain Path:     /languages
  * Version:         0.1.0
  *
- * @package         Mondu_Trade_Account
+ * @package         MonduTradeAccount
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
