@@ -42,9 +42,6 @@ class SubmitTradeAccount extends Form {
 	public function __construct() {
 		$this->action = 'trade_account_submit';
 		$this->api    = new Api();
-		$this->rules  = [
-			'data-protection' => 'required|true',
-		];
 		parent::__construct();
 	}
 
@@ -62,7 +59,6 @@ class SubmitTradeAccount extends Form {
 	 */
 	public function process(): void {
 		$this->security_check();
-		$this->validate();
 
 		// Bail if there's no user.
 		if ( ! is_user_logged_in() ) {
@@ -92,7 +88,7 @@ class SubmitTradeAccount extends Form {
 		try {
 			$response = $this->api->create_trade_account( $payload );
 			$this->respond( 200, $response, 'Successfully created trade account.' );
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			Logger::error( 'Error creating trade account', [
 				'payload' => $payload,
 				'error'   => $e->getMessage(),
@@ -114,12 +110,19 @@ class SubmitTradeAccount extends Form {
 			$customer = new WC_Customer( $user_id );
 			$user     = get_userdata( $user_id );
 
-			return [
+			// Create the initial array with possible empty values.
+			$applicant_details = [
 				"first_name" => $customer->get_billing_first_name() ?: '',
 				"last_name"  => $customer->get_billing_last_name() ?: '',
 				"email"      => $user->user_email ?: '',
 				"phone"      => $customer->get_billing_phone() ?: '',
 			];
+
+			// Filter out empty values from the array.
+			return array_filter( $applicant_details, function ( $value ) {
+				return $value !== '';
+			});
+
 		} catch ( \Exception $e ) {
 			Logger::error( 'Error retrieving applicant details', [
 				'user_id' => $user_id,

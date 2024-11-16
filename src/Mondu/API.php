@@ -55,6 +55,18 @@ class API extends \Mondu\Mondu\Api {
 	}
 
 	/**
+	 * @param string $uuid
+	 * @return mixed
+	 * @throws ResponseException
+	 * @throws MonduTradeException
+	 */
+	public function get_buyer_limit( array $params ) {
+		$result = $this->request( sprintf( '/buyers/%s/purchasing_limit', $params['uuid'] ) );
+
+		return json_decode( $result['body'], true );
+	}
+
+	/**
 	 * Send Request.
 	 *
 	 * @param $path

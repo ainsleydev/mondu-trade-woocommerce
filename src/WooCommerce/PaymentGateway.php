@@ -14,6 +14,7 @@ use Mondu\Exceptions\ResponseException;
 use Mondu\Mondu\Api;
 use Mondu\Mondu\MonduGateway;
 use MonduTrade\Admin\Options;
+use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\Mondu\RequestWrapper;
 use WC_Order;
 use WC_Payment_Gateway;
@@ -90,7 +91,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @return bool True if the gateway is enabled and all redirect pages are set, false otherwise.
 	 */
-	public function is_enabled() {
+	public function is_enabled(): bool {
 		return 'yes' === $this->get_option( 'enabled' ) && $this->admin_options->has_redirect_pages();
 	}
 
@@ -113,7 +114,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @return array
 	 */
-	public static function add( array $methods ) {
+	public static function add( array $methods ): array {
 		array_unshift( $methods, static::class );
 
 		return $methods;

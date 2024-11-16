@@ -174,6 +174,12 @@ class WebhooksController extends BaseController {
 		$customer->set_mondu_trade_account_status( $state );
 		$customer->save();
 
+		Logger::info( 'Successfully updated customer status from buyer webhook', [
+			'webhook_topic' => $params['topic'],
+			'uuid'          => $buyer_uuid,
+			'state'         => $state,
+		] );
+
 		return $this->return_success();
 	}
 

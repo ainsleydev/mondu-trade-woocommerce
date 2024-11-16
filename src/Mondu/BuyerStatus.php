@@ -18,6 +18,7 @@ namespace MonduTrade\Mondu;
  */
 final class BuyerStatus
 {
+	const UNDEFINED = 'undefined';
 	const ACCEPTED = 'accepted';
 	const PENDING = 'pending';
 	const DECLINED = 'declined';
@@ -30,6 +31,7 @@ final class BuyerStatus
 	public static function get_values(): array
 	{
 		return [
+			self::UNDEFINED,
 			self::ACCEPTED,
 			self::PENDING,
 			self::DECLINED,

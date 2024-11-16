@@ -1,3 +1,21 @@
+<?php
+
+/**
+ * Views - Account Status
+ *
+ * This view is for when Mondu redirects us back to
+ * the checkout, it's useful to show some informational
+ * messages to the user after they've applied.
+ *
+ * @package     MonduTradeAccount
+ * @category    Views
+ * @author      ainsley.dev
+ */
+
+$domain = \MonduTrade\Plugin::DOMAIN;
+
+?>
+
 <!-- =====================
 	Trade Account Status
 	===================== -->

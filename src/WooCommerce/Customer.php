@@ -11,6 +11,7 @@
 namespace MonduTrade\WooCommerce;
 
 use Exception;
+use MonduTrade\Util\Logger;
 use WC_Customer;
 use MonduTrade\Mondu\BuyerStatus;
 
@@ -34,15 +35,20 @@ if ( ! defined( 'ABSPATH' ) ) {
  * echo $customer->get_mondu_trade_account_status();
  */
 class Customer extends WC_Customer {
+
 	/**
 	 * Constructor for the extended customer class.
 	 *
 	 * @param int $id
-	 *
-	 * @throws Exception
 	 */
 	public function __construct( int $id = 0 ) {
-		parent::__construct( $id );
+		try {
+			parent::__construct( $id );
+		} catch ( Exception $e ) {
+			Logger::error( 'Obtaining the Mondu Trade Customer', [
+				'id' => $id,
+			] );
+		}
 	}
 
 	/**
@@ -78,7 +84,7 @@ class Customer extends WC_Customer {
 	 * @param string $status
 	 */
 	public function set_mondu_trade_account_status( string $status ) {
-		if (!BuyerStatus::is_valid($status)) {
+		if ( ! BuyerStatus::is_valid( $status ) ) {
 			throw new \InvalidArgumentException( 'Invalid status value provided.' );
 		}
 		$this->update_meta_data( 'mondu_trade_account_status', sanitize_text_field( $status ) );

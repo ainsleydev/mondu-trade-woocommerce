@@ -13,9 +13,12 @@ namespace MonduTrade\Mondu;
 use WC_Order;
 use Exception;
 use Mondu\Plugin;
+use MonduTrade\Util\Logger;
 use Mondu\Mondu\Support\OrderData;
 use Mondu\Mondu\MonduRequestWrapper;
+use MonduTrade\WooCommerce\Customer;
 use Mondu\Exceptions\ResponseException;
+use MonduTrade\Exceptions\MonduTradeException;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -49,22 +52,64 @@ class RequestWrapper extends MonduRequestWrapper {
 	 */
 	public function create_order_with_account( WC_Order $order, $success_url ) {
 		// Temporary to avoid warning.
-		$order->set_payment_method(Plugin::PAYMENT_METHODS['invoice']);
+		$order->set_payment_method( Plugin::PAYMENT_METHODS['invoice'] );
 
-		$order_data                  = OrderData::create_order( $order, $success_url );
+		$order_data                   = OrderData::create_order( $order, $success_url );
 		$order_data['payment_method'] = 'billing_statement';
-		$order_data['buyer']['uuid'] = 'bb9e3083-59a3-4f31-b34b-577b38f6ad90';
+		$order_data['buyer']['uuid']  = 'bb9e3083-59a3-4f31-b34b-577b38f6ad90';
 
-		error_log(json_encode( $order_data ));
-		$response                    = $this->wrap_with_mondu_log_event( 'create_order', [ $order_data ] );
+		error_log( json_encode( $order_data ) );
+		$response = $this->wrap_with_mondu_log_event( 'create_order', [ $order_data ] );
 
-
-		$mondu_order                 = $response['order'];
+		$mondu_order = $response['order'];
 
 		$order->update_meta_data( Plugin::ORDER_ID_KEY, $mondu_order['uuid'] );
 		$order->save();
 
 		return $mondu_order;
+	}
+
+	/**
+	 * Obtains the Buyer Limit for a given user.
+	 *
+	 * @return mixed
+	 * @throws ResponseException
+	 * @see https://docs.mondu.ai/reference/get_api-v1-buyers-uuid-purchasing-limit
+	 */
+	public function get_buyer_limit() {
+		$user_id = get_current_user_id();
+
+		try {
+			$customer = new Customer( $user_id );
+		} catch ( Exception $e ) {
+			Logger::error( 'Obtaining customer to get Buyer Limit', [
+				'user_id' => $user_id,
+				'error'   => $e->getMessage(),
+			] );
+		}
+
+		$params = [
+			'uuid' => $customer->get_mondu_trade_account_uuid(),
+		];
+
+		return $this->wrap_with_mondu_log_event( 'get_buyer_limit', [ $params ] );
+	}
+
+	/**
+	 * Register Buyer Webhooks.
+	 *
+	 * @return mixed
+	 * @throws ResponseException
+	 */
+	public function register_buyer_webhooks() {
+		$params = [
+			'topic'   => 'buyer',
+			'address' => 'https://mondu-resinbound-ainsleydev.loca.lt/wp-json/mondu-trade/v1/webhooks'
+		];
+
+		$response = $this->wrap_with_mondu_log_event( 'register_webhook', [ $params ] );
+
+		return $response['webhooks'] ?? null;
 	}
 
 	/**

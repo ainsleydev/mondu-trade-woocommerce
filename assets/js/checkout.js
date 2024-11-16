@@ -18,7 +18,6 @@ function submitTradeAccountApplication(event) {
 
 	formData.append('action', 'trade_account_submit');
 	formData.append('nonce', localisedData.ajax_nonce);
-	formData.append('data-protection', document.getElementById('a-dev-data-protection').checked);
 
 	// AJAX request to backend (use WordPress ajaxurl if needed)
 	fetch(localisedData.ajax_url, {
@@ -31,7 +30,6 @@ function submitTradeAccountApplication(event) {
 		.then(response => response.json())
 		.then(res => {
 			if (res.error) {
-				// Display validation errors
 				displayErrorMessages(res.data);
 			} else if (res?.data?.hosted_page_url) {
 				window.location.href = res.data.hosted_page_url;
@@ -41,7 +39,6 @@ function submitTradeAccountApplication(event) {
 		})
 		.catch(error => {
 			console.error('Error:', error);
-			// alert("There was a network error.");
 		})
 		.finally(() => {
 			btn.classList.remove('loading');
