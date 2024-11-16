@@ -10,11 +10,12 @@
 
 namespace MonduTrade\Mondu;
 
-use MonduTrade\Util\Environment;
+
 use WC_Order;
 use Exception;
 use Mondu\Plugin;
 use MonduTrade\Util\Logger;
+use MonduTrade\Util\Environment;
 use Mondu\Mondu\Support\OrderData;
 use Mondu\Mondu\MonduRequestWrapper;
 use MonduTrade\WooCommerce\Customer;
@@ -56,7 +57,8 @@ class RequestWrapper extends MonduRequestWrapper {
 
 		$order_data                   = OrderData::create_order( $order, $success_url );
 		$order_data['payment_method'] = 'billing_statement';
-		$order_data['buyer']['uuid']  = 'bb9e3083-59a3-4f31-b34b-577b38f6ad90';
+		// TODO: Fix this, we just need to make a new WC_Customer and get their UUID. Maybe that'll fix the order issue?
+		$order_data['buyer']['uuid']  = '3aa93331-5f61-4576-8dc2-b5086ba830fe';
 
 		error_log( json_encode( $order_data ) );
 		$response = $this->wrap_with_mondu_log_event( 'create_order', [ $order_data ] );

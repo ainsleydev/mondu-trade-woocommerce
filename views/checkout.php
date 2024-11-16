@@ -69,9 +69,8 @@ if ( is_user_logged_in() ) {
 	<fieldset id="wc-a-dev-trade-account" class="wc-credit-card-form wc-payment-form" style="background:transparent;">
 		<!-- Info -->
 		<div class="form-row form-row-wide">
-			<p>
-				You're not currently registered for a Trade Account, compelete the form below to be redirected to
-				Mondu
+			<p style="margin-bottom: 10px;">
+				You're not currently registered for a Trade Account, complete the form below to be redirected to Mondu.
 			</p>
 			<p>
 				<?php

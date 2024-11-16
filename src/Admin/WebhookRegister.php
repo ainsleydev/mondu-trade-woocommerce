@@ -140,8 +140,8 @@ class WebhookRegister {
 		];
 
 		$message_key = self::ADMIN_MESSAGE_KEY;
-		if ( isset( $_GET[$message_key] ) && isset( $messages[ $_GET[$message_key] ] ) ) {
-			return $messages[ $_GET[$message_key] ];
+		if ( isset( $_GET[ $message_key ] ) && isset( $messages[ $_GET[ $message_key ] ] ) ) {
+			return $messages[ $_GET[ $message_key ] ];
 		}
 
 		return null;

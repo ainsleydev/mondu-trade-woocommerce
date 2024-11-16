@@ -110,6 +110,8 @@ class SubmitTradeAccount extends Form {
 			$customer = new WC_Customer( $user_id );
 			$user     = get_userdata( $user_id );
 
+			// TODO: We should get the Wordpress User Data first, and if not resort to Woo's data.
+
 			// Create the initial array with possible empty values.
 			$applicant_details = [
 				"first_name" => $customer->get_billing_first_name() ?: '',

@@ -14,7 +14,6 @@ use Mondu\Exceptions\ResponseException;
 use Mondu\Mondu\Api;
 use Mondu\Mondu\MonduGateway;
 use MonduTrade\Admin\Options;
-use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\Mondu\RequestWrapper;
 use WC_Order;
 use WC_Payment_Gateway;
