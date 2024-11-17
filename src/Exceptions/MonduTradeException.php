@@ -20,5 +20,4 @@ use Exception;
  * Mondu Trade Exception is a generic exception for
  * when an error occurred within the plugin.
  */
-class MonduTradeException extends Exception {
-}
+class MonduTradeException extends Exception {}

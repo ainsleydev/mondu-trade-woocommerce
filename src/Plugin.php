@@ -36,6 +36,11 @@ class Plugin {
 	const DOMAIN = 'mondu-trade-account';
 
 	/**
+	 * The name of the payment gateway.
+	 */
+	const PAYMENT_GATEWAY_NAME = 'mondu-ainsley-dev-trade-account';
+
+	/**
 	 * Initialises the Mondu Trade Account Plugin
 	 */
 	public function __construct() {

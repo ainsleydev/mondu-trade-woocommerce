@@ -8,12 +8,16 @@ serve: # Serve Wordpress & Local Tunnel
 	cd ../../../ && concurrently --names "wordpress,localtunnel,logs" --prefix-colors "blue,green,yellow" \
  		"APP_ENV=dev php -S localhost:8000" \
  		"lt --port 8000 --subdomain mondu-trade-account-woocommerce-ainsleydev" \
- 		"tail -f  ./wp-content/debug.log"
+ 		"tail -n 0 -f ./wp-content/debug.log"
 .PHONY: serve
 
 zip: # Zips the contents of the plugin under /dist
 	wp dist-archive ./ dist/mondu-trade-woocommerce.zip
 .PHONY: zip
+
+pack: # Packs repo into txt file (AI)
+	repopack --ignore "**/*.log,tmp/,vendor/dist/" --output repopack.txt
+.PHONY: pack
 
 todo: # Show TODO items per file
 	$(Q) grep \

@@ -10,13 +10,17 @@
 
 namespace MonduTrade\WooCommerce;
 
+use Exception;
 use Mondu\Exceptions\ResponseException;
 use Mondu\Mondu\Api;
 use Mondu\Mondu\MonduGateway;
 use MonduTrade\Admin\Options;
+use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\Mondu\RequestWrapper;
+use MonduTrade\Plugin;
 use WC_Order;
 use WC_Payment_Gateway;
+use WP_Error;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -56,7 +60,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 	private Options $admin_options;
 
 	public function __construct() {
-		$this->id                 = 'mondu-ainsley-dev-trade-account';
+		$this->id                 =  Plugin::PAYMENT_GATEWAY_NAME;
 		$this->has_fields         = true;
 		$this->method_title       = 'Mondu Trade Account';
 		$this->method_description = 'Allows payments using Mondu Trade Account';
@@ -103,7 +107,51 @@ class PaymentGateway extends WC_Payment_Gateway {
 	public function payment_fields() {
 		wp_enqueue_script( 'a-dev-mondu-checkout-js', MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/checkout.js', [], null, true );
 		parent::payment_fields();
-		include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout.php';
+
+		$status      = BuyerStatus::UNDEFINED;
+		$buyer_limit = false;
+
+		if ( ! is_user_logged_in() ) {
+			include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/not-logged-in.php';
+
+			return;
+		}
+
+		// If the user is logged in, we can obtain the status to
+		// display different messages to the user.
+		$user_id  = get_current_user_id();
+		$customer = new Customer( $user_id );
+		$status   = $customer->get_mondu_trade_account_status();
+
+		// Get different views dependant on the buyer status.
+		switch ( $status ):
+			case BuyerStatus::PENDING:
+				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/pending.php';
+				break;
+			case BuyerStatus::DECLINED:
+				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/declined.php';
+				break;
+			case BuyerStatus::ACCEPTED:
+				// If the buyer has an accepted status, we can assume that they
+				// probably have a buying limit to display to the user.
+				try {
+					$buyer_limit = $this->mondu_request_wrapper->get_buyer_limit();
+
+					if ( $buyer_limit && isset( $buyer_limit['purchasing_limit']['purchasing_limit_cents'] ) ) {
+						$purchasing_limit = $buyer_limit['purchasing_limit']['purchasing_limit_cents'] / 100; // Convert cents to pounds.
+						echo '<p>Purchasing Limit: ' . wc_price( $purchasing_limit ) . '</p>';
+					}
+
+				} catch ( Exception $e ) {
+					// TODO: Probably need to display message to user.
+					\MonduTrade\Util\Logger::error('Getting buyer limit', [
+						'error' => $e->getMessage(),
+					]);
+				}
+				break;
+			default:
+				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/sign-up.php';
+		endswitch;
 	}
 
 	/**
@@ -206,21 +254,10 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 * @param $amount
 	 * @param string $reason
 	 *
-	 * @return bool|WP_Error
+	 * @return bool| WP_Error
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
 		return $this->mondu_gateway->process_refund( $order_id, $amount, $reason );
-	}
-
-	/**
-	 * Stubs a function called submission_status
-	 *
-	 * @return string
-	 */
-	public function submission_status() {
-		// Here you could implement real submission logic, but for now, we're stubbing it.
-		// Possible return values: 'pending', 'success', 'declined'
-		return 'pending'; // Replace this with appropriate logic later.
 	}
 
 	/**

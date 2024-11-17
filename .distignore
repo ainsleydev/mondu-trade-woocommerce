@@ -46,3 +46,4 @@ NOTES.md
 .env
 .env.example
 Makefile
+repopack.txt

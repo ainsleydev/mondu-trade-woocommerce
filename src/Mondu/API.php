@@ -11,9 +11,11 @@
 namespace MonduTrade\Mondu;
 
 use Mondu\Plugin;
+use MonduTrade\Util\Logger;
 use Mondu\Mondu\Support\Helper;
 use Mondu\Exceptions\ResponseException;
 use MonduTrade\Exceptions\MonduTradeException;
+use MonduTrade\Exceptions\MonduTradeResponseException;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -102,10 +104,10 @@ class API extends \Mondu\Mondu\Api {
 			$args['body'] = wp_json_encode( $body );
 		}
 
-		Helper::log( [
+		Logger::info( 'Performing request to Mondu API', [
 			'method' => $method,
 			'url'    => $url,
-			'body'   => isset( $args['body'] ) ? $args['body'] : null,
+			'body'   => $args['body'] ?? null,
 		] );
 
 		return $this->validate_remote_result( $url, wp_remote_request( $url, $args ) );
@@ -117,17 +119,17 @@ class API extends \Mondu\Mondu\Api {
 	 * @param $url
 	 * @param $result
 	 * @return array
-	 * @throws ResponseException
+	 * @throws MonduTradeResponseException
 	 * @throws MonduTradeException
 	 */
-	private function validate_remote_result( $url, $result ) {
+	private function validate_remote_result( $url, $result ): array {
 		if ( $result instanceof \WP_Error ) {
 			throw new MonduTradeException( $result->get_error_message(), $result->get_error_code() );
 		} else {
-			Helper::log( [
-				'code'     => isset( $result['response']['code'] ) ? $result['response']['code'] : null,
+			Logger::info( 'Result from Mondu API', [
+				'code'     => $result['response']['code'] ?? null,
 				'url'      => $url,
-				'response' => isset( $result['body'] ) ? $result['body'] : null,
+				'response' => $result['body'] ?? null,
 			] );
 		}
 
@@ -141,7 +143,7 @@ class API extends \Mondu\Mondu\Api {
 				$message = $result['body']['errors']['title'];
 			}
 
-			throw new ResponseException( $message, $result['response']['code'], json_decode( $result['body'], true ) );
+			throw new \MonduTrade\Exceptions\MonduTradeException( $message, $result['response']['code'], json_decode( $result['body'], true ) );
 		}
 
 		return $result;

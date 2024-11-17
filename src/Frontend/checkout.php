@@ -8,6 +8,8 @@
  * @author      ainsley.dev
  */
 
+use MonduTrade\Plugin;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
 }
@@ -49,4 +51,40 @@ if ( ! function_exists( 'mondu_trade_checkout_account_notice' ) ) {
 	}
 
 	add_action( 'template_redirect', 'mondu_trade_checkout_account_notice' );
+}
+
+
+/**
+ * Selects the Trade Account gateway if the status
+ * is succeeded.
+ *
+ * @return void
+ */
+if ( ! function_exists( 'mondu_trade_checkout_select_default_gateway' ) ) {
+
+	function mondu_trade_checkout_select_default_gateway( $available_gateways ) {
+		if ( ! is_checkout() ) {
+			return $available_gateways;
+		}
+
+		$status = isset( $_GET['trade_account_status'] ) ? sanitize_text_field( $_GET['trade_account_status'] ) : '';
+
+		if ( $status !== 'succeeded' ) {
+			return $available_gateways;
+		}
+
+		foreach ( $available_gateways as $gateway_id => $gateway ) {
+			if ( $gateway_id === Plugin::PAYMENT_GATEWAY_NAME ) {
+				$gateway->chosen = true;
+				// Set the chosen payment method in the session
+				WC()->session->set( 'chosen_payment_method', Plugin::PAYMENT_GATEWAY_NAME );
+			} else {
+				$gateway->chosen = false;
+			}
+		}
+
+		return $available_gateways;
+	}
+
+	add_filter( 'woocommerce_available_payment_gateways', 'mondu_trade_checkout_select_default_gateway' );
 }
