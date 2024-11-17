@@ -191,7 +191,7 @@ class WebhooksController extends BaseController {
 	private function get_customer( $id ) {
 		try {
 			$customer = new Customer( $id );
-			if ( $customer->get_id() === 0 ) {
+			if (!$customer->is_valid()) {
 				throw new \Exception( "Customer not found" );
 			}
 

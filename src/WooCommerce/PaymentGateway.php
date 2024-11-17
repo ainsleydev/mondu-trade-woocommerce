@@ -32,13 +32,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class PaymentGateway extends WC_Payment_Gateway {
 
 	/**
-	 * Mondu API
-	 *
-	 * @var Api
-	 */
-	private Api $api;
-
-	/**
 	 * Base Mondu Gateway found.
 	 *
 	 * @var MonduGateway
@@ -66,7 +59,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$this->method_description = 'Allows payments using Mondu Trade Account';
 		$this->icon               = 'https://checkout.mondu.ai/logo.svg';
 
-		$this->api                   = new Api();
 		$this->mondu_gateway         = new MonduGateway();
 		$this->mondu_request_wrapper = new RequestWrapper();
 		$this->admin_options         = new Options();
@@ -279,7 +271,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 
 		$scriptID = 'a-dev-mondu-checkout-js';
 
-		// TODO: Localise API Key
+		// TODO: Localise API Key.
 		wp_register_script( $scriptID, MONDU_TRADE_ACCOUNT_ASSETS_PATH . '/js/checkout.js', [ 'jquery' ], null, true );
 		wp_localize_script( $scriptID, 'aDevTradeAccountData', [
 			'ajax_url'   => admin_url( 'admin-ajax.php' ),

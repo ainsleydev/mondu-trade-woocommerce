@@ -11,6 +11,7 @@
 namespace MonduTrade\Mondu;
 
 
+use MonduTrade\Exceptions\MonduTradeException;
 use WC_Order;
 use Exception;
 use Mondu\Plugin;
@@ -54,7 +55,7 @@ class RequestWrapper extends MonduRequestWrapper {
 	public function create_order_with_account( WC_Order $order, $success_url ) {
 		$customer = new Customer( $order->get_customer_id() );
 
-		// Temporary to avoid warning.
+		// Set a temporary payment method to avoid PHP warning.
 		$order->set_payment_method( Plugin::PAYMENT_METHODS['invoice'] );
 
 		$order_data                   = OrderData::create_order( $order, $success_url );
@@ -80,6 +81,7 @@ class RequestWrapper extends MonduRequestWrapper {
 	 *
 	 * @return mixed
 	 * @throws ResponseException
+	 * @throws MonduTradeException
 	 * @see https://docs.mondu.ai/reference/get_api-v1-buyers-uuid-purchasing-limit
 	 */
 	public function get_buyer_limit() {
@@ -92,6 +94,10 @@ class RequestWrapper extends MonduRequestWrapper {
 				'user_id' => $user_id,
 				'error'   => $e->getMessage(),
 			] );
+		}
+
+		if (!isset($customer) || !$customer || !$customer->is_valid()) {
+			throw new MonduTradeException('Cannot buyer limit, invalid customer');
 		}
 
 		$params = [

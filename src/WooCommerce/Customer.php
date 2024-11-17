@@ -37,6 +37,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Customer extends WC_Customer {
 
 	/**
+	 * Determines if the customer was retrieved successfully.
+	 *
+	 * @var bool
+	 */
+	private bool $valid = true;
+
+	/**
 	 * Constructor for the extended customer class.
 	 *
 	 * @param int $id
@@ -48,7 +55,26 @@ class Customer extends WC_Customer {
 			Logger::error( 'Obtaining the Mondu Trade Customer', [
 				'id' => $id,
 			] );
+			$this->valid = false;
 		}
+	}
+
+	/**
+	 * Determines if the customer was retrieved successfully
+	 * by checking for the user ID.
+	 *
+	 * @return bool
+	 */
+	public function is_valid(): bool {
+		if ( ! $this->valid ) {
+			return false;
+		}
+
+		if ( $this->get_id() === 0 ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
