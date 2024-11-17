@@ -1,6 +1,7 @@
-setup: # Setup
+setup: # Setup Dependencies
 	npm install -g localtunnel
 	npm install -g concurrently
+	wp package install wp-cli/dist-archive-command
 .PHONY: setup
 
 serve: # Serve Wordpress & Local Tunnel
@@ -10,7 +11,11 @@ serve: # Serve Wordpress & Local Tunnel
  		"tail -f  ./wp-content/debug.log"
 .PHONY: serve
 
-todo: # Show to-do items per file
+zip: # Zips the contents of the plugin under /dist
+	wp dist-archive ./ dist/mondu-trade-woocommerce.zip
+.PHONY: zip
+
+todo: # Show TODO items per file
 	$(Q) grep \
 		--exclude=Makefile.util \
 		--exclude-dir=vendor \

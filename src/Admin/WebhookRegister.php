@@ -10,6 +10,7 @@
 namespace MonduTrade\Admin;
 
 use MonduTrade\Plugin;
+use MonduTrade\Util\Environment;
 use MonduTrade\Util\Logger;
 use MonduTrade\Mondu\RequestWrapper;
 use Mondu\Exceptions\ResponseException;
@@ -106,6 +107,11 @@ class WebhookRegister {
 	 */
 	public function delete() {
 		Util::validate_user_permissions();
+
+		if ( Environment::is_production() ) {
+			exit;
+		}
+
 		$uuid = isset( $_POST['uuid'] ) ? sanitize_text_field( $_POST['uuid'] ) : '';
 		Util::validate_nonce( 'mondu_trade_delete_webhook_' . $uuid, 'mondu_trade_delete_webhook_nonce' );
 

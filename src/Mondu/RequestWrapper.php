@@ -52,15 +52,19 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * @throws \WC_Data_Exception
 	 */
 	public function create_order_with_account( WC_Order $order, $success_url ) {
+		$customer = new Customer( $order->get_customer_id() );
+
 		// Temporary to avoid warning.
 		$order->set_payment_method( Plugin::PAYMENT_METHODS['invoice'] );
 
 		$order_data                   = OrderData::create_order( $order, $success_url );
 		$order_data['payment_method'] = 'billing_statement';
-		// TODO: Fix this, we just need to make a new WC_Customer and get their UUID. Maybe that'll fix the order issue?
-		$order_data['buyer']['uuid']  = '3aa93331-5f61-4576-8dc2-b5086ba830fe';
+		$order_data['buyer']['uuid'] = $customer->get_mondu_trade_account_uuid();
 
-		error_log( json_encode( $order_data ) );
+		Logger::debug('Sending order to Mondu', [
+			'order' => $order_data,
+		]);
+
 		$response = $this->wrap_with_mondu_log_event( 'create_order', [ $order_data ] );
 
 		$mondu_order = $response['order'];
@@ -104,7 +108,7 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * @throws ResponseException
 	 */
 	public function register_buyer_webhooks() {
-		$path    = '/wp-json/mondu-trade/v1/webhooks';
+		$path = '/wp-json/mondu-trade/v1/webhooks';
 		$base = rest_url();
 
 		if ( Environment::is_development() ) {

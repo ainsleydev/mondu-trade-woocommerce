@@ -41,3 +41,8 @@ node_modules
 *.sql
 *.tar.gz
 *.zip
+
+NOTES.md
+.env
+.env.example
+Makefile

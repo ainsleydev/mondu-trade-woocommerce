@@ -8,7 +8,11 @@
  * @author      ainsley.dev
  */
 
-$domain = \MonduTrade\Plugin::DOMAIN;
+use MonduTrade\Plugin;
+use MonduTrade\Util\Environment;
+
+$domain = Plugin::DOMAIN;
+$is_development = Environment::is_development()
 
 ?>
 
@@ -89,7 +93,9 @@ $domain = \MonduTrade\Plugin::DOMAIN;
 				<th><?php esc_html_e( 'UUID', $domain ); ?></th>
 				<th><?php esc_html_e( 'Topic', $domain ); ?></th>
 				<th><?php esc_html_e( 'Address', $domain ); ?></th>
-				<th><?php esc_html_e( 'Actions', $domain ); ?></th>
+				<?php if ($is_development): ?>
+					<th><?php esc_html_e( 'Actions', $domain ); ?></th>
+				<?php endif; ?>
 			</tr>
 			</thead>
 			<tbody>
@@ -98,14 +104,16 @@ $domain = \MonduTrade\Plugin::DOMAIN;
 					<td><?php echo esc_html( $webhook['uuid'] ); ?></td>
 					<td><?php echo esc_html( $webhook['topic'] ); ?></td>
 					<td><?php echo esc_html( $webhook['address'] ); ?></td>
-					<td>
-						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-							<?php wp_nonce_field( 'mondu_trade_delete_webhook_' . $webhook['uuid'], 'mondu_trade_delete_webhook_nonce' ); ?>
-							<input type="hidden" name="action" value="mondu_trade_delete_webhook">
-							<input type="hidden" name="uuid" value="<?php echo esc_attr( $webhook['uuid'] ); ?>">
-							<?php submit_button( __( 'Delete', $domain ), 'delete', 'submit', false ); ?>
-						</form>
-					</td>
+					<?php if ($is_development): ?>
+						<td>
+							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+								<?php wp_nonce_field( 'mondu_trade_delete_webhook_' . $webhook['uuid'], 'mondu_trade_delete_webhook_nonce' ); ?>
+								<input type="hidden" name="action" value="mondu_trade_delete_webhook">
+								<input type="hidden" name="uuid" value="<?php echo esc_attr( $webhook['uuid'] ); ?>">
+								<?php submit_button( __( 'Delete', $domain ), 'delete', 'submit', false ); ?>
+							</form>
+						</td>
+					<?php endif; ?>
 				</tr>
 			<?php endforeach; ?>
 			</tbody>
