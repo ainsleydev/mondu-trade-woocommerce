@@ -15,6 +15,7 @@ namespace MonduTrade;
 use Dotenv\Dotenv;
 use MonduTrade\Admin\Settings;
 use MonduTrade\Actions\SubmitTradeAccount;
+use MonduTrade\Admin\User;
 use MonduTrade\Util\Environment;
 use MonduTrade\WooCommerce\PaymentGateway;
 use MonduTrade\Controllers\TradeAccountController;
@@ -31,14 +32,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Plugin {
 
 	/**
-	 * The text domain of the plugin.
+	 * Text domain of the plugin.
+	 *
+	 * @var string
 	 */
 	const DOMAIN = 'mondu-trade-account';
 
 	/**
-	 * The name of the payment gateway.
+	 * Name of the payment gateway for WooCommerce.
+	 *
+	 * @var string
 	 */
-	const PAYMENT_GATEWAY_NAME = 'mondu-ainsley-dev-trade-account';
+	const PAYMENT_GATEWAY_NAME = 'mondu-trade-account';
+
+	/**
+	 * Log context  for the Woocommerce logger.
+	 *
+	 * @var string
+	 */
+	const LOG_CONTEXT = 'mondu-trade';
 
 	/**
 	 * Initialises the Mondu Trade Account Plugin
@@ -66,9 +78,11 @@ class Plugin {
 			// Register forms (actions).
 			new SubmitTradeAccount();
 
-			// Add the admin options in the sidebar.
+			// Add the admin options in the sidebar and display
+			// user information in the /user-edit page.
 			if ( is_admin() ) {
 				new Settings();
+				new User();
 			}
 		} );
 

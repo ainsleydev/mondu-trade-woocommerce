@@ -11,8 +11,9 @@
 namespace MonduTrade\WooCommerce;
 
 use Exception;
-use MonduTrade\Util\Logger;
 use WC_Customer;
+use MonduTrade\Util\Logger;
+use InvalidArgumentException;
 use MonduTrade\Mondu\BuyerStatus;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,8 +24,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * MonduCustomer extends the WooCommerce Customer to allow for
  * additional fields for the Trade Account.
  *
+ * Usage Example:
+ *
  * $customer_id = 1;
- * $customer = new WC_Customer_Extended($customer_id);
+ * $customer = new Customer($customer_id);
  *
  * $customer->set_mondu_trade_account_uuid('sample-uuid-value');
  * $customer->set_mondu_trade_account_status('pending');
@@ -42,6 +45,20 @@ class Customer extends WC_Customer {
 	 * @var bool
 	 */
 	private bool $valid = true;
+
+	/**
+	 * Meta key for Mondu Trade Account UUID
+	 *
+	 * @var string
+	 */
+	private const META_KEY_TRADE_ACCOUNT_UUID = 'mondu_trade_account_uuid';
+
+	/**
+	 * Meta key for Mondu Trade Account Status
+	 *
+	 * @var string
+	 */
+	private const META_KEY_TRADE_ACCOUNT_STATUS = 'mondu_trade_account_status';
 
 	/**
 	 * Constructor for the extended customer class.
@@ -83,16 +100,16 @@ class Customer extends WC_Customer {
 	 * @return string
 	 */
 	public function get_mondu_trade_account_uuid(): string {
-		return $this->get_meta( 'mondu_trade_account_uuid', true );
+		return $this->get_meta( self::META_KEY_TRADE_ACCOUNT_UUID, true );
 	}
 
 	/**
 	 * Set the Mondu Trade Account UUID.
 	 *
-	 * @param string $uuid
+	 * @param string $uuid Trade Account UUID
 	 */
 	public function set_mondu_trade_account_uuid( string $uuid ) {
-		$this->update_meta_data( 'mondu_trade_account_uuid', sanitize_text_field( $uuid ) );
+		$this->update_meta_data( self::META_KEY_TRADE_ACCOUNT_UUID, sanitize_text_field( $uuid ) );
 	}
 
 	/**
@@ -101,18 +118,19 @@ class Customer extends WC_Customer {
 	 * @return string
 	 */
 	public function get_mondu_trade_account_status(): string {
-		return $this->get_meta( 'mondu_trade_account_status', true );
+		return $this->get_meta( self::META_KEY_TRADE_ACCOUNT_STATUS, true );
 	}
 
 	/**
 	 * Set the Mondu Trade Account Status.
 	 *
-	 * @param string $status
+	 * @param string $status Trade Account Status
+	 * @throws InvalidArgumentException if the status is invalid
 	 */
 	public function set_mondu_trade_account_status( string $status ) {
 		if ( ! BuyerStatus::is_valid( $status ) ) {
-			throw new \InvalidArgumentException( 'Invalid status value provided.' );
+			throw new InvalidArgumentException( 'Invalid status value provided.' );
 		}
-		$this->update_meta_data( 'mondu_trade_account_status', sanitize_text_field( $status ) );
+		$this->update_meta_data( self::META_KEY_TRADE_ACCOUNT_STATUS, sanitize_text_field( $status ) );
 	}
 }

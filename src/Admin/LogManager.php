@@ -10,6 +10,7 @@
 
 namespace MonduTrade\Admin;
 
+use MonduTrade\Plugin;
 use WP_Filesystem_Base;
 
 /**
@@ -55,7 +56,7 @@ class LogManager {
 			exit( esc_html__( 'Log not found.', 'plugin-domain' ) );
 		}
 
-		$filename = 'mondu-trade-' . $date . '.log';
+		$filename = Plugin::LOG_CONTEXT . '-' . $date . '.log';
 
 		header( 'Content-Type: text/plain' );
 		header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
@@ -74,7 +75,7 @@ class LogManager {
 		$dir      = opendir( $base_dir );
 		if ( $dir ) {
 			while ( $file = readdir( $dir ) ) { //phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-				if ( str_starts_with( $file, 'mondu-trade-' . $date ) && str_ends_with( $file, '.log' ) ) {
+				if ( str_starts_with( $file, Plugin::LOG_CONTEXT . '-' . $date ) && str_ends_with( $file, '.log' ) ) {
 					closedir( $dir );
 
 					return $base_dir . $file;

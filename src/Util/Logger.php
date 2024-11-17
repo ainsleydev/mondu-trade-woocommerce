@@ -3,11 +3,14 @@
 /**
  * Logger
  *
- * @package MonduTradeAccount
- * @author  ainsley.dev
+ * @package     MonduTradeAccount
+ * @category    Util
+ * @author      ainsley.dev
  */
 
 namespace MonduTrade\Util;
+
+use MonduTrade\Plugin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -18,13 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * WooCommerce logger.
  */
 final class Logger {
-
-	/**
-	 * Logger Context
-	 *
-	 * @var string
-	 */
-	public static string $context = 'mondu-trade';
 
 	/**
 	 * Log an info message.
@@ -82,7 +78,7 @@ final class Logger {
 			] );
 		}
 		$out = wc_print_r( $lines, true );
-		$logger->log( $level, $out, [ 'source' => self::$context ] );
+		$logger->log( $level, $out, [ 'source' => Plugin::LOG_CONTEXT ] );
 
 		if ( Environment::is_development() ) {
 			error_log( json_encode( $lines ) );

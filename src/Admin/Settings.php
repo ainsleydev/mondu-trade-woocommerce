@@ -102,7 +102,7 @@ class Settings {
 		$message = $this->webhook_register->get_message();
 		$webhooks_registered = get_option( '_mondu_trade_webhooks_registered' );
 
-		include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/admin.php';
+		include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/admin/settings.php';
 	}
 
 	/**
