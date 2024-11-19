@@ -1,10 +1,15 @@
-# Mondu Trade Account - WooCommerce
-
-Wordpress Plugin for integrating trade accounts into the Resinbound.online Website via the Mondu API
+<div align="center">
+<img width="100" src="res/logo.svg" alt="Errors Logo" />
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![GNU General Public License 3.0](https://img.shields.io/github/license/ainsleyclark/squidge.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 [![Twitter](https://img.shields.io/twitter/follow/ainsleydev)](https://twitter.com/ainsleydev)
+
+</div>
+
+# Mondu Trade Account - WooCommerce
+
+Wordpress Plugin for integrating trade accounts into the Resinbound.online Website via the Mondu API
 
 ### Sign up
 
