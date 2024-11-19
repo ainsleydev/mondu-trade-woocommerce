@@ -13,13 +13,13 @@
 namespace MonduTrade;
 
 use Dotenv\Dotenv;
+use MonduTrade\Admin\User;
 use MonduTrade\Admin\Settings;
 use MonduTrade\Actions\SubmitTradeAccount;
-use MonduTrade\Admin\User;
-use MonduTrade\Util\Environment;
+use MonduTrade\WooCommerce\Checkout;
 use MonduTrade\WooCommerce\PaymentGateway;
-use MonduTrade\Controllers\TradeAccountController;
 use MonduTrade\Controllers\WebhooksController;
+use MonduTrade\Controllers\TradeAccountController;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -79,11 +79,6 @@ class Plugin {
 		} );
 
 		/**
-		 * Require hooks & actions.
-		 */
-		require_once __DIR__ . '/Frontend/checkout.php';
-
-		/**
 		 * We should use the .env file in the plugin base dir
 		 * if we're in dev. Safe Load doesn't throw an
 		 * exception if it's not found.
@@ -109,12 +104,22 @@ class Plugin {
 		/*
 		 * Show action links on the plugin screen.
 		 */
-		add_filter('plugin_action_links_' . MONDU_TRADE_PLUGIN_BASENAME, [ $this, 'add_action_links' ]);
+		add_filter( 'plugin_action_links_' . MONDU_TRADE_PLUGIN_BASENAME, [ $this, 'add_action_links' ] );
 
 		/*
 		 * Adds meta information about the Mondu Trade Plugin.
 		 */
-		add_filter('plugin_row_meta', [ $this, 'add_row_meta' ], 10, 2);
+		add_filter( 'plugin_row_meta', [ $this, 'add_row_meta' ], 10, 2 );
+
+		/**
+		 * Adds checkout notices when the buyer has submitted a Trade application.
+		 */
+		add_filter( 'template_redirect', [ Checkout::class, 'notices' ] );
+
+		/**
+		 * Pre-selects the Trade Account if it's succeeded.
+		 */
+		add_filter( 'woocommerce_available_payment_gateways', [ Checkout::class, 'select_default_gateway' ] );
 	}
 
 	/**
@@ -159,19 +164,19 @@ class Plugin {
 	 * @param $links
 	 * @return array|string[]
 	 */
-	public static function add_action_links($links): array {
+	public static function add_action_links( $links ): array {
 		$action_links = [
-			'settings' => '<a href="' . admin_url('admin.php?page=mondu-trade-account') . '" aria-label="' . esc_attr__('View Mondu settings', self::DOMAIN) . '">' . esc_html__('Settings', 'woocommerce') . '</a>',
+			'settings' => '<a href="' . admin_url( 'admin.php?page=mondu-trade-account' ) . '" aria-label="' . esc_attr__( 'View Mondu settings', self::DOMAIN ) . '">' . esc_html__( 'Settings', 'woocommerce' ) . '</a>',
 		];
 
-		return array_merge($action_links, $links);
+		return array_merge( $action_links, $links );
 	}
 
 	/**
 	 * Show row meta on the plugin screen.
 	 *
 	 * @param mixed $links Plugin Row Meta.
-	 * @param mixed $file   Plugin Base file.
+	 * @param mixed $file Plugin Base file.
 	 * @return array
 	 * @noinspection DuplicatedCode
 	 */
@@ -181,13 +186,12 @@ class Plugin {
 		}
 
 		$row_meta = [
-			'github'  => '<a target="_blank" href="' . esc_url( 'https://github.com/ainsleydev/mondu-trade-woocommerce' ) . '" aria-label="' . esc_attr__('Visit Github Repo', self::DOMAIN) . '">' . esc_html__( 'GitHub', self::DOMAIN ) . '</a>',
-			'faq'   => '<a target="_blank" href="' . esc_url( esc_attr__( 'https://mondu.ai/faq', self::DOMAIN ) ) . '" aria-label="' . esc_attr__('View FAQ', self::DOMAIN) . '">' . esc_html__( 'FAQ', self::DOMAIN ) . '</a>',
+			'github' => '<a target="_blank" href="' . esc_url( 'https://github.com/ainsleydev/mondu-trade-woocommerce' ) . '" aria-label="' . esc_attr__( 'Visit Github Repo', self::DOMAIN ) . '">' . esc_html__( 'GitHub', self::DOMAIN ) . '</a>',
+			'faq'    => '<a target="_blank" href="' . esc_url( esc_attr__( 'https://mondu.ai/faq', self::DOMAIN ) ) . '" aria-label="' . esc_attr__( 'View FAQ', self::DOMAIN ) . '">' . esc_html__( 'FAQ', self::DOMAIN ) . '</a>',
 		];
 
 		return array_merge( $links, $row_meta );
 	}
-
 }
 
 

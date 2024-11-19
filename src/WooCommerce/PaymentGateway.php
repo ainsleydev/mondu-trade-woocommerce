@@ -16,11 +16,9 @@ use WC_Data_Exception;
 use MonduTrade\Plugin;
 use WC_Payment_Gateway;
 use Mondu\Mondu\MonduGateway;
-use MonduTrade\Admin\Options;
 use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\Mondu\RequestWrapper;
 use Mondu\Exceptions\ResponseException;
-
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -61,12 +59,12 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$this->init_form_fields();
 		$this->init_settings();
 
-		$this->enabled     = $this->get_option( 'enabled' ) === 'yes' ? 'yes' : 'no';
-		$this->title       = $this->get_option( 'title' );
+		$this->enabled = $this->get_option( 'enabled' ) === 'yes' ? 'yes' : 'no';
+		$this->title   = $this->get_option( 'title' );
 
 		add_action( 'woocommerce_thankyou_' . $this->id, [ $this, 'thankyou_page' ] );
 		add_action( 'woocommerce_email_before_order_table', [ $this, 'email_instructions' ], 10, 3 );
-		add_action( 'mondu_trade_account_checkout_class', [ $this, 'view_class_filter' ], );
+		add_action( 'mondu_trade_account_checkout_class', [ $this, 'view_class_filter' ] );
 
 		$this->register_scripts();
 
@@ -135,14 +133,14 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 */
 	public function init_form_fields(): void {
 		$this->form_fields = [
-			'enabled'     => [
+			'enabled' => [
 				'title'       => 'Enable/Disable',
 				'label'       => 'Enable Mondu Trade Account Payment',
 				'type'        => 'checkbox',
 				'description' => '',
 				'default'     => 'no',
 			],
-			'title'       => [
+			'title'   => [
 				'title'       => 'Title',
 				'type'        => 'text',
 				'description' => 'This controls the title which the user sees during checkout.',
@@ -157,16 +155,26 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @param $order_id
 	 * @return array|void
-	 * @throws ResponseException
-	 * @throws WC_Data_Exception
+	 * @throws ResponseException|WC_Data_Exception
 	 */
 	public function process_payment( $order_id ) {
-		$order       = wc_get_order( $order_id );
+		$order    = wc_get_order( $order_id );
+		$customer = new Customer( $order->get_customer_id() );
+
+		// Bail if the customer hasn't been accepted by Mondu, to avoid
+		// people placing orders if they haven't been accepted.
+		if ( $customer->get_mondu_trade_account_status() !== BuyerStatus::ACCEPTED ) {
+			wc_add_notice( __( 'You are not currently permitted to place a Mondu Trade Payment, try another payment method.', Plugin::DOMAIN ), 'error' );
+
+			return;
+		}
+
+		// Original code from Mondu, we just call the parent.
 		$success_url = $this->get_return_url( $order );
 		$mondu_order = $this->mondu_request_wrapper->create_order_with_account( $order, $success_url );
 
 		if ( ! $mondu_order ) {
-			wc_add_notice( __( 'Error placing an order. Please try again.', 'mondu' ), 'error' );
+			wc_add_notice( __( 'Error placing an order. Please try again.', Plugin::DOMAIN ), 'error' );
 
 			return;
 		}
@@ -224,7 +232,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function register_scripts() {
-
 		// We only need JavaScript to process a token only on cart/checkout pages.
 		if ( ! is_cart() && ! is_checkout() ) {
 			return;

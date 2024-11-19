@@ -10,6 +10,10 @@
 
 namespace MonduTrade\Mondu;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Direct access not allowed' );
+}
+
 /**
  * Buyer Status defines the statues for a Trade Account
  * buyer via Mondu.
@@ -18,7 +22,7 @@ namespace MonduTrade\Mondu;
  */
 final class BuyerStatus
 {
-	const UNDEFINED = 'undefined';
+	const UNKNOWN = 'unknown';
 	const ACCEPTED = 'accepted';
 	const PENDING = 'pending';
 	const DECLINED = 'declined';
@@ -31,7 +35,7 @@ final class BuyerStatus
 	public static function get_values(): array
 	{
 		return [
-			self::UNDEFINED,
+			self::UNKNOWN,
 			self::ACCEPTED,
 			self::PENDING,
 			self::DECLINED,

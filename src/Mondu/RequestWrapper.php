@@ -196,8 +196,8 @@ class RequestWrapper extends MonduRequestWrapper {
 	private function get_trade_redirect_url( int $user_id, string $status ): string {
 		return add_query_arg(
 			[
-				'status'      => $status,
-				'customer_id' => $user_id,
+				'redirect_status' => $status,
+				'customer_id'     => $user_id,
 			],
 			rest_url( 'mondu-trade/v1/trade-account' )
 		);

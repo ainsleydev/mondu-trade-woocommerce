@@ -175,7 +175,7 @@ class WebhooksController extends BaseController {
 		$customer->save();
 
 		Logger::info( 'Successfully updated customer status from buyer webhook', [
-			'webhook_topic' => $params['topic'],
+			'topic' => $params['webhook_topic'],
 			'uuid'          => $buyer_uuid,
 			'state'         => $state,
 		] );

@@ -118,7 +118,13 @@ class Customer extends WC_Customer {
 	 * @return string
 	 */
 	public function get_mondu_trade_account_status(): string {
-		return $this->get_meta( self::META_KEY_TRADE_ACCOUNT_STATUS, true );
+		$status = $this->get_meta( self::META_KEY_TRADE_ACCOUNT_STATUS, true );
+
+		if ( ! $status ) {
+			return BuyerStatus::UNKNOWN;
+		}
+
+		return $status;
 	}
 
 	/**

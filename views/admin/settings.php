@@ -11,6 +11,10 @@
 use MonduTrade\Plugin;
 use MonduTrade\Util\Environment;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Direct access not allowed' );
+}
+
 $domain = Plugin::DOMAIN;
 $is_development = Environment::is_development()
 
