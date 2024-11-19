@@ -11,6 +11,10 @@
 
 Wordpress Plugin for integrating trade accounts into the Resinbound.online Website via the Mondu API
 
+## Installation
+
+You can either download a the zip file from the releases section or locate it on the Wordpress Plugin install page.
+
 ### Sign up
 
 ## FAQs
@@ -27,3 +31,16 @@ add_filter('mondu_trade_account_checkout_class', function ($class) {
 	return $class . ' my-class-name';
 });
 ```
+
+## Copyright
+
+All rights reserved. This plugin and its code are proprietary to ainsley.dev LTD. Unauthorized copying, distribution,
+transmission, or storage of this plugin, its code, or content, in whole or in part, in any form or by any means, is
+strictly prohibited without prior written permission.
+
+This plugin is licensed for use by end-users on their WordPress sites but may not be copied, shared, modified, or
+redistributed in any form, except with explicit written permission from ainsley.dev LTD.
+
+## Licence
+
+Code Copyright 2023 ainsley.dev. Code released under the [BSD-3 Clause](LICENSE).
