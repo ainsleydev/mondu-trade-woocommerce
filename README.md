@@ -10,7 +10,7 @@
 
 ## Overview
 
-Wordpress Plugin for integrating trade accounts into the Resinbound.online Website via the Mondu API
+WordPress Plugin for TODO.
 
 ## Installation
 
@@ -44,4 +44,4 @@ redistributed in any form, except with explicit written permission from ainsley.
 
 ## Licence
 
-Code Copyright 2023 ainsley.dev. Code released under the [BSD-3 Clause](LICENSE).
+Code Copyright 2024 ainsley.dev LTD. Code released under the [BSD-3 Clause](LICENSE).
