@@ -46,13 +46,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 	private RequestWrapper $mondu_request_wrapper;
 
 	/**
-	 * Admin user defined options.
-	 *
-	 * @var Options
-	 */
-	private Options $admin_options;
-
-	/**
 	 * Payment Gateway constructor.
 	 */
 	public function __construct() {
@@ -64,14 +57,12 @@ class PaymentGateway extends WC_Payment_Gateway {
 
 		$this->mondu_gateway         = new MonduGateway();
 		$this->mondu_request_wrapper = new RequestWrapper();
-		$this->admin_options         = new Options();
 
 		$this->init_form_fields();
 		$this->init_settings();
 
-		$this->enabled     = $this->is_enabled() ? 'yes' : 'no';
+		$this->enabled     = $this->get_option( 'enabled' ) === 'yes' ? 'yes' : 'no';
 		$this->title       = $this->get_option( 'title' );
-		$this->description = $this->get_option( 'description' );
 
 		add_action( 'woocommerce_thankyou_' . $this->id, [ $this, 'thankyou_page' ] );
 		add_action( 'woocommerce_email_before_order_table', [ $this, 'email_instructions' ], 10, 3 );
@@ -86,28 +77,20 @@ class PaymentGateway extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Check if the payment gateway should be enabled.
-	 *
-	 * @return bool True if the gateway is enabled and all redirect pages are set, false otherwise.
-	 */
-	public function is_enabled(): bool {
-		return 'yes' === $this->get_option( 'enabled' ) && $this->admin_options->has_redirect_pages();
-	}
-
-	/**
 	 * Adds Payment Fields to the Gateway
 	 *
 	 * @return void
 	 */
 	public function payment_fields() {
-		wp_enqueue_script( 'a-dev-mondu-checkout-js', MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/checkout.js', [], null, true );
+		wp_enqueue_script( 'a-dev-mondu-checkout-js', MONDU_TRADE_VIEW_PATH . '/checkout/checkout.js', [], null, true );
 		parent::payment_fields();
 
 		// We need the user ID in order to obtain the UUID that's
 		// associated with the user, this indicates that they
 		// haven't signed up yet.
 		if ( ! is_user_logged_in() ) {
-			include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/not-logged-in.php';
+			include MONDU_TRADE_VIEW_PATH . '/checkout/not-logged-in.php';
+
 			return;
 		}
 
@@ -120,16 +103,16 @@ class PaymentGateway extends WC_Payment_Gateway {
 		// Get different views dependant on the buyer status.
 		switch ( $status ):
 			case BuyerStatus::PENDING:
-				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/pending.php';
+				include MONDU_TRADE_VIEW_PATH . '/checkout/pending.php';
 				break;
 			case BuyerStatus::DECLINED:
-				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/declined.php';
+				include MONDU_TRADE_VIEW_PATH . '/checkout/declined.php';
 				break;
 			case BuyerStatus::ACCEPTED:
-				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/accepted.php';
+				include MONDU_TRADE_VIEW_PATH . '/checkout/accepted.php';
 				break;
 			default:
-				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/sign-up.php';
+				include MONDU_TRADE_VIEW_PATH . '/checkout/sign-up.php';
 		endswitch;
 	}
 
@@ -164,13 +147,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 				'type'        => 'text',
 				'description' => 'This controls the title which the user sees during checkout.',
 				'default'     => 'Mondu Trade Account',
-				'desc_tip'    => true,
-			],
-			'description' => [
-				'title'       => 'Description',
-				'type'        => 'textarea',
-				'description' => 'This controls the description which the user sees during checkout.',
-				'default'     => 'Pay using Mondu Trade Account.',
 				'desc_tip'    => true,
 			],
 		];
@@ -262,7 +238,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$scriptID = 'a-dev-mondu-checkout-js';
 
 		// TODO: Localise API Key.
-		wp_register_script( $scriptID, MONDU_TRADE_ACCOUNT_ASSETS_PATH . '/js/checkout.js', [ 'jquery' ], null, true );
+		wp_register_script( $scriptID, MONDU_TRADE_ASSETS_PATH . '/js/checkout.js', [ 'jquery' ], null, true );
 		wp_localize_script( $scriptID, 'aDevTradeAccountData', [
 			'ajax_url'   => admin_url( 'admin-ajax.php' ),
 			'ajax_nonce' => wp_create_nonce( 'ajax_nonce' ),
@@ -283,7 +259,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 * @param $class
 	 * @return string
 	 */
-	public function view_class_filter($class): string {
-		return 'mondu-trade mondu-trade-checkout' .  $class;
+	public function view_class_filter( $class ): string {
+		return 'mondu-trade mondu-trade-checkout' . $class;
 	}
 }

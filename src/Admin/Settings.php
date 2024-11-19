@@ -12,7 +12,6 @@ namespace MonduTrade\Admin;
 
 use MonduTrade\Plugin;
 use MonduTrade\Util\Environment;
-use WP_Filesystem_Base;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -102,7 +101,7 @@ class Settings {
 		$message = $this->webhook_register->get_message();
 		$webhooks_registered = get_option( '_mondu_trade_webhooks_registered' );
 
-		include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/admin/settings.php';
+		include MONDU_TRADE_VIEW_PATH . '/admin/settings.php';
 	}
 
 	/**

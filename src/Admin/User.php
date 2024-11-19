@@ -13,6 +13,11 @@ namespace MonduTrade\Admin;
 use WP_User;
 use MonduTrade\WooCommerce\Customer;
 
+/**
+ * User allows admins to view information about the
+ * Trade Account such as the UUID and status
+ * associated with Mondu.
+ */
 class User {
 
 	/**
@@ -34,6 +39,10 @@ class User {
 	 * @param WP_User $user The user object.
 	 */
 	public function display_mondu_trade_account( WP_User $user ) {
+		if ( ! is_admin() ) {
+			return;
+		}
+
 		$customer = new Customer( $user->ID );
 		if ( ! $customer->is_valid() ) {
 			echo '<h3>Mondu Trade Account</h3><p>No trade account data available.</p>';
@@ -44,7 +53,7 @@ class User {
 		$uuid   = $customer->get_mondu_trade_account_uuid();
 		$status = $customer->get_mondu_trade_account_status();
 
-		include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/admin/user.php';
+		include MONDU_TRADE_VIEW_PATH . '/admin/user.php';
 	}
 
 	/**
@@ -53,7 +62,7 @@ class User {
 	 * @param int $user_id
 	 */
 	public function prevent_trade_account_update( int $user_id ) {
-		if ( ! current_user_can( 'edit_user', $user_id ) ) {
+		if ( ! current_user_can( 'edit_user', $user_id ) || !is_admin() ) {
 			return;
 		}
 

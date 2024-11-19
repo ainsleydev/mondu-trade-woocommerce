@@ -33,6 +33,10 @@ add_filter('mondu_trade_account_checkout_class', function ($class) {
 });
 ```
 
+## Screenshots
+
+
+
 ## Copyright
 
 All rights reserved. This plugin and its code are proprietary to ainsley.dev LTD. Unauthorized copying, distribution,

@@ -53,24 +53,16 @@ class Plugin {
 	const LOG_CONTEXT = 'mondu-trade';
 
 	/**
-	 * Initialises the Mondu Trade Account Plugin
+	 * Initialises Mondu Trade.
+	 *
+	 * @return void
 	 */
-	public function __construct() {
+	public function init() {
 		// If dependencies are not met, return early and don't initialize the plugin.
 		if ( ! $this->check_dependencies() ) {
 			return;
 		}
 
-		// Continue with initialisation.
-		$this->init();
-	}
-
-	/**
-	 *
-	 *
-	 * @return void
-	 */
-	private function init() {
 		/**
 		 * Bootstrap classes, filters & actions.
 		 */
@@ -96,7 +88,7 @@ class Plugin {
 		 * if we're in dev. Safe Load doesn't throw an
 		 * exception if it's not found.
 		 */
-		$dotenv = Dotenv::createImmutable( MONDU_TRADE_ACCOUNT_PLUGIN_PATH );
+		$dotenv = Dotenv::createImmutable( MONDU_TRADE_PLUGIN_PATH );
 		$dotenv->safeLoad();
 
 		/**
@@ -113,6 +105,16 @@ class Plugin {
 		 * Load the main Mondu Trade Gateway.
 		 */
 		add_filter( 'woocommerce_payment_gateways', [ PaymentGateway::class, 'add' ] );
+
+		/*
+		 * Show action links on the plugin screen.
+		 */
+		add_filter('plugin_action_links_' . MONDU_TRADE_PLUGIN_BASENAME, [ $this, 'add_action_links' ]);
+
+		/*
+		 * Adds meta information about the Mondu Trade Plugin.
+		 */
+		add_filter('plugin_row_meta', [ $this, 'add_row_meta' ], 10, 2);
 	}
 
 	/**
@@ -150,6 +152,42 @@ class Plugin {
 				<p>Mondu Trade Account requires WooCommerce and Mondu Buy Now Pay Later plugins to be activated.</p>
 			</div>';
 	}
+
+	/**
+	 * Allows the user to go to the Settings page from the Plugins page.
+	 *
+	 * @param $links
+	 * @return array|string[]
+	 */
+	public static function add_action_links($links): array {
+		$action_links = [
+			'settings' => '<a href="' . admin_url('admin.php?page=mondu-trade-account') . '" aria-label="' . esc_attr__('View Mondu settings', self::DOMAIN) . '">' . esc_html__('Settings', 'woocommerce') . '</a>',
+		];
+
+		return array_merge($action_links, $links);
+	}
+
+	/**
+	 * Show row meta on the plugin screen.
+	 *
+	 * @param mixed $links Plugin Row Meta.
+	 * @param mixed $file   Plugin Base file.
+	 * @return array
+	 * @noinspection DuplicatedCode
+	 */
+	public static function add_row_meta( $links, $file ): array {
+		if ( MONDU_TRADE_PLUGIN_BASENAME !== $file ) {
+			return $links;
+		}
+
+		$row_meta = [
+			'github'  => '<a target="_blank" href="' . esc_url( 'https://github.com/ainsleydev/mondu-trade-woocommerce' ) . '" aria-label="' . esc_attr__('Visit Github Repo', self::DOMAIN) . '">' . esc_html__( 'GitHub', self::DOMAIN ) . '</a>',
+			'faq'   => '<a target="_blank" href="' . esc_url( esc_attr__( 'https://mondu.ai/faq', self::DOMAIN ) ) . '" aria-label="' . esc_attr__('View FAQ', self::DOMAIN) . '">' . esc_html__( 'FAQ', self::DOMAIN ) . '</a>',
+		];
+
+		return array_merge( $links, $row_meta );
+	}
+
 }
 
 

@@ -10,8 +10,8 @@
 namespace MonduTrade\Admin;
 
 use MonduTrade\Plugin;
-use MonduTrade\Util\Environment;
 use MonduTrade\Util\Logger;
+use MonduTrade\Util\Environment;
 use MonduTrade\Mondu\RequestWrapper;
 use Mondu\Exceptions\ResponseException;
 
