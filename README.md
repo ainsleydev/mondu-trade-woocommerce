@@ -1,5 +1,5 @@
 <div align="center">
-<img width="100" height="96" src="res/logo.svg" alt="Errors Logo"/>
+<img width="100" height="60" src="res/logo.svg" alt="Errors Logo"/>
 <h3 align="center">Mondu Trade Account - WooCommerce</h3>
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
@@ -7,6 +7,8 @@
 [![Twitter](https://img.shields.io/twitter/follow/ainsleydev)](https://twitter.com/ainsleydev)
 
 </div>
+
+## Overview
 
 Wordpress Plugin for integrating trade accounts into the Resinbound.online Website via the Mondu API
 
