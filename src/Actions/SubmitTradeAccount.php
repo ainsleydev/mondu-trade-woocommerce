@@ -10,11 +10,9 @@
 
 namespace MonduTrade\Actions;
 
-use Mondu\Exceptions\ResponseException;
-use MonduTrade\Exceptions\MonduTradeException;
-use MonduTrade\Mondu\API;
-use MonduTrade\Util\Logger;
 use WC_Customer;
+use MonduTrade\Util\Logger;
+use MonduTrade\Mondu\RequestWrapper;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -30,18 +28,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 class SubmitTradeAccount extends Form {
 
 	/**
-	 * The API to interact with Mondu.
+	 * Mondu Request Wrapper.
 	 *
-	 * @var API
+	 * @var RequestWrapper
 	 */
-	private API $api;
+	private RequestWrapper $mondu_request_wrapper;
 
 	/**
 	 * Submit Trade Account constructor.
 	 */
 	public function __construct() {
-		$this->action = 'trade_account_submit';
-		$this->api    = new Api();
+		$this->action                = 'trade_account_submit';
+		$this->mondu_request_wrapper = new RequestWrapper();
 		parent::__construct();
 	}
 
@@ -53,8 +51,6 @@ class SubmitTradeAccount extends Form {
 	 * data is sent, if it's available (non-blocking)
 	 *
 	 * @return void
-	 * @throws MonduTradeException
-	 * @throws ResponseException
 	 * @see https://docs.mondu.ai/reference/post_api-v1-trade-account
 	 */
 	public function process(): void {
@@ -69,30 +65,11 @@ class SubmitTradeAccount extends Form {
 		// User ID is required for the external reference.
 		$user_id = get_current_user_id();
 
-		// Base Payload for POSTing data to the Trade Account endpoint.
-		$payload = [
-			"external_reference_id" => (string) $user_id,
-			"redirect_urls"         => [
-				"success_url"  => $this->get_redirect_url( $user_id, 'succeeded' ),
-				"cancel_url"   => $this->get_redirect_url( $user_id, 'cancelled' ),
-				"declined_url" => $this->get_redirect_url( $user_id, 'declined' ),
-			],
-		];
-
-		// Add applicant details if available.
-		$applicant_details = $this->get_applicant_details( $user_id );
-		if ( ! empty( $applicant_details ) ) {
-			$payload['applicant'] = $applicant_details;
-		}
-
 		try {
-			$response = $this->api->create_trade_account( $payload );
-			$this->respond( 200, $response, 'Successfully created trade account.' );
+			$response = $this->mondu_request_wrapper->create_trade_account( $user_id, $this->get_applicant_details( $user_id ) );
+
+			$this->respond( 200, $response, 'Trade account submitted');
 		} catch ( \Exception $e ) {
-			Logger::error( 'Error creating trade account', [
-				'payload' => $payload,
-				'error'   => $e->getMessage(),
-			] );
 			$this->respond( 500, [], $e->getMessage() );
 		}
 
@@ -107,24 +84,26 @@ class SubmitTradeAccount extends Form {
 	 */
 	private function get_applicant_details( int $user_id ): array {
 		try {
-			$customer = new WC_Customer( $user_id );
 			$user     = get_userdata( $user_id );
+			$customer = new WC_Customer( $user_id );
 
-			// TODO: We should get the Wordpress User Data first, and if not resort to Woo's data.
-
-			// Create the initial array with possible empty values.
+			// Create the initial array with WordPress user data first.
 			$applicant_details = [
-				"first_name" => $customer->get_billing_first_name() ?: '',
-				"last_name"  => $customer->get_billing_last_name() ?: '',
-				"email"      => $user->user_email ?: '',
-				"phone"      => $customer->get_billing_phone() ?: '',
+				"first_name" => $user->first_name ?? '',
+				"last_name"  => $user->last_name ?? '',
+				"email"      => $user->user_email ?? '',
+				"phone"      => '',
 			];
+
+			// If WordPress data is missing, fall back to WooCommerce data.
+			$applicant_details['first_name'] = $applicant_details['first_name'] ?: $customer->get_billing_first_name();
+			$applicant_details['last_name']  = $applicant_details['last_name'] ?: $customer->get_billing_last_name();
+			$applicant_details['phone']      = $customer->get_billing_phone() ?: '';
 
 			// Filter out empty values from the array.
 			return array_filter( $applicant_details, function ( $value ) {
 				return $value !== '';
-			});
-
+			} );
 		} catch ( \Exception $e ) {
 			Logger::error( 'Error retrieving applicant details', [
 				'user_id' => $user_id,
@@ -133,22 +112,5 @@ class SubmitTradeAccount extends Form {
 
 			return []; // Return an empty array if there’s an error
 		}
-	}
-
-	/**
-	 * Generate the redirect URL with a specified status and user ID.
-	 *
-	 * @param int $user_id
-	 * @param string $status
-	 * @return string
-	 */
-	private function get_redirect_url( int $user_id, string $status ): string {
-		return add_query_arg(
-			[
-				'status'      => $status,
-				'customer_id' => $user_id,
-			],
-			rest_url( 'mondu-trade/v1/trade-account' )
-		);
 	}
 }

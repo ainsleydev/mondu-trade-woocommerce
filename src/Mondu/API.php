@@ -13,7 +13,6 @@ namespace MonduTrade\Mondu;
 use Mondu\Plugin;
 use MonduTrade\Util\Logger;
 use Mondu\Mondu\Support\Helper;
-use Mondu\Exceptions\ResponseException;
 use MonduTrade\Exceptions\MonduTradeException;
 use MonduTrade\Exceptions\MonduTradeResponseException;
 
@@ -46,9 +45,8 @@ class API extends \Mondu\Mondu\Api {
 	 *
 	 * @param array $params
 	 * @return mixed
-	 * @throws MonduTradeException
-	 * @throws ResponseException
-	 * @see https://docs.mondu.ai/reference/get_api-v1-orders
+	 * @throws MonduTradeResponseException|MonduTradeException
+	 * @see https://docs.mondu.ai/reference/post_api-v1-trade-account
 	 */
 	public function create_trade_account( array $params ) {
 		$result = $this->request( '/trade_account', 'POST', $params );
@@ -57,10 +55,12 @@ class API extends \Mondu\Mondu\Api {
 	}
 
 	/**
-	 * @param string $uuid
+	 * Obtains the buyer limit for the customer.
+	 *
+	 * @param array $params
 	 * @return mixed
-	 * @throws ResponseException
-	 * @throws MonduTradeException
+	 * @throws MonduTradeResponseException|MonduTradeException
+	 * @see https://docs.mondu.ai/reference/get_api-v1-buyers-uuid-purchasing-limit
 	 */
 	public function get_buyer_limit( array $params ) {
 		$result = $this->request( sprintf( '/buyers/%s/purchasing_limit', $params['uuid'] ) );
@@ -68,6 +68,15 @@ class API extends \Mondu\Mondu\Api {
 		return json_decode( $result['body'], true );
 	}
 
+	/**
+	 * Deletes a webhook that's already registered.
+	 * Should only be used in dev.
+	 *
+	 * @param array $params
+	 * @return mixed
+	 * @throws MonduTradeResponseException|MonduTradeException
+	 * @see https://docs.mondu.ai/reference/delete_api-v1-webhooks-uuid
+	 */
 	public function delete_webhook( array $params ) {
 		$result = $this->request( sprintf( '/webhooks/%s', $params['uuid'] ), 'DELETE' );
 
@@ -77,13 +86,14 @@ class API extends \Mondu\Mondu\Api {
 	/**
 	 * Send Request.
 	 *
-	 * @param $path
-	 * @param $method
+	 * @param string $path
+	 * @param string $method
 	 * @param $body
 	 * @return array
-	 * @throws ResponseException|MonduTradeException
+	 * @throws MonduTradeResponseException|MonduTradeException
+	 * @noinspection DuplicatedCode
 	 */
-	private function request( $path, $method = 'GET', $body = null ) {
+	private function request( string $path, string $method = 'GET', $body = null ): array {
 		$url = Helper::is_production() ? MONDU_PRODUCTION_URL : MONDU_SANDBOX_URL;
 		$url .= $path;
 
@@ -119,8 +129,7 @@ class API extends \Mondu\Mondu\Api {
 	 * @param $url
 	 * @param $result
 	 * @return array
-	 * @throws MonduTradeResponseException
-	 * @throws MonduTradeException
+	 * @throws MonduTradeResponseException|MonduTradeException
 	 */
 	private function validate_remote_result( $url, $result ): array {
 		if ( $result instanceof \WP_Error ) {
@@ -143,7 +152,7 @@ class API extends \Mondu\Mondu\Api {
 				$message = $result['body']['errors']['title'];
 			}
 
-			throw new \MonduTrade\Exceptions\MonduTradeException( $message, $result['response']['code'], json_decode( $result['body'], true ) );
+			throw new MonduTradeResponseException( $message, $result['response']['code'], json_decode( $result['body'], true ) );
 		}
 
 		return $result;

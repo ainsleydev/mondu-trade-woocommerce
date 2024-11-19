@@ -10,17 +10,17 @@
 
 namespace MonduTrade\WooCommerce;
 
-use Exception;
-use Mondu\Exceptions\ResponseException;
-use Mondu\Mondu\Api;
+use WP_Error;
+use WC_Order;
+use WC_Data_Exception;
+use MonduTrade\Plugin;
+use WC_Payment_Gateway;
 use Mondu\Mondu\MonduGateway;
 use MonduTrade\Admin\Options;
 use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\Mondu\RequestWrapper;
-use MonduTrade\Plugin;
-use WC_Order;
-use WC_Payment_Gateway;
-use WP_Error;
+use Mondu\Exceptions\ResponseException;
+
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -52,8 +52,11 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 */
 	private Options $admin_options;
 
+	/**
+	 * Payment Gateway constructor.
+	 */
 	public function __construct() {
-		$this->id                 =  Plugin::PAYMENT_GATEWAY_NAME;
+		$this->id                 = Plugin::PAYMENT_GATEWAY_NAME;
 		$this->has_fields         = true;
 		$this->method_title       = 'Mondu Trade Account';
 		$this->method_description = 'Allows payments using Mondu Trade Account';
@@ -72,6 +75,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 
 		add_action( 'woocommerce_thankyou_' . $this->id, [ $this, 'thankyou_page' ] );
 		add_action( 'woocommerce_email_before_order_table', [ $this, 'email_instructions' ], 10, 3 );
+		add_action( 'mondu_trade_account_checkout_class', [ $this, 'view_class_filter' ], );
 
 		$this->register_scripts();
 
@@ -92,7 +96,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Adds Payment Fields to the Gateway
-	 * TODO: If conditional if already registered.
 	 *
 	 * @return void
 	 */
@@ -100,12 +103,11 @@ class PaymentGateway extends WC_Payment_Gateway {
 		wp_enqueue_script( 'a-dev-mondu-checkout-js', MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/checkout.js', [], null, true );
 		parent::payment_fields();
 
-		$status      = BuyerStatus::UNDEFINED;
-		$buyer_limit = false;
-
+		// We need the user ID in order to obtain the UUID that's
+		// associated with the user, this indicates that they
+		// haven't signed up yet.
 		if ( ! is_user_logged_in() ) {
 			include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/not-logged-in.php';
-
 			return;
 		}
 
@@ -124,22 +126,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/declined.php';
 				break;
 			case BuyerStatus::ACCEPTED:
-				// If the buyer has an accepted status, we can assume that they
-				// probably have a buying limit to display to the user.
-				try {
-					$buyer_limit = $this->mondu_request_wrapper->get_buyer_limit();
-
-					if ( $buyer_limit && isset( $buyer_limit['purchasing_limit']['purchasing_limit_cents'] ) ) {
-						$purchasing_limit = $buyer_limit['purchasing_limit']['purchasing_limit_cents'] / 100; // Convert cents to pounds.
-						echo '<p>Purchasing Limit: ' . wc_price( $purchasing_limit ) . '</p>';
-					}
-
-				} catch ( Exception $e ) {
-					// TODO: Probably need to display message to user.
-					\MonduTrade\Util\Logger::error('Getting buyer limit', [
-						'error' => $e->getMessage(),
-					]);
-				}
+				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/accepted.php';
 				break;
 			default:
 				include MONDU_TRADE_ACCOUNT_VIEW_PATH . '/checkout/sign-up.php';
@@ -147,10 +134,9 @@ class PaymentGateway extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Add method
+	 * Add method (called from constructor).
 	 *
 	 * @param array $methods
-	 *
 	 * @return array
 	 */
 	public static function add( array $methods ): array {
@@ -159,7 +145,12 @@ class PaymentGateway extends WC_Payment_Gateway {
 		return $methods;
 	}
 
-	public function init_form_fields() {
+	/**
+	 * Establishes the form fields in the backend of WooCommerce.
+	 *
+	 * @return void
+	 */
+	public function init_form_fields(): void {
 		$this->form_fields = [
 			'enabled'     => [
 				'title'       => 'Enable/Disable',
@@ -186,13 +177,12 @@ class PaymentGateway extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Process payment
+	 * Process payment.
 	 *
 	 * @param $order_id
-	 *
 	 * @return array|void
 	 * @throws ResponseException
-	 * @throws \WC_Data_Exception
+	 * @throws WC_Data_Exception
 	 */
 	public function process_payment( $order_id ) {
 		$order       = wc_get_order( $order_id );
@@ -279,5 +269,21 @@ class PaymentGateway extends WC_Payment_Gateway {
 			'home_url'   => home_url(),
 		] );
 		wp_enqueue_script( 'a-dev-mondu-checkout-js' );
+	}
+
+	/**
+	 * Allows the user to add a custom class to the checkout.
+	 *
+	 * Example usage:
+	 *
+	 * add_filter('mondu_trade_account_checkout_class', function ($class) {
+	 *     return $class . ' my-class-name';
+	 * });
+	 *
+	 * @param $class
+	 * @return string
+	 */
+	public function view_class_filter($class): string {
+		return 'mondu-trade mondu-trade-checkout' .  $class;
 	}
 }

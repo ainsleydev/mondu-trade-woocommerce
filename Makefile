@@ -5,6 +5,7 @@ setup: # Setup Dependencies
 .PHONY: setup
 
 serve: # Serve Wordpress & Local Tunnel
+	@export $(shell sed 's/^/export /' .env); \
 	cd ../../../ && concurrently --names "wordpress,localtunnel,logs" --prefix-colors "blue,green,yellow" \
  		"APP_ENV=dev php -S localhost:8000" \
  		"lt --port 8000 --subdomain mondu-trade-account-woocommerce-ainsleydev" \

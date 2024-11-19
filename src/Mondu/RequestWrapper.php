@@ -10,23 +10,29 @@
 
 namespace MonduTrade\Mondu;
 
-
-use MonduTrade\Exceptions\MonduTradeException;
 use WC_Order;
 use Exception;
 use Mondu\Plugin;
+use WC_Data_Exception;
 use MonduTrade\Util\Logger;
 use MonduTrade\Util\Environment;
 use Mondu\Mondu\Support\OrderData;
 use Mondu\Mondu\MonduRequestWrapper;
 use MonduTrade\WooCommerce\Customer;
 use Mondu\Exceptions\ResponseException;
+use MonduTrade\Exceptions\MonduTradeException;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
 }
 
+/**
+ * Request Wrapper is an extension of the Mondu API to
+ * provide functionality to interact with Mondu via
+ * Woocommerce & WordPress.
+ */
 class RequestWrapper extends MonduRequestWrapper {
+
 	/**
 	 * Mondu API
 	 *
@@ -43,14 +49,41 @@ class RequestWrapper extends MonduRequestWrapper {
 	}
 
 	/**
-	 * Create Order with Account (WP User) via the
-	 * billing statement method.
+	 * Creates a new trade account.
 	 *
-	 * @see https://docs.mondu.ai/docs/mondu-digital-trade-account
+	 * @param int $user_id
+	 * @param array $applicant_details
+	 * @return array
+	 * @throws ResponseException
+	 * @see https://docs.mondu.ai/reference/post_api-v1-trade-account
+	 */
+	public function create_trade_account( int $user_id, array $applicant_details ): array {
+		$trade_data = [
+			"external_reference_id" => (string) $user_id,
+			"redirect_urls"         => [
+				"success_url"  => $this->get_trade_redirect_url( $user_id, 'succeeded' ),
+				"cancel_url"   => $this->get_trade_redirect_url( $user_id, 'cancelled' ),
+				"declined_url" => $this->get_trade_redirect_url( $user_id, 'declined' ),
+			],
+		];
+
+		if ( ! empty( $applicant_details ) ) {
+			$trade_data['applicant'] = $applicant_details;
+		}
+
+		return $this->wrap_with_mondu_log_event( 'create_trade_account', [ $trade_data ] );
+	}
+
+	/**
+	 * Create Order with Account (WP User) via the billing statement method.
+	 *
+	 * This just calls the parent but with the added UUID and payment method
+	 * set to billing statement.
 	 *
 	 * @return mixed|void
 	 * @throws ResponseException
-	 * @throws \WC_Data_Exception
+	 * @throws WC_Data_Exception
+	 * @see https://docs.mondu.ai/docs/mondu-digital-trade-account
 	 */
 	public function create_order_with_account( WC_Order $order, $success_url ) {
 		$customer = new Customer( $order->get_customer_id() );
@@ -60,11 +93,11 @@ class RequestWrapper extends MonduRequestWrapper {
 
 		$order_data                   = OrderData::create_order( $order, $success_url );
 		$order_data['payment_method'] = 'billing_statement';
-		$order_data['buyer']['uuid'] = $customer->get_mondu_trade_account_uuid();
+		$order_data['buyer']['uuid']  = $customer->get_mondu_trade_account_uuid();
 
-		Logger::debug('Sending order to Mondu', [
+		Logger::debug( 'Sending order to Mondu', [
 			'order' => $order_data,
-		]);
+		] );
 
 		$response = $this->wrap_with_mondu_log_event( 'create_order', [ $order_data ] );
 
@@ -96,8 +129,8 @@ class RequestWrapper extends MonduRequestWrapper {
 			] );
 		}
 
-		if (!isset($customer) || !$customer || !$customer->is_valid()) {
-			throw new MonduTradeException('Cannot buyer limit, invalid customer');
+		if ( ! isset( $customer ) || ! $customer || ! $customer->is_valid() ) {
+			throw new MonduTradeException( 'Cannot buyer limit, invalid customer' );
 		}
 
 		$params = [
@@ -118,7 +151,7 @@ class RequestWrapper extends MonduRequestWrapper {
 		$base = rest_url();
 
 		if ( Environment::is_development() ) {
-			$base = Environment::get( 'WEBHOOK_ADDRESS' );
+			$base = Environment::get( 'MONDU_WEBHOOKS_URL' );
 		}
 
 		$params = [
@@ -151,5 +184,22 @@ class RequestWrapper extends MonduRequestWrapper {
 			$this->log_plugin_event( $e, $action );
 			throw $e;
 		}
+	}
+
+	/**
+	 * Generate the redirect URL with a specified status and user ID.
+	 *
+	 * @param int $user_id
+	 * @param string $status
+	 * @return string
+	 */
+	private function get_trade_redirect_url( int $user_id, string $status ): string {
+		return add_query_arg(
+			[
+				'status'      => $status,
+				'customer_id' => $user_id,
+			],
+			rest_url( 'mondu-trade/v1/trade-account' )
+		);
 	}
 }
