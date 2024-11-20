@@ -12,20 +12,27 @@ namespace MonduTrade\WooCommerce;
 
 use WP_Error;
 use WC_Order;
+use Exception;
 use WC_Data_Exception;
 use MonduTrade\Plugin;
 use WC_Payment_Gateway;
+use MonduTrade\Util\Logger;
 use Mondu\Mondu\MonduGateway;
 use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\Mondu\RequestWrapper;
-use Mondu\Exceptions\ResponseException;
+use MonduTrade\Exceptions\MonduTradeResponseException;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
 }
 
 /**
- * Payment Gateway - TODO
+ * Payment Gateway is the main WooCommerce payment gateway
+ * for Mondu Digital Trade Accounts.
+ *
+ * It deals with the functionality of when a user hit's pay
+ * on the checkout.
+ *
  */
 class PaymentGateway extends WC_Payment_Gateway {
 
@@ -75,11 +82,12 @@ class PaymentGateway extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Adds Payment Fields to the Gateway
+	 * Adds Payment Fields to the Gateway.
+	 * This is what the user sees under 'Mondu Trade Account'
 	 *
 	 * @return void
 	 */
-	public function payment_fields() {
+	public function payment_fields(): void {
 		wp_enqueue_script( 'a-dev-mondu-checkout-js', MONDU_TRADE_VIEW_PATH . '/checkout/checkout.js', [], null, true );
 		parent::payment_fields();
 
@@ -153,20 +161,72 @@ class PaymentGateway extends WC_Payment_Gateway {
 	/**
 	 * Process payment.
 	 *
+	 * Buyer States:
+	 * Unknown  -> The customer will be redirected to create a trade account.
+	 * Pending  -> The buyer will be displayed a message to indicate they will be notified within 48 hours.
+	 * Declined -> The buyer will be displayed a message to show they cannot purchase with a Trade Account.
+	 * Accepted -> Spending limit is checked and displayed, and then redirected to Mondu's self-hosted checkout.
+	 *
 	 * @param $order_id
 	 * @return array|void
-	 * @throws ResponseException|WC_Data_Exception
+	 * @throws WC_Data_Exception|MonduTradeResponseException
 	 */
 	public function process_payment( $order_id ) {
-		$order    = wc_get_order( $order_id );
-		$customer = new Customer( $order->get_customer_id() );
+		$order       = wc_get_order( $order_id );
+		$customer_id = $order->get_customer_id();
+		$customer    = new Customer( $customer_id );
+		$status      = $customer->get_mondu_trade_account_status();
 
-		// Bail if the customer hasn't been accepted by Mondu, to avoid
-		// people placing orders if they haven't been accepted.
-		if ( $customer->get_mondu_trade_account_status() !== BuyerStatus::ACCEPTED ) {
-			wc_add_notice( __( 'You are not currently permitted to place a Mondu Trade Payment, try another payment method.', Plugin::DOMAIN ), 'error' );
+		// If the buyer status is unknown, it would indicate we need to
+		// create the trade account as the webhook hasn't fired for this
+		// customer yet.
+		if ( $status === BuyerStatus::UNKNOWN ) {
+			$response = $this->mondu_request_wrapper->create_trade_account( $customer_id, [
+				'first_name' => $order->get_billing_first_name(),
+				'last_name'  => $order->get_billing_last_name(),
+				'email'      => $order->get_billing_email(),
+				'phone'      => $order->get_billing_phone(),
+			] );
 
-			return;
+			if ( empty( $response['hosted_page_url'] ) ) {
+				$this->exit_from_payment();
+			}
+
+			$redirect_url = $response['hosted_page_url'];
+
+			Logger::info( 'Redirecting user to hosted checkout page', [
+				'url' => $redirect_url,
+			] );
+
+			return [
+				'result'   => 'success',
+				'redirect' => $redirect_url,
+			];
+		}
+
+		// Bail if the customer hasn't been accepted by Mondu (PENDING/DECLINED)
+		// to avoid people placing orders if they haven't been accepted.
+		if ( $status === BuyerStatus::PENDING || $status === BuyerStatus::DECLINED ) {
+			$this->exit_from_payment( 'You are not currently permitted to place a Mondu Trade Payment, try another payment method.' );
+		}
+
+		// If the buyer doesn't have enough credit's in their account,
+		// we can't process the payment. We do this by comparing the
+		// current balance in Mondu and the WooCommerce total amount.
+		try {
+			$response = $this->mondu_request_wrapper->get_buyer_limit();
+
+			$max_purchase_value_cents = $response['purchasing_limit']['max_purchase_value_cents'];
+			$order_total              = $order->get_total();
+			$order_total_pence        = intval( $order_total * 100 );
+
+			if ( $order_total_pence > $max_purchase_value_cents ) {
+				$this->exit_from_payment( 'Your order exceeds the allowed purchase limit. Please reduce your order amount or try another payment method.' );
+
+				return;
+			}
+		} catch ( Exception $e ) {
+			$this->exit_from_payment();
 		}
 
 		// Original code from Mondu, we just call the parent.
@@ -174,9 +234,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$mondu_order = $this->mondu_request_wrapper->create_order_with_account( $order, $success_url );
 
 		if ( ! $mondu_order ) {
-			wc_add_notice( __( 'Error placing an order. Please try again.', Plugin::DOMAIN ), 'error' );
-
-			return;
+			$this->exit_from_payment();
 		}
 
 		return [
@@ -205,7 +263,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 * Checks if the order can be refunded.
 	 *
 	 * @param WC_Order $order
-	 *
 	 * @return bool
 	 */
 	public function can_refund_order( $order ): bool {
@@ -219,11 +276,26 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 * @param $order_id
 	 * @param $amount
 	 * @param string $reason
-	 *
 	 * @return bool| WP_Error
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
 		return $this->mondu_gateway->process_refund( $order_id, $amount, $reason );
+	}
+
+	/**
+	 * Exits from the payment and adds a session variable.
+	 *
+	 * @param string $notice_message
+	 * @return void
+	 */
+	private function exit_from_payment( string $notice_message = '' ): void {
+		if ( $notice_message === '' ) {
+			$notice_message = 'Error placing an order. Please try again.';
+		}
+
+		wc_add_notice( __( $notice_message, Plugin::DOMAIN ), 'error' );
+
+		exit;
 	}
 
 	/**

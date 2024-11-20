@@ -116,7 +116,7 @@ class TradeAccountController extends BaseController {
 		$redirect_url = add_query_arg(
 			[
 				self::QUERY_REDIRECT_STATUS => esc_attr( $redirect_status ),
-				self::QUERY_BUYER_STATUS    => esc_attr( $customer->get_mondu_trade_account_status() )
+				self::QUERY_BUYER_STATUS    => esc_attr( $customer->get_mondu_trade_account_status() ),
 			],
 			wc_get_checkout_url()
 		);

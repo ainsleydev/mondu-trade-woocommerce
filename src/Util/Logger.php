@@ -28,7 +28,7 @@ final class Logger {
 	 * @param string $message The message to log.
 	 * @param array $data Additional data to log.
 	 */
-	public static function info( string $message, array $data = [] ) {
+	public static function info( string $message, array $data = [] ): void {
 		self::log( 'info', $message, $data );
 	}
 
@@ -38,7 +38,7 @@ final class Logger {
 	 * @param string $message The message to log.
 	 * @param array $data Additional data to log.
 	 */
-	public static function debug( string $message, array $data = [] ) {
+	public static function debug( string $message, array $data = [] ): void {
 		self::log( 'debug', $message, $data );
 	}
 
@@ -48,7 +48,7 @@ final class Logger {
 	 * @param string $message The message to log.
 	 * @param array $data Additional data to log.
 	 */
-	public static function error( string $message, array $data = [] ) {
+	public static function error( string $message, array $data = [] ): void {
 		self::log( 'error', $message, $data );
 	}
 
@@ -66,7 +66,7 @@ final class Logger {
 	 *      'debug': Debug-level messages.
 	 * @param string $message The message to log.
 	 */
-	private static function log( string $level, string $message, array $data = [] ) {
+	private static function log( string $level, string $message, array $data = [] ): void {
 		$logger = wc_get_logger();
 		$lines  = [
 			'level'   => $level,

@@ -94,7 +94,7 @@ class API extends \Mondu\Mondu\Api {
 	 * @noinspection DuplicatedCode
 	 */
 	private function request( string $path, string $method = 'GET', $body = null ): array {
-		$url = Helper::is_production() ? MONDU_PRODUCTION_URL : MONDU_SANDBOX_URL;
+		$url = Helper::is_production() ? MONDU_TRADE_API_PRODUCTION_URL : MONDU_TRADE_API_SANDBOX_URL;
 		$url .= $path;
 
 		$headers = [
@@ -124,7 +124,7 @@ class API extends \Mondu\Mondu\Api {
 	}
 
 	/**
-	 * Validate Result
+	 * Validate Result.
 	 *
 	 * @param $url
 	 * @param $result

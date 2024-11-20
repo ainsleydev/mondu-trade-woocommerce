@@ -10,6 +10,7 @@
 
 namespace MonduTrade\Mondu;
 
+use MonduTrade\Exceptions\MonduTradeResponseException;
 use WC_Order;
 use Exception;
 use Mondu\Plugin;
@@ -54,7 +55,7 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * @param int $user_id
 	 * @param array $applicant_details
 	 * @return array
-	 * @throws ResponseException
+	 * @throws MonduTradeResponseException
 	 * @see https://docs.mondu.ai/reference/post_api-v1-trade-account
 	 */
 	public function create_trade_account( int $user_id, array $applicant_details ): array {
@@ -81,8 +82,7 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * set to billing statement.
 	 *
 	 * @return mixed|void
-	 * @throws ResponseException
-	 * @throws WC_Data_Exception
+	 * @throws WC_Data_Exception|MonduTradeResponseException
 	 * @see https://docs.mondu.ai/docs/mondu-digital-trade-account
 	 */
 	public function create_order_with_account( WC_Order $order, $success_url ) {
@@ -113,7 +113,6 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * Obtains the Buyer Limit for a given user.
 	 *
 	 * @return mixed
-	 * @throws ResponseException
 	 * @throws MonduTradeException
 	 * @see https://docs.mondu.ai/reference/get_api-v1-buyers-uuid-purchasing-limit
 	 */
@@ -144,7 +143,7 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * Register Buyer Webhooks.
 	 *
 	 * @return mixed
-	 * @throws ResponseException
+	 * @throws MonduTradeResponseException
 	 */
 	public function register_buyer_webhooks() {
 		$path = '/wp-json/mondu-trade/v1/webhooks';
@@ -169,15 +168,13 @@ class RequestWrapper extends MonduRequestWrapper {
 	 *
 	 * @param string $action
 	 * @param array $params
-	 *
 	 * @return mixed
-	 * @throws ResponseException
-	 * @throws Exception
+	 * @throws Exception|MonduTradeResponseException
 	 */
 	private function wrap_with_mondu_log_event( string $action, array $params = [] ) {
 		try {
 			return call_user_func_array( [ $this->api, $action ], $params );
-		} catch ( ResponseException $e ) {
+		} catch ( MonduTradeResponseException $e ) {
 			$this->log_plugin_event( $e, $action, $e->getBody() );
 			throw $e;
 		} catch ( Exception $e ) {
