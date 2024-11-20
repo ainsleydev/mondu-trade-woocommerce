@@ -63,10 +63,11 @@ that's logged in.
 **HTML**:
 
 ```html
+
 <form id="trade-account-signup" method="POST" action="<?php echo admin_url('admin-ajax.php'); ?>">
-    <input type="hidden" name="action" value="trade_account_submit">
-    <?php wp_nonce_field('trade_account_submit', 'trade_account_nonce'); ?>
-    <button type="submit">Submit</button>
+  <input type="hidden" name="action" value="trade_account_submit">
+  <?php wp_nonce_field('trade_account_submit', 'trade_account_nonce'); ?>
+  <button type="submit">Submit</button>
 </form>
 ```
 
@@ -74,31 +75,31 @@ that's logged in.
 
 ```js
 document.querySelector('form').addEventListener('submit', function (event) {
-	event.preventDefault();
+  event.preventDefault();
 
-	const form = event.target;
-	const formData = new FormData(form);
+  const form = event.target;
+  const formData = new FormData(form);
 
-	fetch(form.action, {
-		method: 'POST',
-		body: formData,
-	})
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error(`Server responded with status ${response.status}`);
-			}
-			return response.json();
-		})
-		.then((data) => {
-			if (!data.error) {
-				alert('Trade Account application submitted successfully.');
-			} else {
-				alert(`Error: ${data.message || 'An error occurred while submitting the application.'}`);
-			}
-		})
-		.catch((error) => {
-			alert(`An error occurred: ${error.message}`);
-		});
+  fetch(form.action, {
+    method: 'POST',
+    body: formData,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (!data.error) {
+        alert('Trade Account application submitted successfully.');
+      } else {
+        alert(`Error: ${data.message || 'An error occurred while submitting the application.'}`);
+      }
+    })
+    .catch((error) => {
+      alert(`An error occurred: ${error.message}`);
+    });
 });
 ```
 
@@ -106,10 +107,10 @@ document.querySelector('form').addEventListener('submit', function (event) {
 
 ```json
 {
-	"status": 200,
-	"message": "Trade Account application submitted successfully.",
-	"data": null,
-	"error": false
+  "status": 200,
+  "message": "Trade Account application submitted successfully.",
+  "data": null,
+  "error": false
 }
 ```
 
@@ -156,15 +157,15 @@ the [Mondu Webhooks Overview](https://docs.mondu.ai/reference/webhooks-overview)
 
 ```json
 {
-	"topic": "buyer/{TOPIC_NAME}",
-	"buyer": {
-		"uuid": "66e8d234-23b5-1125-9592-d7390f20g01c",
-		"state": "accepted",
-		"external_reference_id": "DE-1-1000745773",
-		"company_name": "2023-02-07T15:14:22.301Z",
-		"first_name": "John",
-		"last_name": "Smith"
-	}
+  "topic": "buyer/{TOPIC_NAME}",
+  "buyer": {
+    "uuid": "66e8d234-23b5-1125-9592-d7390f20g01c",
+    "state": "accepted",
+    "external_reference_id": "DE-1-1000745773",
+    "company_name": "2023-02-07T15:14:22.301Z",
+    "first_name": "John",
+    "last_name": "Smith"
+  }
 }
 ```
 
