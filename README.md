@@ -63,6 +63,14 @@ add_filter('mondu_trade_account_checkout_class', function ($class) {
 
 ---
 
+### How do I know what the status is of a customer?
+
+---
+
+### Will Mondu email the customer after a Trade Account has been applied for?
+
+---
+
 ### How can I run actions when a buyer status has changed?
 
 There are 4 different actions you can latch onto when Mondu replies with an update after a customer has applied for a
@@ -174,6 +182,27 @@ add_action('mondu_trade_buyer_declined', function ($buyer) {
 ---
 
 ## Screenshots
+
+## Development
+
+### Setup
+
+To get setup with plugin, follow the steps listed below.
+
+1. Clone the Repository:
+
+```shell
+git clone https://github.com/ainsleydev/mondu-trade-woocommerce
+cd mondu-trade-woocommerce
+```
+
+2. Install Dependencies:
+   Ensure you have Composer and the WP CLI installed on your system. Run the following command to install PHP dependencies:
+
+```shell
+composer install
+make setup
+```
 
 ## Copyright
 
