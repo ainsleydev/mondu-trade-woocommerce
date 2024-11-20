@@ -105,12 +105,15 @@ class WebhooksController extends BaseController {
 			$buyer = $params['buyer'];
 			switch ( $topic ) {
 				case 'buyer/accepted':
+					do_action('mondu_trade_buyer_accepted', $buyer);
 					$result = $this->update_customer_state( BuyerStatus::ACCEPTED, $buyer );
 					break;
 				case 'buyer/pending':
+					do_action('mondu_trade_buyer_pending', $buyer);
 					$result = $this->update_customer_state( BuyerStatus::PENDING, $buyer );
 					break;
 				case 'buyer/declined':
+					do_action('mondu_trade_buyer_accepted', $buyer);
 					$result = $this->update_customer_state( BuyerStatus::DECLINED, $buyer );
 					break;
 				default:
@@ -153,6 +156,8 @@ class WebhooksController extends BaseController {
 	 * @see: https://docs.mondu.ai/reference/webhooks-overview#buyer--accepted--pending--declined
 	 */
 	private function update_customer_state( string $state, array $params ): WP_REST_Response {
+		do_action( 'mondu_trade_buyer_webhook_received', $state, $params );
+
 		$woocommerce_customer_number = $params['external_reference_id'];
 		$buyer_uuid                  = $params['uuid'];
 		$state                       = $params['state'];

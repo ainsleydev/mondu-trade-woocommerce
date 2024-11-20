@@ -33,9 +33,53 @@ add_filter('mondu_trade_account_checkout_class', function ($class) {
 });
 ```
 
+### How can I run actions when a buyer status has changed?
+
+There are 4 different actions you can latch onto when Mondu replies with an update after a customer has applied for a
+Digital Trade Account. Below is a list of available actions.
+
+**Example Payload**
+
+Below is an example of a buyer and topic sent via the actions, see
+the [Mondu Webhooks Overview](https://docs.mondu.ai/reference/webhooks-overview) for more information
+
+```json
+{
+	"topic": "buyer/{TOPIC_NAME}",
+	"buyer": {
+		"uuid": "66e8d234-23b5-1125-9592-d7390f20g01c",
+		"state": "accepted",
+		"external_reference_id": "DE-1-1000745773",
+		"company_name": "2023-02-07T15:14:22.301Z",
+		"first_name": "John",
+		"last_name": "Smith"
+	}
+}
+```
+
+#### General Webhook Action
+
+`mondu_trade_buyer_webhook_received`
+
+Triggered when a webhook related to a buyer is received from Mondu.
+
+**Parameters:**
+
+- `$state (string)`: The current state of the buyer (e.g., accepted, pending, declined).
+- `params (array)`: The full payload of the webhook.
+
+**Usage**
+
+```php
+add_action('mondu_trade_buyer_webhook_received', function ($state, $buyer) {
+    error_log("Buyer webhook received: State = $state");
+    error_log(print_r($buyer, true));
+});
+```
+
+#### `mondu_trade_buyer_webhook_received`
+
 ## Screenshots
-
-
 
 ## Copyright
 
