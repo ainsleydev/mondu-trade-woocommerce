@@ -143,6 +143,8 @@ add_action('mondu_trade_buyer_declined', function ($buyer) {
 });
 ```
 
+---
+
 ## Screenshots
 
 ## Copyright
