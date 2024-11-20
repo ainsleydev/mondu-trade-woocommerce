@@ -15,7 +15,7 @@ namespace MonduTrade;
 use Dotenv\Dotenv;
 use MonduTrade\Admin\User;
 use MonduTrade\Admin\Settings;
-use MonduTrade\Actions\SubmitTradeAccount;
+use MonduTrade\Forms\SubmitTradeAccount;
 use MonduTrade\WooCommerce\Checkout;
 use MonduTrade\WooCommerce\PaymentGateway;
 use MonduTrade\Controllers\WebhooksController;

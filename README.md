@@ -48,6 +48,84 @@ Useful Links:
 
 ## FAQs
 
+### How do I allow for signups outside the checkout?
+
+This plugin adds native support for allowing users to sign up to a Trade Account outside of the checkout. Perfect for
+CTA's or banners.
+
+**Note**: The user must be logged in to perform this action, this is because when Mondu responds to the Trade Account
+request, a customer ID is required. Before displaying the form below, ensure your users are logged in by using the
+WordPress `is_user_logged_in()` function.
+
+The only thing you need to send is a nonce, and the user details will be obtained progromatically from the WP user
+that's logged in.
+
+**HTML**:
+
+```php
+<form id="trade-account-signup" method="POST" action="<?php echo admin_url('admin-ajax.php'); ?>">
+    <input type="hidden" name="action" value="trade_account_submit">
+    <?php wp_nonce_field('trade_account_submit', 'trade_account_nonce'); ?>
+    <button type="submit">Submit</button>
+</form>
+```
+
+**JavaScript**:
+
+```js
+document.querySelector('form').addEventListener('submit', function (event) {
+	event.preventDefault();
+
+	const form = event.target;
+	const formData = new FormData(form);
+
+	fetch(form.action, {
+		method: 'POST',
+		body: formData,
+	})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error(`Server responded with status ${response.status}`);
+			}
+			return response.json();
+		})
+		.then((data) => {
+			if (!data.error) {
+				alert('Trade Account application submitted successfully.');
+			} else {
+				alert(`Error: ${data.message || 'An error occurred while submitting the application.'}`);
+			}
+		})
+		.catch((error) => {
+			alert(`An error occurred: ${error.message}`);
+		});
+});
+```
+
+**Response**:
+
+Below is the response format from the endpoint.
+
+```json
+{
+	"status": 200,
+	"message": "Trade Account application submitted successfully.",
+	"data": null,
+	"error": false
+}
+
+```
+
+---
+
+### How do I know what the status is of a customer?
+
+---
+
+### Will Mondu email the customer after a Trade Account has been applied for?
+
+---
+
 ### How do I add custom styling to the payment gateway?
 
 There may be times you want to style the checkout gateway with your own styles. To do this, you can either latch onto
@@ -60,14 +138,6 @@ add_filter('mondu_trade_account_checkout_class', function ($class) {
 	return $class . ' my-class-name';
 });
 ```
-
----
-
-### How do I know what the status is of a customer?
-
----
-
-### Will Mondu email the customer after a Trade Account has been applied for?
 
 ---
 

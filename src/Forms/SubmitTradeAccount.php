@@ -8,7 +8,7 @@
  * @author      ainsley.dev
  */
 
-namespace MonduTrade\Actions;
+namespace MonduTrade\Forms;
 
 use WC_Customer;
 use MonduTrade\Util\Logger;
@@ -54,7 +54,12 @@ class SubmitTradeAccount extends Form {
 	 * @see https://docs.mondu.ai/reference/post_api-v1-trade-account
 	 */
 	public function process(): void {
-		$this->security_check();
+
+		// Validate the nonce using check_admin_referer.
+		if ( ! check_admin_referer( $this->action, 'trade_account_nonce' ) ) {
+			$this->respond( 403, [], 'Invalid nonce' );
+			exit;
+		}
 
 		// Bail if there's no user.
 		if ( ! is_user_logged_in() ) {
@@ -68,8 +73,12 @@ class SubmitTradeAccount extends Form {
 		try {
 			$response = $this->mondu_request_wrapper->create_trade_account( $user_id, $this->get_applicant_details( $user_id ) );
 
-			$this->respond( 200, $response, 'Trade account submitted');
+			$this->respond( 200, $response, 'Trade account submitted' );
 		} catch ( \Exception $e ) {
+			Logger::error( 'Error creating Trade Account from form', [
+				'user_id' => $user_id,
+				'error'   => $e->getMessage(),
+			] );
 			$this->respond( 500, [], $e->getMessage() );
 		}
 

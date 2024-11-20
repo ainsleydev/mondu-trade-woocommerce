@@ -88,7 +88,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function payment_fields(): void {
-		wp_enqueue_script( 'a-dev-mondu-checkout-js', MONDU_TRADE_VIEW_PATH . '/checkout/checkout.js', [], null, true );
 		parent::payment_fields();
 
 		// We need the user ID in order to obtain the UUID that's
@@ -296,34 +295,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 		wc_add_notice( __( $notice_message, Plugin::DOMAIN ), 'error' );
 
 		exit;
-	}
-
-	/**
-	 * Registers Javascript checkout script.
-	 *
-	 * @return void
-	 */
-	public function register_scripts() {
-		// We only need JavaScript to process a token only on cart/checkout pages.
-		if ( ! is_cart() && ! is_checkout() ) {
-			return;
-		}
-
-		// If payment gateway is disabled, we do not have to enqueue JS too.
-		if ( 'no' === $this->enabled ) {
-			return;
-		}
-
-		$scriptID = 'a-dev-mondu-checkout-js';
-
-		// TODO: Localise API Key.
-		wp_register_script( $scriptID, MONDU_TRADE_ASSETS_PATH . '/js/checkout.js', [ 'jquery' ], null, true );
-		wp_localize_script( $scriptID, 'aDevTradeAccountData', [
-			'ajax_url'   => admin_url( 'admin-ajax.php' ),
-			'ajax_nonce' => wp_create_nonce( 'ajax_nonce' ),
-			'home_url'   => home_url(),
-		] );
-		wp_enqueue_script( 'a-dev-mondu-checkout-js' );
 	}
 
 	/**
