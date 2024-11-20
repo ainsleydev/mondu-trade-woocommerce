@@ -73,8 +73,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 		add_action( 'woocommerce_email_before_order_table', [ $this, 'email_instructions' ], 10, 3 );
 		add_action( 'mondu_trade_account_checkout_class', [ $this, 'view_class_filter' ] );
 
-		$this->register_scripts();
-
 		$this->supports = [
 			'products',
 			'refunds',

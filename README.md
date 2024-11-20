@@ -184,7 +184,7 @@ Triggered when a webhook related to a buyer is received from Mondu.
 **Usage**
 
 ```php
-add_action('mondu_trade_buyer_webhook_received', function ($state, $customer_id,  $buyer) {
+add_action('mondu_trade_buyer_webhook_received', function ($state, $customer_id, $buyer) {
    print_r([
         'state' => $state,
         'customer_id' => $customer_id,
@@ -205,7 +205,7 @@ Triggered when a buyer has been accepted for a Trade Account.
 - `$buyer (array)`:     The buyer object, see above for an example.
 
 ```php
-add_action('mondu_trade_buyer_accepted', function ($buyer) {
+add_action('mondu_trade_buyer_accepted', function ($customer_id, $buyer) {
    print_r([
         'customer_id' => $customer_id,
         'buyer' => $buyer,
@@ -225,7 +225,7 @@ Triggered when a buyer is in a pending state (maximum 48 hours).
 - `$buyer (array)`:     The buyer object, see above for an example.
 
 ```php
-add_action('mondu_trade_buyer_pending', function ($buyer) {
+add_action('mondu_trade_buyer_pending', function ($customer_id, $buyer) {
    print_r([
         'customer_id' => $customer_id,
         'buyer' => $buyer,
@@ -245,7 +245,7 @@ Triggered when a buyer has been declined for a Trade Account.
 - `$buyer (array)`:     The buyer object, see above for an example.
 
 ```php
-add_action('mondu_trade_buyer_declined', function ($buyer) {
+add_action('mondu_trade_buyer_declined', function ($customer_id, $buyer) {
    print_r([
         'customer_id' => $customer_id,
         'buyer' => $buyer,
