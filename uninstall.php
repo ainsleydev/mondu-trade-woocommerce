@@ -16,4 +16,4 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 // Delete plugin-specific options
 delete_option( 'mondu_trade_account_options' );
 delete_option( '_mondu_trade_webhooks_registered' );
-delete_option( '_mondu_webhook_secret' );
+delete_option( '_mondu_trade_webhooks_secret' );

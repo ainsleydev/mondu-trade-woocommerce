@@ -10,6 +10,8 @@
 
 namespace MonduTrade\Encryption;
 
+use MonduTrade\Plugin;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
 }
@@ -31,7 +33,7 @@ class SignatureVerifier {
 	 * Signature constructor.
 	 */
 	public function __construct() {
-		$this->secret = get_option( '_mondu_webhook_secret' );
+		$this->secret = get_option( Plugin::OPTION_WEBHOOKS_SECRET );
 	}
 
 	/**

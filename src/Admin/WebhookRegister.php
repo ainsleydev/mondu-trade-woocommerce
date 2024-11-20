@@ -27,12 +27,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WebhookRegister {
 
 	/**
-	 * Option name for webhooks registered timestamp.
-	 */
-	private const OPTION_WEBHOOKS_REGISTERED = '_mondu_trade_webhooks_registered';
-
-	/**
 	 * The key that's used to display messages to the user.
+	 *
+	 * @var string
 	 */
 	private const ADMIN_MESSAGE_KEY = "mondu_trade_message";
 
@@ -72,14 +69,17 @@ class WebhookRegister {
 				$this->mondu_request_wrapper->register_buyer_webhooks();
 			}
 
-			update_option( self::OPTION_WEBHOOKS_REGISTERED, time() );
-
+			update_option( Plugin::OPTION_WEBHOOKS_REGISTERED, time() );
 			Logger::debug( 'Successfully registered buyer webhooks' );
+
+			$secret = $this->mondu_request_wrapper->webhook_secret();
+			update_option( Plugin::OPTION_WEBHOOKS_SECRET, $secret );
+			Logger::debug( 'Successfully updated webhook secret' );
 
 			wp_redirect( add_query_arg( self::ADMIN_MESSAGE_KEY, 'webhooks_registered', wp_get_referer() ) );
 			exit;
 		} catch ( \Exception $exception ) {
-			delete_option( self::OPTION_WEBHOOKS_REGISTERED );
+			delete_option( Plugin::OPTION_WEBHOOKS_REGISTERED );
 
 			Logger::error( 'Registering buyer webhooks failed', [
 				'error' => $exception->getMessage(),
@@ -117,7 +117,7 @@ class WebhookRegister {
 
 		try {
 			$this->mondu_request_wrapper->api->delete_webhook( [ 'uuid' => $uuid ] );
-			delete_option( self::OPTION_WEBHOOKS_REGISTERED );
+			delete_option( Plugin::OPTION_WEBHOOKS_REGISTERED );
 
 			wp_redirect( add_query_arg( self::ADMIN_MESSAGE_KEY, 'webhook_deleted', wp_get_referer() ) );
 			exit;

@@ -53,6 +53,20 @@ class Plugin {
 	const LOG_CONTEXT = 'mondu-trade';
 
 	/**
+	 * Option name for webhooks registered timestamp.
+	 *
+	 * @var string
+	 */
+	const OPTION_WEBHOOKS_REGISTERED = '_mondu_trade_webhooks_registered';
+
+	/**
+	 * Options name for the secret used in the Signature Verifier.
+	 *
+	 * @var string
+	 */
+	const OPTION_WEBHOOKS_SECRET = '_mondu_trade_webhooks_secret';
+
+	/**
 	 * Initialises Mondu Trade.
 	 *
 	 * @return void

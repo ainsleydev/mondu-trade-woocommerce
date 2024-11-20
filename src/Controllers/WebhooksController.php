@@ -92,14 +92,14 @@ class WebhooksController extends BaseController {
 		$signature_payload = $request->get_header( 'X-MONDU-SIGNATURE' );
 		$signature         = $verifier->create_hmac( $body );
 
-		Logger::info( 'Webhook recieved from Mondu', [
+		Logger::info( 'Webhook received from Mondu', [
 			'webhook_topic' => $topic,
 			'params'        => $params,
 		] );
 
 		try {
-			if ( Environment::is_production() && $signature !== $signature_payload ) {
-				throw new MonduTradeException( __( 'Signature mismatch.', 'mondu' ) );
+			if ( $signature !== $signature_payload ) {
+				throw new MonduTradeException( __( 'Signature mismatch.', Plugin::DOMAIN ) );
 			}
 
 			$buyer = $params['buyer'];
@@ -175,7 +175,7 @@ class WebhooksController extends BaseController {
 		$customer->save();
 
 		Logger::info( 'Successfully updated customer status from buyer webhook', [
-			'topic' => $params['webhook_topic'],
+			'topic' => $params['topic'],
 			'uuid'          => $buyer_uuid,
 			'state'         => $state,
 		] );

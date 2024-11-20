@@ -30,8 +30,7 @@ class Checkout {
 	 *
 	 * @return void
 	 */
-	public static function notices() {
-
+	public static function notices(): void {
 		if ( ! is_checkout() || is_wc_endpoint_url() ) {
 			return;
 		}

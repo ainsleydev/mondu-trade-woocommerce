@@ -16,6 +16,10 @@ zip: # Zips the contents of the plugin under /dist
 	wp dist-archive ./ dist/mondu-trade-woocommerce.zip
 .PHONY: zip
 
+clear-log: # Clear the contents of debug.log
+	> ../../debug.log
+.PHONY: clear-log
+
 pack: # Packs repo into txt file (AI)
 	repopack --ignore "**/*.log,tmp/,vendor/dist/" --output repopack.txt
 .PHONY: pack
