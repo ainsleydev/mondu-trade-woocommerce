@@ -33,7 +33,7 @@ add_filter('mondu_trade_account_checkout_class', function ($class) {
 });
 ```
 
-***
+---
 
 ### How can I run actions when a buyer status has changed?
 
@@ -91,11 +91,55 @@ Triggered when a buyer has been accepted for a Trade Account.
 
 **Parameters:**
 
-- `$buyer (array)`: The buyer object, see above for an example.
+- `$customer_id (int)`: The WooCommerce customer ID.
+- `$buyer (array)`:     The buyer object, see above for an example.
 
 ```php
-add_action('mondu_trade_buyer_webhook_received', function ($buyer) {
-    print_r($buyer, true))
+add_action('mondu_trade_buyer_accepted', function ($buyer) {
+   print_r([
+        'customer_id' => $customer_id,
+        'buyer' => $buyer,
+    ]);
+});
+```
+
+#### Pending
+
+`mondu_trade_buyer_pending`
+
+Triggered when a buyer is in a pending state (maximum 48 hours).
+
+**Parameters:**
+
+- `$customer_id (int)`: The WooCommerce customer ID.
+- `$buyer (array)`:     The buyer object, see above for an example.
+
+```php
+add_action('mondu_trade_buyer_pending', function ($buyer) {
+   print_r([
+        'customer_id' => $customer_id,
+        'buyer' => $buyer,
+    ]);
+});
+```
+
+#### Declined
+
+`mondu_trade_buyer_declined`
+
+Triggered when a buyer has been declined for a Trade Account.
+
+**Parameters:**
+
+- `$customer_id (int)`: The WooCommerce customer ID.
+- `$buyer (array)`:     The buyer object, see above for an example.
+
+```php
+add_action('mondu_trade_buyer_declined', function ($buyer) {
+   print_r([
+        'customer_id' => $customer_id,
+        'buyer' => $buyer,
+    ]);
 });
 ```
 
