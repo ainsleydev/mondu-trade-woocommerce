@@ -13,14 +13,14 @@
 The Mondu Trade Account - WooCommerce plugin integrates Mondu's Digital Trade Account functionality into your
 WooCommerce store, allowing your customers to apply for and manage trade accounts directly during checkout.
 
-- **Trade Account Applications**: Let customers apply for a trade account while completing their order.
-- **Webhook Integration**: Automatically update customer statuses (e.g., accepted, pending, declined) when a customer
+- ✅ **Trade Account Applications**: Let customers apply for a trade account while completing their order.
+- ✅ **Webhook Integration**: Automatically update customer statuses (e.g., accepted, pending, declined) when a customer
   has applied for a Digital Trade Account.
-- **Custom Styling and Actions**: Easily extend and customize the checkout experience with hooks and filters. Allowing
+- ✅ **Custom Styling and Actions**: Easily extend and customize the checkout experience with hooks and filters. Allowing
   you to run actions when a buyer has been accepted or declined.
-- **Admin Management Tools**: Access customer trade account information, logs, and webhook settings from the WordPress
+- ✅ **Admin Management Tools**: Access customer trade account information, logs, and webhook settings from the WordPress
   admin panel.
-- **Secure and Compliant**: Fully supports WooCommerce standards and uses secure connections for API communication.
+- ✅ **Secure and Compliant**: Fully supports WooCommerce standards and uses secure connections for API communication.
 
 ## Installation
 
