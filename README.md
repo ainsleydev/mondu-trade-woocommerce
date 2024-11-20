@@ -33,6 +33,8 @@ add_filter('mondu_trade_account_checkout_class', function ($class) {
 });
 ```
 
+---
+
 ### How can I run actions when a buyer status has changed?
 
 There are 4 different actions you can latch onto when Mondu replies with an update after a customer has applied for a
