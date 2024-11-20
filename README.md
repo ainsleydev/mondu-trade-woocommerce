@@ -33,7 +33,7 @@ add_filter('mondu_trade_account_checkout_class', function ($class) {
 });
 ```
 
-___
+***
 
 ### How can I run actions when a buyer status has changed?
 
