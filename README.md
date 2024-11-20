@@ -66,18 +66,32 @@ Triggered when a webhook related to a buyer is received from Mondu.
 **Parameters:**
 
 - `$state (string)`: The current state of the buyer (e.g., accepted, pending, declined).
-- `params (array)`: The full payload of the webhook.
+- `$buyer (array)`: The buyer object, see above for an example.
 
 **Usage**
 
 ```php
 add_action('mondu_trade_buyer_webhook_received', function ($state, $buyer) {
-    error_log("Buyer webhook received: State = $state");
-    error_log(print_r($buyer, true));
+    print_r($buyer, true))
 });
 ```
 
-#### `mondu_trade_buyer_webhook_received`
+#### Accepted
+
+`mondu_trade_buyer_accepted`
+
+Triggered when a buyer has been accepted for a Trade Account.
+
+**Parameters:**
+
+- `$buyer (array)`: The buyer object, see above for an example.
+
+```php
+add_action('mondu_trade_buyer_webhook_received', function ($state, $buyer) {
+    print_r($buyer, true))
+});
+```
+
 
 ## Screenshots
 
