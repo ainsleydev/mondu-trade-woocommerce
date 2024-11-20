@@ -36,6 +36,16 @@ requirements:
 - **WooCommerce**: Requires at least version `9.4`
 - **Mondu Plugin** Needs to be installed, tested version `3.0.3`
 
+## Backwards Compatibility
+
+This plugin has direct dependency on the `Mondu Plugin`. Before updating both plugins, always test the new version on a
+staging environment to ensure compatibility with your customizations, integrations, and WooCommerce setup.
+
+Useful Links:
+
+- [Official GitHub Repository](https://github.com/mondu-ai/bnpl-checkout-woocommerce)
+- [Changelog](https://github.com/mondu-ai/bnpl-checkout-woocommerce/blob/main/changelog.txt)
+
 ## FAQs
 
 ### How do I add custom styling to the payment gateway?
