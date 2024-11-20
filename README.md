@@ -189,14 +189,14 @@ add_action('mondu_trade_buyer_declined', function ($buyer) {
 
 To get setup with plugin, follow the steps listed below.
 
-1. Clone the Repository:
+**1.** Clone the Repository:
 
 ```shell
 git clone https://github.com/ainsleydev/mondu-trade-woocommerce
 cd mondu-trade-woocommerce
 ```
 
-2. Install Dependencies:
+**2.** Install Dependencies:
    Ensure you have Composer and the WP CLI installed on your system. Run the following command to install PHP dependencies:
 
 ```shell
