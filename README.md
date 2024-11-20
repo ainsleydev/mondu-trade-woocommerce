@@ -59,7 +59,7 @@ the [Mondu Webhooks Overview](https://docs.mondu.ai/reference/webhooks-overview)
 }
 ```
 
-#### General Webhook Action
+### General Webhook Action
 
 `mondu_trade_buyer_webhook_received`
 
@@ -83,7 +83,7 @@ add_action('mondu_trade_buyer_webhook_received', function ($state, $customer_id,
 });
 ```
 
-#### Accepted
+### Accepted
 
 `mondu_trade_buyer_accepted`
 
@@ -103,7 +103,7 @@ add_action('mondu_trade_buyer_accepted', function ($buyer) {
 });
 ```
 
-#### Pending
+### Pending
 
 `mondu_trade_buyer_pending`
 
@@ -123,7 +123,7 @@ add_action('mondu_trade_buyer_pending', function ($buyer) {
 });
 ```
 
-#### Declined
+### Declined
 
 `mondu_trade_buyer_declined`
 
