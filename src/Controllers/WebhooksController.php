@@ -105,15 +105,15 @@ class WebhooksController extends BaseController {
 			$buyer = $params['buyer'];
 			switch ( $topic ) {
 				case 'buyer/accepted':
-					do_action('mondu_trade_buyer_accepted', $buyer);
+
 					$result = $this->update_customer_state( BuyerStatus::ACCEPTED, $buyer );
 					break;
 				case 'buyer/pending':
-					do_action('mondu_trade_buyer_pending', $buyer);
+					do_action( 'mondu_trade_buyer_pending', $buyer );
 					$result = $this->update_customer_state( BuyerStatus::PENDING, $buyer );
 					break;
 				case 'buyer/declined':
-					do_action('mondu_trade_buyer_accepted', $buyer);
+					do_action( 'mondu_trade_buyer_accepted', $buyer );
 					$result = $this->update_customer_state( BuyerStatus::DECLINED, $buyer );
 					break;
 				default:
@@ -156,8 +156,6 @@ class WebhooksController extends BaseController {
 	 * @see: https://docs.mondu.ai/reference/webhooks-overview#buyer--accepted--pending--declined
 	 */
 	private function update_customer_state( string $state, array $params ): WP_REST_Response {
-		do_action( 'mondu_trade_buyer_webhook_received', $state, $params );
-
 		$woocommerce_customer_number = $params['external_reference_id'];
 		$buyer_uuid                  = $params['uuid'];
 		$state                       = $params['state'];
@@ -175,14 +173,16 @@ class WebhooksController extends BaseController {
 			return $this->return_not_found();
 		}
 
+		$this->perform_action( $state, (int) $woocommerce_customer_number, $params );
+
 		$customer->set_mondu_trade_account_uuid( $buyer_uuid );
 		$customer->set_mondu_trade_account_status( $state );
 		$customer->save();
 
 		Logger::info( 'Successfully updated customer status from buyer webhook', [
 			'topic' => $params['topic'],
-			'uuid'          => $buyer_uuid,
-			'state'         => $state,
+			'uuid'  => $buyer_uuid,
+			'state' => $state,
 		] );
 
 		return $this->return_success();
@@ -196,7 +196,7 @@ class WebhooksController extends BaseController {
 	private function get_customer( $id ) {
 		try {
 			$customer = new Customer( $id );
-			if (!$customer->is_valid()) {
+			if ( ! $customer->is_valid() ) {
 				throw new \Exception( "Customer not found" );
 			}
 
@@ -208,6 +208,31 @@ class WebhooksController extends BaseController {
 			] );
 
 			return false;
+		}
+	}
+
+	/**
+	 * Performs an action so any user can latch onto the
+	 * Webhook Request.
+	 *
+	 * @param string $state
+	 * @param int $customer_id
+	 * @param array $buyer
+	 * @return void
+	 */
+	private function perform_action( string $state, int $customer_id, array $buyer ) {
+		do_action( 'mondu_trade_buyer_webhook_received', $state, $customer_id, $buyer );
+
+		switch ( $state ) {
+			case BuyerStatus::ACCEPTED:
+				do_action( 'mondu_trade_buyer_accepted', $buyer, $customer_id );
+				break;
+			case BuyerStatus::PENDING:
+				do_action( 'mondu_trade_buyer_pending', $buyer, $customer_id );
+				break;
+			case BuyerStatus::DECLINED:
+				do_action( 'mondu_trade_buyer_declined', $buyer, $customer_id );
+				break;
 		}
 	}
 

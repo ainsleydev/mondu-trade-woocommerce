@@ -65,14 +65,19 @@ Triggered when a webhook related to a buyer is received from Mondu.
 
 **Parameters:**
 
-- `$state (string)`: The current state of the buyer (e.g., accepted, pending, declined).
-- `$buyer (array)`: The buyer object, see above for an example.
+- `$state (string)`:    The current state of the buyer (e.g. `accepted`, `pending`, `declined`).
+- `$customer_id (int)`: The WooCommerce customer ID.
+- `$buyer (array)`:     The buyer object, see above for an example.
 
 **Usage**
 
 ```php
-add_action('mondu_trade_buyer_webhook_received', function ($state, $buyer) {
-    print_r($buyer, true))
+add_action('mondu_trade_buyer_webhook_received', function ($state, $customer_id,  $buyer) {
+   print_r([
+        'state' => $state,
+        'customer_id' => $customer_id,
+        'buyer' => $buyer,
+    ]);
 });
 ```
 
@@ -87,11 +92,10 @@ Triggered when a buyer has been accepted for a Trade Account.
 - `$buyer (array)`: The buyer object, see above for an example.
 
 ```php
-add_action('mondu_trade_buyer_webhook_received', function ($state, $buyer) {
+add_action('mondu_trade_buyer_webhook_received', function ($buyer) {
     print_r($buyer, true))
 });
 ```
-
 
 ## Screenshots
 
