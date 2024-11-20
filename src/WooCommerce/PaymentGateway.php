@@ -94,29 +94,28 @@ class PaymentGateway extends WC_Payment_Gateway {
 		if ( ! is_user_logged_in() ) {
 			include MONDU_TRADE_VIEW_PATH . '/checkout/not-logged-in.php';
 
-			return;
+		} else {
+			// If the user is logged in, we can obtain the status to
+			// display different messages to the user.
+			$user_id  = get_current_user_id();
+			$customer = new Customer( $user_id );
+			$status   = $customer->get_mondu_trade_account_status();
+
+			// Get different views dependant on the buyer status.
+			switch ( $status ):
+				case BuyerStatus::PENDING:
+					include MONDU_TRADE_VIEW_PATH . '/checkout/pending.php';
+					break;
+				case BuyerStatus::DECLINED:
+					include MONDU_TRADE_VIEW_PATH . '/checkout/declined.php';
+					break;
+				case BuyerStatus::ACCEPTED:
+					include MONDU_TRADE_VIEW_PATH . '/checkout/accepted.php';
+					break;
+				default:
+					include MONDU_TRADE_VIEW_PATH . '/checkout/sign-up.php';
+			endswitch;
 		}
-
-		// If the user is logged in, we can obtain the status to
-		// display different messages to the user.
-		$user_id  = get_current_user_id();
-		$customer = new Customer( $user_id );
-		$status   = $customer->get_mondu_trade_account_status();
-
-		// Get different views dependant on the buyer status.
-		switch ( $status ):
-			case BuyerStatus::PENDING:
-				include MONDU_TRADE_VIEW_PATH . '/checkout/pending.php';
-				break;
-			case BuyerStatus::DECLINED:
-				include MONDU_TRADE_VIEW_PATH . '/checkout/declined.php';
-				break;
-			case BuyerStatus::ACCEPTED:
-				include MONDU_TRADE_VIEW_PATH . '/checkout/accepted.php';
-				break;
-			default:
-				include MONDU_TRADE_VIEW_PATH . '/checkout/sign-up.php';
-		endswitch;
 	}
 
 	/**
