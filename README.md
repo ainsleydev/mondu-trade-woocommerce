@@ -62,7 +62,7 @@ that's logged in.
 
 **HTML**:
 
-```php
+```html
 <form id="trade-account-signup" method="POST" action="<?php echo admin_url('admin-ajax.php'); ?>">
     <input type="hidden" name="action" value="trade_account_submit">
     <?php wp_nonce_field('trade_account_submit', 'trade_account_nonce'); ?>
