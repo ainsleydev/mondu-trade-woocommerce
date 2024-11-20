@@ -185,11 +185,15 @@ add_action('mondu_trade_buyer_declined', function ($buyer) {
 
 ## Development
 
+Below are the steps to install the plugin on your local machine for development.
+
 ### Setup
 
 To get setup with plugin, follow the steps listed below.
 
 **1. Clone the Repository**
+
+Clone the repository into your `/wp-content/plugins` folder.
 
 ```shell
 git clone https://github.com/ainsleydev/mondu-trade-woocommerce
@@ -197,11 +201,32 @@ cd mondu-trade-woocommerce
 ```
 
 **2. Install Dependencies**
-   Ensure you have Composer and the WP CLI installed on your system. Run the following command to install PHP dependencies:
+
+Ensure you have Composer and the WP CLI installed on your system. Run the following command to install PHP dependencies.
+The `make setup` command will install `localtunnel` and `concurrently` on the system to run WordPress with webhook
+functionality.
 
 ```shell
 composer install
 make setup
+```
+
+**3. Setup Environment**
+
+Create a `.env` file by copying `.env.example`:
+
+```dotenv
+APP_ENV=dev
+MONDU_WEBHOOKS_URL=https://mondu-trade-account-woocommerce-ainsleydev.loca.lt
+```
+
+### Running WordPress
+
+The make file exposes a handy `serve` function which runs Wordpress, a local tunnel and tails the WordPress logs. Feel
+free to edit this script to suit your needs.
+
+```shell
+make serve
 ```
 
 ## Copyright
