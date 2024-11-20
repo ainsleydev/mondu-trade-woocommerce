@@ -104,8 +104,6 @@ document.querySelector('form').addEventListener('submit', function (event) {
 
 **Response**:
 
-Below is the response format from the endpoint.
-
 ```json
 {
 	"status": 200,
@@ -113,7 +111,6 @@ Below is the response format from the endpoint.
 	"data": null,
 	"error": false
 }
-
 ```
 
 ---
