@@ -117,6 +117,12 @@ document.querySelector('form').addEventListener('submit', function (event) {
 
 ### How do I know what the status is of a customer?
 
+Simply go to the user's account on WordPress by navigating to `Users` and click on a customer. From there, you should
+see the following fields:
+
+- `uuid` -> The external UUID that's been assigned from Mondu.
+- `status` -> The buyer status which can be one of `unknown`, `accepted`, pending` or `declined`.
+
 ---
 
 ### Will Mondu email the customer after a Trade Account has been applied for?
