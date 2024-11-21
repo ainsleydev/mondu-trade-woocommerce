@@ -146,16 +146,11 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * @throws MonduTradeResponseException
 	 */
 	public function register_buyer_webhooks() {
-		$path = 'mondu-trade/v1/webhooks';
-		$base = rest_url();
-
-		if ( Environment::is_development() ) {
-			$base = Environment::get( 'MONDU_WEBHOOKS_URL' ) . '/wp-json/';
-		}
+		$base = Environment::get( 'MONDU_WEBHOOKS_URL', get_home_url() );
 
 		$params = [
 			'topic'   => 'buyer',
-			'address' => $base . $path,
+			'address' => $base . '/?rest_route=/mondu-trade/v1/webhooks/index',
 		];
 
 		$response = $this->wrap_with_mondu_log_event( 'register_webhook', [ $params ] );

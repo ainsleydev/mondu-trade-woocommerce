@@ -12,9 +12,7 @@ namespace MonduTrade\Controllers;
 
 use WP_REST_Request;
 use WP_REST_Response;
-use MonduTrade\Plugin;
 use MonduTrade\Util\Logger;
-use MonduTrade\Util\Environment;
 use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\WooCommerce\Customer;
 use MonduTrade\Mondu\RequestWrapper;
@@ -50,7 +48,7 @@ class WebhooksController extends BaseController {
 	 * Register routes.
 	 */
 	public function register_routes() {
-		register_rest_route( $this->namespace, '/webhooks', [
+		register_rest_route( $this->namespace, '/webhooks/index', [
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'index' ],
