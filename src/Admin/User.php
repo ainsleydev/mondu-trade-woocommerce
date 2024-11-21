@@ -45,7 +45,8 @@ class User {
 
 		$customer = new Customer( $user->ID );
 		if ( ! $customer->is_valid() ) {
-			echo '<h3>Mondu Trade Account</h3><p>No trade account data available.</p>';
+			echo '<h3>' . esc_html__( 'Mondu Trade Account', 'mondu-trade-account' ) . '</h3>';
+			echo '<p>' . esc_html__( 'No trade account data available.', 'mondu-trade-account' ) . '</p>';
 
 			return;
 		}
@@ -65,7 +66,7 @@ class User {
 		check_admin_referer( 'update-user_' . $user_id );
 
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
-			wp_die( __( 'Sorry, you are not allowed to edit this user.' ) );
+			wp_die( esc_html__( 'Sorry, you are not allowed to edit this user.', 'mondu-trade-account' ) );
 		}
 
 		// Fetch original customer data to ensure no changes are made,

@@ -31,20 +31,24 @@ class Checkout {
 	 * @return void
 	 */
 	public static function notices(): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
+		// Bail if it's not the checkout.
 		if ( ! is_checkout() || is_wc_endpoint_url() ) {
 			return;
 		}
 
 		// Check for trade account error query param.
-		if ( isset( $_GET[ TradeAccountController::QUERY_ERROR ] ) && 'true' === sanitize_text_field( $_GET[ TradeAccountController::QUERY_ERROR ] ) ) {
+		if ( isset( $_GET[ TradeAccountController::QUERY_ERROR ] ) &&
+		     'true' === sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_ERROR ] ) ) ) {
 			wc_add_notice( __( 'Unfortunately your trade account could not be processed at this time, please try again.', 'mondu-trade-account' ), 'error' );
 
 			return;
 		}
 
 		// Check for buyer status and redirect status.
-		$buyer_status    = isset( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ? sanitize_text_field( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) : '';
-		$redirect_status = isset( $_GET[ TradeAccountController::QUERY_REDIRECT_STATUS ] ) ? sanitize_text_field( $_GET[ TradeAccountController::QUERY_REDIRECT_STATUS ] ) : '';
+		$buyer_status    = isset( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ? sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ) : '';
+		$redirect_status = isset( $_GET[ TradeAccountController::QUERY_REDIRECT_STATUS ] ) ? sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_REDIRECT_STATUS ] ) ) : '';
 
 		// Display notices based on the query parameters.
 		if ( $redirect_status === 'cancelled' ) {
@@ -70,6 +74,8 @@ class Checkout {
 				wc_add_notice( __( "We couldn't process your trade account application, please try again or reach out to support.", 'mondu-trade-account' ), 'error' );
 				break;
 		}
+
+		// phpcs:enable
 	}
 
 	/**
@@ -80,11 +86,13 @@ class Checkout {
 	 * @return mixed
 	 */
 	public static function select_default_gateway( $available_gateways ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( ! is_checkout() ) {
 			return $available_gateways;
 		}
 
-		$status = isset( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ? sanitize_text_field( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) : '';
+		$status = isset( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ?
+			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ) : '';
 
 		if ( $status !== 'succeeded' ) {
 			return $available_gateways;
@@ -99,5 +107,7 @@ class Checkout {
 		}
 
 		return $available_gateways;
+
+		// phpcs:enable
 	}
 }
