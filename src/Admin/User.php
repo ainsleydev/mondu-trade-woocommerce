@@ -62,8 +62,10 @@ class User {
 	 * @param int $user_id
 	 */
 	public function prevent_trade_account_update( int $user_id ) {
-		if ( ! current_user_can( 'edit_user', $user_id ) || !is_admin() ) {
-			return;
+		check_admin_referer( 'update-user_' . $user_id );
+
+		if ( ! current_user_can( 'edit_user', $user_id ) ) {
+			wp_die( __( 'Sorry, you are not allowed to edit this user.' ) );
 		}
 
 		// Fetch original customer data to ensure no changes are made,

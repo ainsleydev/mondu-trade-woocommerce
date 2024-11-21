@@ -32,28 +32,13 @@ final class Util {
 	}
 
 	/**
-	 * Validate a nonce for a given action and exits if
-	 * the nonce was invalid.
-	 *
-	 * @param string $action
-	 * @param string $query_arg
-	 * @return true
+	 * Dies WP if the nonce was invalid.
 	 */
-	public static function validate_nonce( string $action, string $query_arg = '' ): bool {
-		if ($query_arg === '') {
-			$query_arg = $action;
-		}
-
-		$is_nonce_valid = check_admin_referer( $action, $query_arg );
-
-		if ( ! $is_nonce_valid ) {
-			wp_die(
-				esc_html__( 'Invalid security token. Please try again.', 'mondu-trade-account' ),
-				esc_html__( 'Bad Request', 'mondu-trade-account' ),
-				[ 'response' => 400, 'back_link' => true ]
-			);
-		}
-
-		return true;
+	public static function die_after_security_check(): void {
+		wp_die(
+			esc_html__( 'Invalid security token. Please try again.', 'mondu-trade-account' ),
+			esc_html__( 'Bad Request', 'mondu-trade-account' ),
+			[ 'response' => 400, 'back_link' => true ]
+		);
 	}
 }

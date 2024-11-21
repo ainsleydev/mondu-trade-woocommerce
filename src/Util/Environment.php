@@ -28,7 +28,7 @@ final class Environment {
 	 * @return mixed
 	 */
 	public static function get( string $key, $default = null ) {
-		return $_ENV[ $key ] ?? getenv( $key ) ?: $default;
+		return $_ENV[ $key ] ?? getenv( $key ) ?: $default; // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 
 	/**

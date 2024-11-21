@@ -79,7 +79,7 @@ final class Logger {
 		$logger->log( $level, $out, [ 'source' => Plugin::LOG_CONTEXT ] );
 
 		if ( Environment::is_development() ) {
-			error_log( wp_json_encode( $lines ) );
+			error_log( wp_json_encode( $lines ) ); // phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 	}
 }

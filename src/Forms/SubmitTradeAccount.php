@@ -55,10 +55,11 @@ class SubmitTradeAccount extends Form {
 	 */
 	public function process(): void {
 
-		// Validate the nonce using check_admin_referer.
-		if ( ! check_admin_referer( $this->action, 'trade_account_nonce' ) ) {
+		$is_nonce_valid = wp_verify_nonce( $this->action, 'trade_account_nonce', );
+		if ( ! $is_nonce_valid ) {
 			$this->respond( 403, [], 'Invalid nonce' );
-			exit;
+
+			return;
 		}
 
 		// Bail if there's no user.

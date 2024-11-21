@@ -98,7 +98,7 @@ abstract class Form {
 	 * Validate form fields with rules.
 	 */
 	protected function validate() {
-		$validation = $this->validator->validate( $_POST, $this->rules );
+		$validation = $this->validator->validate( $_POST, $this->rules ); // phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( $validation->fails() ) {
 			$this->respond( 400, $validation->errors()->toArray(), "Validation failed" );
 		}

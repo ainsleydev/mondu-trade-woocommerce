@@ -34,7 +34,13 @@ class LogManager {
 	 */
 	public function download() {
 		Util::validate_user_permissions();
-		Util::validate_nonce( 'mondu_trade_download_logs', 'mondu_trade_download_logs_nonce' );
+
+		$is_nonce_valid = wp_verify_nonce( 'mondu_trade_download_logs_nonce', 'mondu_trade_download_logs' );
+		if ( ! $is_nonce_valid ) {
+			Util::die_after_security_check();
+
+			return;
+		}
 
 		/**
 		 * @var WP_Filesystem_Base $wp_filesystem
