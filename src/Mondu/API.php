@@ -114,7 +114,7 @@ class API extends \Mondu\Mondu\Api {
 			$args['body'] = wp_json_encode( $body );
 		}
 
-		Logger::info( 'Performing request to Mondu API', [
+		Logger::debug( 'Performing request to Mondu API', [
 			'method' => $method,
 			'url'    => $url,
 			'body'   => $args['body'] ?? null,

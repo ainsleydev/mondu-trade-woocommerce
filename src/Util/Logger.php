@@ -73,9 +73,7 @@ final class Logger {
 			'message' => $message,
 		];
 		if ( ! empty( $data ) ) {
-			$lines = array_merge( $lines, [
-				'data' => $data
-			] );
+			$lines = array_merge( $lines, $data );
 		}
 		$out = wc_print_r( $lines, true );
 		$logger->log( $level, $out, [ 'source' => Plugin::LOG_CONTEXT ] );

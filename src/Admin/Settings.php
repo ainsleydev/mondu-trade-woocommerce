@@ -89,13 +89,11 @@ class Settings {
 
 		// Fetch the current webhooks to display to the
 		// user (just for debugging).
-		if (Environment::is_development()) {
-			try {
-				$webhooks = $this->webhook_register->get();
-			} catch ( \Exception $e ) {
-				$webhooks            = [];
-				$webhooks_list_error = $e->getMessage();
-			}
+		try {
+			$webhooks = $this->webhook_register->get();
+		} catch ( \Exception $e ) {
+			$webhooks            = [];
+			$webhooks_list_error = $e->getMessage();
 		}
 
 		$message = $this->webhook_register->get_message();

@@ -140,7 +140,7 @@ class Plugin {
 	 * Checks if the following plugins are installed:
 	 *
 	 * - WooCommerce
-	 * - Mondu Buy Now pay Later
+	 * - Mondu Buy Now Pay Later (with support for two potential paths)
 	 *
 	 * @return bool
 	 */
@@ -150,9 +150,15 @@ class Plugin {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		// Check the plugins are activated.
-		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) ||
-		     ! is_plugin_active( 'mondu-buy-now-pay-later/mondu-buy-now-pay-later.php' ) ) {
+		// Check if WooCommerce is active.
+		$is_woocommerce_active = is_plugin_active( 'woocommerce/woocommerce.php' );
+
+		// Check if Mondu Buy Now Pay Later is active in either of the two paths.
+		$is_mondu_active = is_plugin_active( 'mondu-buy-now-pay-later/mondu-buy-now-pay-later.php' ) ||
+		                   is_plugin_active( 'bnpl-checkout-woocommerce-main/mondu-buy-now-pay-later.php' );
+
+		// If either plugin is inactive, show admin notice and return false.
+		if ( ! $is_woocommerce_active || ! $is_mondu_active ) {
 			add_action( 'admin_notices', [ $this, 'dependency_error_notice' ] );
 
 			return false;

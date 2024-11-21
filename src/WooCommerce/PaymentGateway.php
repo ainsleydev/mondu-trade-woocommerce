@@ -186,6 +186,8 @@ class PaymentGateway extends WC_Payment_Gateway {
 
 			if ( empty( $response['hosted_page_url'] ) ) {
 				$this->exit_from_payment();
+
+				return;
 			}
 
 			$redirect_url = $response['hosted_page_url'];
@@ -204,6 +206,8 @@ class PaymentGateway extends WC_Payment_Gateway {
 		// to avoid people placing orders if they haven't been accepted.
 		if ( $status === BuyerStatus::PENDING || $status === BuyerStatus::DECLINED ) {
 			$this->exit_from_payment( 'You are not currently permitted to place a Mondu Trade Payment, try another payment method.' );
+
+			return;
 		}
 
 		// If the buyer doesn't have enough credit's in their account,
@@ -223,6 +227,8 @@ class PaymentGateway extends WC_Payment_Gateway {
 			}
 		} catch ( Exception $e ) {
 			$this->exit_from_payment();
+
+			return;
 		}
 
 		// Original code from Mondu, we just call the parent.
@@ -231,6 +237,8 @@ class PaymentGateway extends WC_Payment_Gateway {
 
 		if ( ! $mondu_order ) {
 			$this->exit_from_payment();
+
+			return;
 		}
 
 		return [
@@ -291,8 +299,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 
 		// translators: %s is the error message displayed to the user.
 		wc_add_notice( sprintf( __( 'Error: %s', 'mondu-trade-account' ), esc_html( $notice_message ) ), 'error' );
-
-		exit;
 	}
 
 	/**
