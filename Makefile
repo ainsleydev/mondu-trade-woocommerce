@@ -1,3 +1,8 @@
+# Constants
+DOCKER_COMPOSE_FILE=docker-compose.yml
+ZIP_FILE_NAME=mondu-trade-account.zip
+
+# Functions
 setup: # Setup Dependencies
 	npm install -g localtunnel
 	npm install -g concurrently
@@ -13,8 +18,25 @@ serve: # Serve Wordpress & Local Tunnel
 .PHONY: serve
 
 zip: # Zips the contents of the plugin under /dist
-	wp dist-archive ./ dist/mondu-trade-woocommerce.zip
+	rm dist/$(ZIP_FILE_NAME) || true
+	wp dist-archive ./ dist/$(ZIP_FILE_NAME) --allow-root
 .PHONY: zip
+
+docker-build: # Rebuild Docker images
+	docker-compose -f $(DOCKER_COMPOSE_FILE) build
+.PHONY: docker-build
+
+docker-up: # Start Docker containers
+	docker-compose -f $(DOCKER_COMPOSE_FILE) up
+.PHONY: docker-up
+
+docker-down: # Stop Docker containers
+	docker-compose -f $(DOCKER_COMPOSE_FILE) down
+.PHONY: docker-down
+
+docker-clean: # Remove stopped containers, networks, and volumes
+	docker-compose -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans
+.PHONY: docker-clean
 
 clear-log: # Clear the contents of debug.log
 	> ../../debug.log

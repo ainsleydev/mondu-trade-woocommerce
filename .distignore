@@ -36,7 +36,6 @@ webpack.config.js
 wp-cli.local.yml
 yarn.lock
 tests
-vendor
 node_modules
 *.sql
 *.tar.gz
@@ -47,3 +46,7 @@ NOTES.md
 .env.example
 Makefile
 repopack.txt
+Dockerfile
+docker-compose.yml
+dist
+.DS_STORE

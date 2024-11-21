@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name:     Mondu Trade Account
- * Plugin URI:      https://ainsley.dev
+ * Plugin URI:      https://github.com/ainsleydev/mondu-trade-woocommerce
  * Description:     WooCommerce Payment Gateway for integrating the Mondu Digital Trade Account.
  * Author:          ainsley.dev LTD
  * Author URI:      https://ainsley.dev

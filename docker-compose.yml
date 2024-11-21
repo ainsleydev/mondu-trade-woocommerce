@@ -1,0 +1,79 @@
+services:
+  woocommerce:
+    container_name: woocommerce
+    build: .
+    volumes:
+      - wordpress_data:/var/www/html
+    links:
+      - mariadb
+      - mailcatcher
+    ports:
+      - 8080:80
+    environment:
+      MONDU_SANDBOX_URL: http://host.docker.internal:3000/api/v1
+      MONDU_PRODUCTION_URL: http://host.docker.internal:3000/api/v1
+      MONDU_WEBHOOKS_URL: http://host.docker.internal:8390
+      WP_DEBUG: 1
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_CONFIG_EXTRA: |
+        require_once(ABSPATH .'wp-includes/plugin.php');
+        // configure phpmailer with SMTP before sending emails
+        add_action('phpmailer_init', function($$mailer) {
+          $$mailer->isSMTP();
+          $$mailer->Host = "mailcatcher";
+          $$mailer->SMTPAuth = false;
+          $$mailer->Port = 1025;
+        });
+        // optional: error logging in case phpmailer fails
+        add_action('wp_mail_failed', function($$wperror) {
+          error_log(implode("; ", $$wperror->get_error_messages()));
+        });
+
+  composer:
+    image: composer:latest
+    command: composer install
+    volumes:
+      - .:/app
+
+  mariadb:
+    container_name: woocommerce_mariadb
+    image: mariadb
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  phpmyadmin:
+    container_name: woocommerce_phpmyadmin
+    image: phpmyadmin
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: wordpress
+      PMA_PASSWORD: wordpress
+    links:
+      - mariadb
+    depends_on:
+      - mariadb
+
+  mailcatcher:
+    container_name: woocommerce_mailcatcher
+    image: schickling/mailcatcher
+    ports:
+      - 1080:1080
+
+volumes:
+  wordpress_data:
+    driver: local
+  mariadb_data:
+    driver: local
