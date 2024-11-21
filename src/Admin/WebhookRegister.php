@@ -139,10 +139,10 @@ class WebhookRegister {
 	 */
 	public function get_message(): ?string {
 		$messages = [
-			'webhooks_registered'     => __( 'Webhooks registered successfully.', Plugin::DOMAIN ),
-			'webhook_register_failed' => __( 'Webhooks failed to register.', Plugin::DOMAIN ),
-			'webhook_deleted'         => __( 'Webhook deleted successfully.', Plugin::DOMAIN ),
-			'webhook_delete_failed'   => __( 'Failed to delete webhook.', Plugin::DOMAIN ),
+			'webhooks_registered'     => __( 'Webhooks registered successfully.', 'mondu-trade-account' ),
+			'webhook_register_failed' => __( 'Webhooks failed to register.', 'mondu-trade-account' ),
+			'webhook_deleted'         => __( 'Webhook deleted successfully.', 'mondu-trade-account' ),
+			'webhook_delete_failed'   => __( 'Failed to delete webhook.', 'mondu-trade-account' ),
 		];
 
 		$message_key = self::ADMIN_MESSAGE_KEY;

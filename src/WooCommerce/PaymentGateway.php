@@ -289,7 +289,8 @@ class PaymentGateway extends WC_Payment_Gateway {
 			$notice_message = 'Error placing an order. Please try again.';
 		}
 
-		wc_add_notice( __( $notice_message, Plugin::DOMAIN ), 'error' );
+		// translators: %s is the error message displayed to the user.
+		wc_add_notice( sprintf( __( 'Error: %s', 'mondu-trade-account' ), esc_html( $notice_message ) ), 'error' );
 
 		exit;
 	}

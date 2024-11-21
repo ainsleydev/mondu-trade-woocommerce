@@ -109,7 +109,9 @@ document.querySelector('form').addEventListener('submit', function (event) {
 {
   "status": 200,
   "message": "Trade Account application submitted successfully.",
-  "data": null,
+  "data": {
+    "hosted_page_uri": "https://mondu.ai/checkout-page"
+  },
   "error": false
 }
 ```

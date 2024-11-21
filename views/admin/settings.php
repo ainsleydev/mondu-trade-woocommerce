@@ -8,14 +8,12 @@
  * @author      ainsley.dev
  */
 
-use MonduTrade\Plugin;
 use MonduTrade\Util\Environment;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
 }
 
-$domain = Plugin::DOMAIN;
 $is_development = Environment::is_development()
 
 ?>
@@ -25,7 +23,7 @@ $is_development = Environment::is_development()
 	===================== -->
 <div class="wrap">
 	<!-- Title -->
-	<h1><?php echo esc_html__( 'Mondu Trade Account', $domain ); ?></h1>
+	<h1><?php echo esc_html__( 'Mondu Trade Account', 'mondu-trade-account' ); ?></h1>
 	<!-- Messages -->
 	<?php if ( ! empty( $message ) ) : ?>
 		<div class="notice notice-success is-dismissible">
@@ -43,13 +41,13 @@ $is_development = Environment::is_development()
 	<!-- =====================
 		Register Webhooks
 		===================== -->
-	<h2><?php esc_html_e( 'Register Webhooks', $domain ); ?></h2>
+	<h2><?php esc_html_e( 'Register Webhooks', 'mondu-trade-account' ); ?></h2>
 	<p>Register the associated webhooks for the
 		<a href="https://docs.mondu.ai/docs/mondu-digital-trade-account" target="_blank">Digital Trade Account</a>.
 	</p>
 	<!-- Register -->
 	<?php if ( isset( $webhooks_registered ) && false !== $webhooks_registered ) : ?>
-		<p>✅ <?php esc_html_e( 'Webhooks registered', $domain ); ?>:
+		<p>✅ <?php esc_html_e( 'Webhooks registered', 'mondu-trade-account' ); ?>:
 			<?php echo esc_html( date_i18n( get_option( 'date_format' ), $webhooks_registered ) ); ?>
 		</p>
 	<?php endif; ?>
@@ -58,13 +56,13 @@ $is_development = Environment::is_development()
 		<input type='hidden' name='action' value='mondu_trade_register_webhooks'/>
 		<?php
 		wp_nonce_field( 'mondu_trade_register_webhooks', 'mondu_trade_register_webhooks_nonce' );
-		submit_button( __( 'Register Webhooks', $domain ) );
+		submit_button( __( 'Register Webhooks', 'mondu-trade-account' ) );
 		?>
 	</form>
 	<!-- =====================
 		Download Logs
 		===================== -->
-	<h2><?php esc_html_e( 'Download Logs', $domain ); ?></h2>
+	<h2><?php esc_html_e( 'Download Logs', 'mondu-trade-account' ); ?></h2>
 	<p>Downloads all logs from the mondu-trade domain.</p>
 	<form action='<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>' method='post'>
 		<input type='hidden' name='action' value='mondu_trade_download_logs'/>
@@ -73,7 +71,7 @@ $is_development = Environment::is_development()
 			<tbody>
 			<tr>
 				<th scope="row">
-					<label for="date"><?php esc_html_e( 'Log date', $domain ); ?>:</label>
+					<label for="date"><?php esc_html_e( 'Log date', 'mondu-trade-account' ); ?>:</label>
 				</th>
 				<td>
 					<input type='date' id='date' name='date' value="<?php echo esc_html( gmdate( 'Y-m-d' ) ); ?>"
@@ -82,23 +80,23 @@ $is_development = Environment::is_development()
 			</tr>
 			</tbody>
 		</table>
-		<?php submit_button( __( 'Download Logs', $domain ) ); ?>
+		<?php submit_button( __( 'Download Logs', 'mondu-trade-account' ) ); ?>
 	</form>
 	<!-- =====================
 		Webhooks
 		===================== -->
-	<h2><?php esc_html_e( 'Current Webhooks', $domain ); ?></h2>
+	<h2><?php esc_html_e( 'Current Webhooks', 'mondu-trade-account' ); ?></h2>
 	<!-- Table -->
 	<?php if ( ! empty( $webhooks ) ) : ?>
 		<p>The registered webhooks are shown below.</p>
 		<table class="wp-list-table widefat fixed striped">
 			<thead>
 			<tr>
-				<th><?php esc_html_e( 'UUID', $domain ); ?></th>
-				<th><?php esc_html_e( 'Topic', $domain ); ?></th>
-				<th><?php esc_html_e( 'Address', $domain ); ?></th>
+				<th><?php esc_html_e( 'UUID', 'mondu-trade-account' ); ?></th>
+				<th><?php esc_html_e( 'Topic', 'mondu-trade-account' ); ?></th>
+				<th><?php esc_html_e( 'Address', 'mondu-trade-account' ); ?></th>
 				<?php if ($is_development): ?>
-					<th><?php esc_html_e( 'Actions', $domain ); ?></th>
+					<th><?php esc_html_e( 'Actions', 'mondu-trade-account' ); ?></th>
 				<?php endif; ?>
 			</tr>
 			</thead>
@@ -114,7 +112,7 @@ $is_development = Environment::is_development()
 								<?php wp_nonce_field( 'mondu_trade_delete_webhook_' . $webhook['uuid'], 'mondu_trade_delete_webhook_nonce' ); ?>
 								<input type="hidden" name="action" value="mondu_trade_delete_webhook">
 								<input type="hidden" name="uuid" value="<?php echo esc_attr( $webhook['uuid'] ); ?>">
-								<?php submit_button( __( 'Delete', $domain ), 'delete', 'submit', false ); ?>
+								<?php submit_button( __( 'Delete', 'mondu-trade-account' ), 'delete', 'submit', false ); ?>
 							</form>
 						</td>
 					<?php endif; ?>
@@ -123,7 +121,7 @@ $is_development = Environment::is_development()
 			</tbody>
 		</table>
 	<?php else : ?>
-		<p><?php esc_html_e( 'No webhooks found.', $domain ); ?></p>
+		<p><?php esc_html_e( 'No webhooks found.', 'mondu-trade-account' ); ?></p>
 	<?php endif; ?>
 </div>
 

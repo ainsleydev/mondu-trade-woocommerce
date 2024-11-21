@@ -46,7 +46,7 @@ $max_purchase_value = $max_purchase_value_cents / 100;
 	Accepted
 	===================== -->
 <div class="<?php echo esc_attr( apply_filters( 'mondu_trade_account_checkout_class', '' ) ); ?>">
-	<p>Balance: <?php echo wc_price( $balance ); ?> </p>
-	<p>Maximum Purchase Value: <?php echo wc_price( $max_purchase_value ); ?> </p>
-	<p>Purchasing Limit: <?php echo wc_price( $purchasing_limit ); ?> </p>
+	<p>Balance: <?php echo wp_kses_post( wc_price( $balance ) ); ?> </p>
+	<p>Maximum Purchase Value: <?php echo wp_kses_post( wc_price( $max_purchase_value ) ); ?> </p>
+	<p>Purchasing Limit: <?php echo wp_kses_post( wc_price( $purchasing_limit ) ); ?> </p>
 </div>

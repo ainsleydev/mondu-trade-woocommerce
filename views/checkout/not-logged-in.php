@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	Not Logged In
 	===================== -->
 <div class="<?php apply_filters( 'mondu_trade_account_checkout_class', '' ); ?>">
-	<a href="<?php echo get_permalink( wc_get_page_id( 'myaccount' ) ); ?>">Log in</a>
+	<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'myaccount' ) ) ); ?>">Log in</a>
 	to register to Pay using a Mondu Trade Account.
 </div>
 

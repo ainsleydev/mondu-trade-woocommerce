@@ -25,7 +25,9 @@ final class Util {
 	 */
 	public static function validate_user_permissions(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.' ) );
+			wp_die(
+				esc_html__( 'You do not have sufficient permissions to access this page.', 'mondu-trade-account' )
+			);
 		}
 	}
 
@@ -46,8 +48,8 @@ final class Util {
 
 		if ( ! $is_nonce_valid ) {
 			wp_die(
-				esc_html__( 'Invalid security token. Please try again.', Plugin::DOMAIN ),
-				esc_html__( 'Bad Request', Plugin::DOMAIN ),
+				esc_html__( 'Invalid security token. Please try again.', 'mondu-trade-account' ),
+				esc_html__( 'Bad Request', 'mondu-trade-account' ),
 				[ 'response' => 400, 'back_link' => true ]
 			);
 		}

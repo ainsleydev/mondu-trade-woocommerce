@@ -37,7 +37,7 @@ class Checkout {
 
 		// Check for trade account error query param.
 		if ( isset( $_GET[ TradeAccountController::QUERY_ERROR ] ) && 'true' === sanitize_text_field( $_GET[ TradeAccountController::QUERY_ERROR ] ) ) {
-			wc_add_notice( __( 'Unfortunately your trade account could not be processed at this time, please try again.', Plugin::DOMAIN ), 'error' );
+			wc_add_notice( __( 'Unfortunately your trade account could not be processed at this time, please try again.', 'mondu-trade-account' ), 'error' );
 
 			return;
 		}
@@ -48,7 +48,7 @@ class Checkout {
 
 		// Display notices based on the query parameters.
 		if ( $redirect_status === 'cancelled' ) {
-			wc_add_notice( __( 'Your Trade Account application was cancelled, please try again.', Plugin::DOMAIN ), 'error' );
+			wc_add_notice( __( 'Your Trade Account application was cancelled, please try again.', 'mondu-trade-account' ), 'error' );
 
 			return;
 		}
@@ -58,16 +58,16 @@ class Checkout {
 		// is in their application.
 		switch ( $buyer_status ) {
 			case BuyerStatus::ACCEPTED:
-				wc_add_notice( __( 'Your trade account has been approved.', Plugin::DOMAIN ), 'success' );
+				wc_add_notice( __( 'Your trade account has been approved.', 'mondu-trade-account' ), 'success' );
 				break;
 			case BuyerStatus::PENDING:
-				wc_add_notice( __( 'Your trade account is pending. You will hear back in 48 hours.', Plugin::DOMAIN ), 'notice' );
+				wc_add_notice( __( 'Your trade account is pending. You will hear back in 48 hours.', 'mondu-trade-account' ), 'notice' );
 				break;
 			case BuyerStatus::DECLINED:
-				wc_add_notice( __( 'Your trade account has been declined, please use an alternative payment method.', Plugin::DOMAIN ), 'error' );
+				wc_add_notice( __( 'Your trade account has been declined, please use an alternative payment method.', 'mondu-trade-account' ), 'error' );
 				break;
 			default:
-				wc_add_notice( __( `We couldn't process your trade account application, please try again or reach out to support.`, Plugin::DOMAIN ), 'error' );
+				wc_add_notice( __( "We couldn't process your trade account application, please try again or reach out to support.", 'mondu-trade-account' ), 'error' );
 				break;
 		}
 	}

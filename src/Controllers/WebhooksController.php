@@ -99,7 +99,7 @@ class WebhooksController extends BaseController {
 
 		try {
 			if ( $signature !== $signature_payload ) {
-				throw new MonduTradeException( __( 'Signature mismatch.', Plugin::DOMAIN ) );
+				throw new MonduTradeException( __( 'Signature mismatch.', 'mondu-trade-account' ) );
 			}
 
 			$buyer = $params['buyer'];
@@ -161,11 +161,25 @@ class WebhooksController extends BaseController {
 		$state                       = $params['state'];
 
 		if ( ! is_numeric( $woocommerce_customer_number ) ) {
-			return $this->respond( __( 'Invalid customer number provided: ' . $woocommerce_customer_number, Plugin::DOMAIN ), 400 );
+			return $this->respond(
+				sprintf(
+					// translators: %s is the customer number that is invalid.
+					__( 'Invalid customer number provided: %s', 'mondu-trade-account' ),
+					$woocommerce_customer_number
+				),
+				400
+			);
 		}
 
 		if ( ! $woocommerce_customer_number ) {
-			return $this->respond( __( 'Customer not found: ' . $woocommerce_customer_number, Plugin::DOMAIN ), 404 );
+			return $this->respond(
+				sprintf(
+					// translators: %s is the customer number that was not found.
+					__( 'Customer not found: %s', 'mondu-trade-account' ),
+					$woocommerce_customer_number
+				),
+				404
+			);
 		}
 
 		$customer = $this->get_customer( (int) $woocommerce_customer_number );

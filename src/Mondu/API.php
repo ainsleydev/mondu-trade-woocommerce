@@ -133,17 +133,22 @@ class API extends \Mondu\Mondu\Api {
 	 */
 	private function validate_remote_result( $url, $result ): array {
 		if ( $result instanceof \WP_Error ) {
-			throw new MonduTradeException( $result->get_error_message(), $result->get_error_code() );
+			throw new MonduTradeException(
+				esc_html( $result->get_error_message() ),
+				esc_html( $result->get_error_code() )
+			);
 		} else {
 			Logger::info( 'Result from Mondu API', [
-				'code'     => $result['response']['code'] ?? null,
-				'url'      => $url,
-				'response' => $result['body'] ?? null,
+				'code'     => esc_html( $result['response']['code'] ?? '' ),
+				'url'      => esc_url( $url ),
+				'response' => esc_html( $result['body'] ?? '' ),
 			] );
 		}
 
 		if ( ! is_array( $result ) || ! isset( $result['response'], $result['body'] ) || ! isset( $result['response']['code'], $result['response']['message'] ) ) {
-			throw new MonduTradeException( __( 'Unexpected API response format.', 'mondu' ) );
+			throw new MonduTradeException(
+				esc_html__( 'Unexpected API response format.', 'mondu-trade-account' )
+			);
 		}
 
 		if ( strpos( $result['response']['code'], '2' ) !== 0 ) {
@@ -152,7 +157,11 @@ class API extends \Mondu\Mondu\Api {
 				$message = $result['body']['errors']['title'];
 			}
 
-			throw new MonduTradeResponseException( $message, $result['response']['code'], json_decode( $result['body'], true ) );
+			throw new MonduTradeResponseException(
+				esc_html( $message ),
+				esc_html( $result['response']['code'] ),
+				wp_json_encode( $result['body'] ),
+			);
 		}
 
 		return $result;

@@ -59,7 +59,7 @@ class Settings {
 		// Add a new section to the Mondu settings page
 		add_settings_section(
 			'mondu_trade_account_section',
-			__( 'Settings', Plugin::DOMAIN ),
+			__( 'Settings', 'mondu-trade-account' ),
 			[ $this, 'section_callback' ],
 			'mondu-trade-account'
 		);
@@ -71,8 +71,8 @@ class Settings {
 	public function add_settings_section() {
 		add_submenu_page(
 			'mondu-settings-account',
-			__( 'Trade Account', 'ainsley-dev' ),
-			__( 'Trade Account', 'ainsley-dev' ),
+			__( 'Trade Account', 'mondu-trade-account' ),
+			__( 'Trade Account', 'mondu-trade-account' ),
 			'manage_options',
 			'mondu-trade-account',
 			[ $this, 'render' ],
@@ -124,6 +124,6 @@ class Settings {
 	 * Section callback
 	 */
 	public function section_callback() {
-		echo '<p>' . esc_html__( 'Configure the trade account settings for Mondu here.', Plugin::DOMAIN ) . '</p>';
+		echo '<p>' . esc_html__( 'Configure the trade account settings for Mondu here.', 'mondu-trade-account' ) . '</p>';
 	}
 }

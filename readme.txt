@@ -1,115 +1,131 @@
 === Mondu Trade Account ===
-Contributors: (this should be a list of wordpress.org userid's)
-Donate link: https://example.com/
-Tags: comments, spam
-Requires at least: 4.5
+Contributors: ainsleydev
+Tags: woocommerce, trade accounts, checkout, mondu, api
+Requires at least: 6.7
 Tested up to: 6.7
-Requires PHP: 5.6
-Stable tag: 0.1.0
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Requires PHP: 7.4
+Stable tag: 0.0.1
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
+Integrates Mondu's Digital Trade Account functionality into WooCommerce, enabling customers to apply for trade accounts during checkout.
 
 == Description ==
 
-This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
+The Mondu Trade Account - WooCommerce plugin integrates Mondu's Digital Trade Account functionality into your WooCommerce store, allowing your customers to apply for and manage trade accounts directly during checkout.
 
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+**Features:**
+- **Trade Account Applications**: Let customers apply for a trade account while completing their order.
+- **Webhook Integration**: Automatically update customer statuses (e.g., accepted, pending, declined).
+- **Custom Styling and Actions**: Extend and customize the checkout experience with hooks and filters.
+- **Admin Management Tools**: Access customer trade account information, logs, and webhook settings from the WordPress admin panel.
+- **Secure and Compliant**: Fully supports WooCommerce standards and uses secure connections for API communication.
 
-A few notes about the sections above:
-
-*   "Contributors" is a comma separated list of wp.org/wp-plugins.org usernames
-*   "Tags" is a comma separated list of tags that apply to the plugin
-*   "Requires at least" is the lowest version that the plugin will work on
-*   "Tested up to" is the highest version that you've *successfully used to test the plugin*. Note that it might work on
-higher versions... this is just the highest one you've verified.
-*   Stable tag should indicate the Subversion "tag" of the latest stable version, or "trunk," if you use `/trunk/` for
-stable.
-
-    Note that the `readme.txt` of the stable tag is the one that is considered the defining one for the plugin, so
-if the `/trunk/readme.txt` file says that the stable tag is `4.3`, then it is `/tags/4.3/readme.txt` that'll be used
-for displaying information about the plugin.  In this situation, the only thing considered from the trunk `readme.txt`
-is the stable tag pointer.  Thus, if you develop in trunk, you can update the trunk `readme.txt` to reflect changes in
-your in-development version, without having that information incorrectly disclosed about the current stable version
-that lacks those changes -- as long as the trunk's `readme.txt` points to the correct stable tag.
-
-    If no stable tag is provided, it is assumed that trunk is stable, but you should specify "trunk" if that's where
-you put the stable version, in order to eliminate any doubt.
+Useful Links:
+- [GitHub Repository](https://github.com/mondu-ai/bnpl-checkout-woocommerce)
+- [Changelog](https://github.com/mondu-ai/bnpl-checkout-woocommerce/blob/main/changelog.txt)
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('plugin_name_hook'); ?>` in your templates
+1. Download the plugin ZIP file from the releases section or the WordPress plugin directory.
+2. Upload the ZIP file via the WordPress admin panel under "Plugins > Add New."
+3. Activate the plugin through the 'Plugins' menu in WordPress.
 
 == Frequently Asked Questions ==
 
-= A question that someone might have =
+= How do I allow for signups outside the checkout? =
+This plugin supports signup forms outside the checkout. Ensure users are logged in before submitting the form.
 
-An answer to that question.
+Example form:
 
-= What about foo bar? =
+**HTML**:
 
-Answer to foo bar dilemma.
+```html
+<form id="trade-account-signup" method="POST" action="<?php echo admin_url('admin-ajax.php'); ?>">
+  <input type="hidden" name="action" value="trade_account_submit">
+  <?php wp_nonce_field('trade_account_submit', 'trade_account_nonce'); ?>
+  <button type="submit">Submit</button>
+</form>
 
-== Screenshots ==
+**JavaScript**:
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+```js
+document.querySelector('form').addEventListener('submit', function (event) {
+  event.preventDefault();
 
-== Changelog ==
+  const form = event.target;
+  const formData = new FormData(form);
 
-= 1.0 =
-* A change since the previous version.
-* Another change.
+  fetch(form.action, {
+    method: 'POST',
+    body: formData,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (!data.error) {
+        alert('Trade Account application submitted successfully.');
+      } else {
+        alert(`Error: ${data.message || 'An error occurred while submitting the application.'}`);
+      }
+    })
+    .catch((error) => {
+      alert(`An error occurred: ${error.message}`);
+    });
+});
+```
 
-= 0.5 =
-* List versions from most recent at top to oldest at bottom.
+= How do I know the status of a customer? =
+Go to "Users" in the WordPress admin panel and select the desired customer. Relevant fields include:
+- `uuid`: External UUID assigned by Mondu.
+- `status`: Customer's trade account status (`unknown`, `accepted`, `pending`, or `declined`).
 
-== Upgrade Notice ==
+= How do I add custom styling to the payment gateway? =
+Use the `mondu_trade_account_checkout_class` filter to add custom styles. Example:
+add_filter('mondu_trade_account_checkout_class', function ($class) {
+    return $class . ' my-class-name';
+});
 
-= 1.0 =
-Upgrade notices describe the reason a user should upgrade.  No more than 300 characters.
+= How can I run actions when a buyer status changes? =
 
-= 0.5 =
-This version fixes a security related bug.  Upgrade immediately.
+There are 4 different actions you can latch onto when Mondu replies with an update after a customer has applied for a
+Digital Trade Account. Below is a list of available actions.
 
-== Arbitrary section ==
+**Example Payload**
 
-You may provide arbitrary sections, in the same format as the ones above.  This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation."  Arbitrary sections will be shown below the built-in sections outlined above.
+Below is an example of a buyer and topic sent via the actions, see
+the [Mondu Webhooks Overview](https://docs.mondu.ai/reference/webhooks-overview) for more information
 
-== A brief Markdown Example ==
+```json
+{
+  "topic": "buyer/{TOPIC_NAME}",
+  "buyer": {
+    "uuid": "66e8d234-23b5-1125-9592-d7390f20g01c",
+    "state": "accepted",
+    "external_reference_id": "DE-1-1000745773",
+    "company_name": "2023-02-07T15:14:22.301Z",
+    "first_name": "John",
+    "last_name": "Smith"
+  }
+}
+```
 
-Ordered list:
+**Actions**:
 
-1. Some feature
-1. Another feature
-1. Something else about the plugin
+- `mondu_trade_buyer_webhook_received`
+- `mondu_trade_buyer_accepted`
+- `mondu_trade_buyer_pending`
+- `mondu_trade_buyer_declined`
 
-Unordered list:
+Example for `mondu_trade_buyer_accepted`:
+add_action('mondu_trade_buyer_accepted', function ($customer_id, $buyer) {
+    // Handle accepted status
+});
 
-* something
-* something else
-* third thing
+== License ==
 
-Here's a link to [WordPress](https://wordpress.org/ "Your favorite software") and one to [Markdown's Syntax Documentation][markdown syntax].
-Titles are optional, naturally.
-
-[markdown syntax]: https://daringfireball.net/projects/markdown/syntax
-            "Markdown is what the parser uses to process much of the readme file"
-
-Markdown uses email style notation for blockquotes and I've been told:
-> Asterisks for *emphasis*. Double it up  for **strong**.
-
-`<?php code(); // goes in backticks ?>`
+This plugin is licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
