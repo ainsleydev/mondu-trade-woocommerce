@@ -112,7 +112,7 @@ class WebhookRegister {
 			exit;
 		}
 
-		$uuid = isset( $_POST['uuid'] ) ? sanitize_text_field( $_POST['uuid'] ) : '';
+		$uuid = isset( $_POST['uuid'] ) ? sanitize_text_field( wp_unslash( $_POST['uuid']) ) : '';
 		Util::validate_nonce( 'mondu_trade_delete_webhook_' . $uuid, 'mondu_trade_delete_webhook_nonce' );
 
 		try {
@@ -146,8 +146,12 @@ class WebhookRegister {
 		];
 
 		$message_key = self::ADMIN_MESSAGE_KEY;
-		if ( isset( $_GET[ $message_key ] ) && isset( $messages[ $_GET[ $message_key ] ] ) ) {
-			return $messages[ $_GET[ $message_key ] ];
+		$message = isset( $_GET[ $message_key ] )
+			? sanitize_text_field( wp_unslash( $_GET[ $message_key ] ) )
+			: '';
+
+		if ( $message && isset( $messages[ $message ] ) ) {
+			return $messages[ $message ];
 		}
 
 		return null;

@@ -87,9 +87,11 @@ abstract class Form {
 	 * Check if current request is AJAX
 	 */
 	protected function is_ajax_request(): bool {
-		return wp_doing_ajax() ||
-		       ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) &&
-		         strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' );
+		$requested_with = isset( $_SERVER['HTTP_X_REQUESTED_WITH'] )
+			? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) )
+			: '';
+
+		return wp_doing_ajax() || strtolower( $requested_with ) === 'xmlhttprequest';
 	}
 
 	/**

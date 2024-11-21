@@ -42,7 +42,7 @@ class LogManager {
 		global $wp_filesystem;
 		WP_Filesystem();
 
-		$date = isset( $_POST['date'] ) ? sanitize_text_field( $_POST['date'] ) : null;
+		$date = isset( $_POST['date'] ) ? sanitize_text_field( wp_unslash( $_POST['date'] ) ) : null;
 
 		if ( null === $date ) {
 			status_header( 400 );

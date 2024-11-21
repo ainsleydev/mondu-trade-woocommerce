@@ -13,6 +13,9 @@
  * Requires PHP: 7.4
  * WC requires at least: 9.4
  *
+ * License: GPLv3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
+ *
  * Copyright 2024 ainsley.dev
  *
  * @package         MonduTradeAccount
