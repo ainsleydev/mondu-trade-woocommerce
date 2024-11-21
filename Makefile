@@ -38,6 +38,10 @@ docker-clean: # Remove stopped containers, networks, and volumes
 	docker-compose -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans
 .PHONY: docker-clean
 
+lint: # Runs Linter
+	phpcs check-cs -- --report-full --standard=WordPress
+.PHONY: lint
+
 clear-log: # Clear the contents of debug.log
 	> ../../debug.log
 .PHONY: clear-log
