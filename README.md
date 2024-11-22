@@ -316,4 +316,4 @@ redistributed in any form, except with explicit written permission from ainsley.
 
 ## Licence
 
-Code Copyright 2024 ainsley.dev LTD. Code released under the [BSD-3 Clause](LICENSE).
+Code Copyright 2024 ainsley.dev LTD. Code released under the [GPL-3.0](LICENSE).
