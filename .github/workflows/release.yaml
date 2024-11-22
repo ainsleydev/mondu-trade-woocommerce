@@ -53,8 +53,10 @@ jobs:
                     generate-zip: true
                 env:
                     SLUG: mondu-trade-account
-                    SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-                    SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+                    #SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+                    #SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+                    SVN_USERNAME: TEMP
+                    SVN_PASSWORD: TEMP
 
             # Create a release
             -   name: Create GitHub release
