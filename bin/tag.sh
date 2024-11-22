@@ -14,6 +14,12 @@ if [[ $version == "" ]]
     exit
 fi
 
+# Exit if version contains 'v'
+if [[ $version == *"v"* ]]; then
+    echo "Version number should not contain 'v'"
+    exit 1
+fi
+
 # Check commit message is not empty
 if [[ $message == "" ]]
   then
