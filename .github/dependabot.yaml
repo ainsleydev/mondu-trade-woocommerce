@@ -1,12 +1,9 @@
 version: 2
 updates:
     -   package-ecosystem: "composer"
-        directory: "/"
+        directory: /
         schedule:
             interval: "weekly"
-        commit-message:
-            prefix: "deps"
-            include: true
         open-pull-requests-limit: 5
         rebase-strategy: "auto"
         reviewers:
