@@ -22,12 +22,16 @@ zip: # Zips the contents of the plugin under /dist
 	wp dist-archive ./ dist/$(ZIP_FILE_NAME) --allow-root
 .PHONY: zip
 
+version: # Extracts the version from mondu-trade-account.php
+	@grep -i "^[[:space:]]*\* Version:[[:space:]]*" ./mondu-trade-account.php | sed -E 's/\*[[:space:]]*Version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/' | tr -d '[:space:]' && echo ""
+.PHONY: version
+
 lint: # Runs Linter
-	composer lint
+	@composer lint
 .PHONY: lint
 
 lint-fix: # Runs Linter with auto-fix
-	composer lint-fix
+	@composer lint-fix
 .PHONY: lint-fix
 
 docker-build: # Rebuild Docker images
@@ -55,8 +59,10 @@ pack: # Packs repo into txt file (AI)
 .PHONY: pack
 
 todo: # Show TODO items per file
-	$(Q) grep \
+	$(Q) @grep \
+		--exclude=Makefile \
 		--exclude=Makefile.util \
+		--exclude=repopack.txt \
 		--exclude-dir=vendor \
 		--exclude-dir=.vercel \
 		--exclude-dir=.gen \
