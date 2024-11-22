@@ -28,7 +28,10 @@
     "wp-coding-standards/wpcs": "^3.0"
   },
   "scripts": {
-    "check-cs": [
+    "lint": [
+      "vendor/bin/phpcs -ps ./src --standard=phpcs.xml"
+    ],
+    "lint-fix": [
       "vendor/bin/phpcs -ps ./src --standard=phpcs.xml"
     ]
   }
