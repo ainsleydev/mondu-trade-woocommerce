@@ -11,7 +11,10 @@
 namespace MonduTrade\Admin;
 
 use WP_User;
+use MonduTrade\Mondu\BuyerStatus;
+use MonduTrade\Mondu\RequestWrapper;
 use MonduTrade\WooCommerce\Customer;
+use MonduTrade\Util\Logger;
 
 /**
  * User allows admins to view information about the
@@ -21,9 +24,18 @@ use MonduTrade\WooCommerce\Customer;
 class User {
 
 	/**
+	 * Mondu Request Wrapper.
+	 *
+	 * @var RequestWrapper
+	 */
+	private RequestWrapper $mondu_request_wrapper;
+
+	/**
 	 * User constructor.
 	 */
 	public function __construct() {
+		$this->mondu_request_wrapper = new RequestWrapper();
+
 		// Display Mondu Trade Account section
 		add_action( 'show_user_profile', [ $this, 'display_mondu_trade_account' ] );
 		add_action( 'edit_user_profile', [ $this, 'display_mondu_trade_account' ] );
@@ -43,7 +55,9 @@ class User {
 			return;
 		}
 
-		$customer = new Customer( $user->ID );
+		$user_id  = $user->ID;
+		$customer = new Customer( $user_id );
+
 		if ( ! $customer->is_valid() ) {
 			echo '<h3>' . esc_html__( 'Mondu Trade Account', 'mondu-trade-account' ) . '</h3>';
 			echo '<p>' . esc_html__( 'No trade account data available.', 'mondu-trade-account' ) . '</p>';
@@ -53,6 +67,22 @@ class User {
 
 		$uuid   = $customer->get_mondu_trade_account_uuid();
 		$status = $customer->get_mondu_trade_account_status();
+		$buyer_limit = false;
+
+		if ( $status === BuyerStatus::ACCEPTED ) {
+			try {
+				$buyer_limit = $this->mondu_request_wrapper->get_buyer_limit( $user_id );
+
+				if ( ( $buyer_limit['purchasing_limit'] ) !== null ) {
+					$buyer_limit = $buyer_limit['purchasing_limit'];
+				}
+			} catch ( \Exception $e ) {
+				Logger::error( 'Error obtaining buyer limit in admin', [
+					'user_id' => $user_id,
+					'error'   => $e->getMessage(),
+				] );
+			}
+		}
 
 		include MONDU_TRADE_VIEW_PATH . '/admin/user.php';
 	}
