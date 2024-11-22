@@ -32,7 +32,7 @@
       "vendor/bin/phpcs -ps ./src --standard=phpcs.xml"
     ],
     "lint-fix": [
-      "vendor/bin/phpcs -ps ./src --standard=phpcs.xml"
+      "vendor/bin/phpcbf -ps ./src --standard=phpcs.xml"
     ]
   }
 }

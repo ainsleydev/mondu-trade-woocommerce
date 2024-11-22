@@ -79,7 +79,9 @@ final class Logger {
 		$logger->log( $level, $out, [ 'source' => Plugin::LOG_CONTEXT ] );
 
 		if ( Environment::is_development() ) {
-			error_log( print_r( $lines, true ) ); // phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			// phpcs:disable
+			error_log( print_r( $lines, true ) );
+			// phpcs:enable
 		}
 	}
 }

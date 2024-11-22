@@ -22,6 +22,14 @@ zip: # Zips the contents of the plugin under /dist
 	wp dist-archive ./ dist/$(ZIP_FILE_NAME) --allow-root
 .PHONY: zip
 
+lint: # Runs Linter
+	composer lint
+.PHONY: lint
+
+lint-fix: # Runs Linter with auto-fix
+	composer lint-fix
+.PHONY: lint-fix
+
 docker-build: # Rebuild Docker images
 	docker-compose -f $(DOCKER_COMPOSE_FILE) build
 .PHONY: docker-build
@@ -37,10 +45,6 @@ docker-down: # Stop Docker containers
 docker-clean: # Remove stopped containers, networks, and volumes
 	docker-compose -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans
 .PHONY: docker-clean
-
-lint: # Runs Linter
-	phpcs check-cs -- --report-full --standard=WordPress
-.PHONY: lint
 
 clear-log: # Clear the contents of debug.log
 	> ../../debug.log
