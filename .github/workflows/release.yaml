@@ -52,11 +52,14 @@ jobs:
                     php-version: 7.4
                     tools: wp-cli
 
+            # Install WP Deps.
+            -   name: Install Dependencies
+                run: wp package install wp-cli/dist-archive-command:@stable --allow-root
+
             # Generates the ZIP file using the WP CLI
             -   name: Generate ZIP file
                 run: |
                     wp dist-archive ./ "mondu-trade-account.zip" --allow-root
-
 
             # Deploy action to generate the ZIP file
             #            -   name: Generate Plugin
@@ -74,5 +77,6 @@ jobs:
                 uses: softprops/action-gh-release@v1
                 with:
                     files: mondu-trade-account.zip
+                    draft: true
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
