@@ -30,10 +30,10 @@ class Checkout {
 	 * @return void
 	 */
 	public static function notices(): void {
-		// phpcs: disable WordPress.Security.NonceVerification.Recommended
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 
-		// Bail if it's not the checkout.
-		if ( ! is_checkout() || is_wc_endpoint_url() ) {
+		// Bail if it's a WC endpoint.
+		if ( is_wc_endpoint_url() ) {
 			return;
 		}
 

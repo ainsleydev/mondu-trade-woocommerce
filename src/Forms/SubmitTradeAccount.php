@@ -10,6 +10,7 @@
 
 namespace MonduTrade\Forms;
 
+use MonduTrade\Controllers\TradeAccountController;
 use WC_Customer;
 use MonduTrade\Util\Logger;
 use MonduTrade\Mondu\RequestWrapper;
@@ -40,6 +41,11 @@ class SubmitTradeAccount extends Form {
 	public function __construct() {
 		$this->action                = 'trade_account_submit';
 		$this->mondu_request_wrapper = new RequestWrapper();
+
+		add_shortcode( 'mondu_trade_account_form', [ $this, 'output_trade_account_form' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_filter( 'woocommerce_login_redirect', [ $this, 'handle_login_redirect' ], 10, 1 );
+
 		parent::__construct();
 	}
 
@@ -55,8 +61,8 @@ class SubmitTradeAccount extends Form {
 	 */
 	public function process(): void {
 
-		$is_nonce_valid = wp_verify_nonce( $this->action, 'trade_account_nonce', );
-		if ( ! $is_nonce_valid ) {
+		// Bail if there is no nonce (trade_account_submit_nonce).
+		if ( ! $this->is_nonce_valid() ) {
 			$this->respond( 403, [], 'Invalid nonce' );
 
 			return;
@@ -80,10 +86,31 @@ class SubmitTradeAccount extends Form {
 				'user_id' => $user_id,
 				'error'   => $e->getMessage(),
 			] );
+
+			wc_add_notice( 'Trade account submission failed: ' . $e->getMessage(), 'error' );
+
 			$this->respond( 500, [], $e->getMessage() );
 		}
 
 		exit;
+	}
+
+	/**
+	 * Outputs the form as a shortcode, won't output if there
+	 * is a query param (indicating they've already signed)
+	 * up.
+	 *
+	 * @return void
+	 */
+	public function output_trade_account_form(): void {
+		$query_buyer_status = isset( $_GET[TradeAccountController::QUERY_BUYER_STATUS] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
+			sanitize_text_field( wp_unslash( $_GET[TradeAccountController::QUERY_BUYER_STATUS] ) ) : '';
+
+		if ( ! empty( $query_buyer_status ) ) {
+			return;
+		}
+
+		include MONDU_TRADE_VIEW_PATH . '/forms/submit-trade-account.php';
 	}
 
 	/**
@@ -122,5 +149,34 @@ class SubmitTradeAccount extends Form {
 
 			return []; // Return an empty array if there’s an error
 		}
+	}
+
+	/**
+	 * Enqueue the JavaScript file for the trade account form
+	 *
+	 * @return void
+	 */
+	public function enqueue_scripts(): void {
+		$id = 'mondu-trade-account-form';
+		wp_register_script( $id, MONDU_TRADE_ASSETS_PATH . '/js/form.js', [ 'jquery' ], false, true );
+		wp_enqueue_script( $id );
+	}
+
+	/**
+	 * Handle redirection after login to the original page with the banner.
+	 *
+	 * @param string $redirect
+	 * @return string
+	 */
+	public function handle_login_redirect( $redirect ): string {
+		// Check if the query parameter 'mondu_trade_redirect_to' is set.
+		if ( isset( $_GET['mondu_trade_redirect_to'] ) ) { // phpcs:disable WordPress.Security.NonceVerification.Recommended
+			$redirect_to = sanitize_text_field( wp_unslash( $_GET['mondu_trade_redirect_to'] ) );
+
+			return esc_url( $redirect_to );
+		}
+
+		// Default redirect URL if the parameter is not set.
+		return $redirect;
 	}
 }

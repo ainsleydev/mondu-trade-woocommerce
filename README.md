@@ -51,6 +51,10 @@ Useful Links:
 
 ## FAQs
 
+### Is the plugin compatible with the WP block editor?
+
+Not at this time.
+
 ### How do I allow for signups outside the checkout?
 
 This plugin adds native support for allowing users to sign up to a Trade Account outside of the checkout. Perfect for
@@ -63,18 +67,29 @@ WordPress `is_user_logged_in()` function.
 The only thing you need to send is a nonce, and the user details will be obtained progromatically from the WP user
 that's logged in.
 
+**Shortcode**:
+
+If you don't fancy writing the form yourself, you can easily perform a shortcode as shown below.
+
+```php
+echo do_shortcode('[mondu_trade_account_form]');
+```
+
 **HTML**:
 
-```html
+Alternatively, you can crate the form from scratch as shown below:
 
+```html
 <form id="trade-account-signup" method="POST" action="<?php echo admin_url('admin-ajax.php'); ?>">
   <input type="hidden" name="action" value="trade_account_submit">
-  <?php wp_nonce_field('trade_account_submit', 'trade_account_nonce'); ?>
+  <?php wp_nonce_field('trade_account_submit', 'trade_account_submit_nonce'); ?>
   <button type="submit">Submit</button>
 </form>
 ```
 
 **JavaScript**:
+
+Below shows how you can send data to the form via JS.
 
 ```js
 document.querySelector('form').addEventListener('submit', function (event) {

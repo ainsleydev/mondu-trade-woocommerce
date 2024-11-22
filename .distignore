@@ -49,4 +49,5 @@ repopack.txt
 Dockerfile
 docker-compose.yml
 dist
+test
 .DS_STORE

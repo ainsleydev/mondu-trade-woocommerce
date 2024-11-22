@@ -84,6 +84,35 @@ abstract class Form {
 	}
 
 	/**
+	 * Obtains the nonce name for the form.
+	 *
+	 * @return string
+	 */
+	protected function get_nonce_name(): string {
+		return $this->action . '_nonce';
+	}
+
+	/**
+	 * Determines if a nonce is valid.
+	 * Default nonce name is action_nonce.
+	 *
+	 * @return bool
+	 */
+	protected function is_nonce_valid(): bool {
+		$nonce_name = $this->get_nonce_name();
+
+		$nonce = isset( $_POST[ $nonce_name ] )
+			? sanitize_text_field( wp_unslash( $_POST[ $nonce_name ] ) )
+			: '';
+
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, $this->action ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Check if current request is AJAX
 	 */
 	protected function is_ajax_request(): bool {

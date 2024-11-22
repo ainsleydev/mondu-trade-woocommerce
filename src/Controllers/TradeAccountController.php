@@ -98,6 +98,7 @@ class TradeAccountController extends BaseController {
 	public function index( WP_REST_Request $request ): WP_REST_Response {
 		$redirect_status = $request->get_param( 'redirect_status' );
 		$customer_id     = $request->get_param( 'customer_id' );
+		$return_url      = urldecode( $request->get_param( 'return_url' ) ) ?? wc_get_checkout_url();
 
 		// Bail if there's no customer, as we can't process the request.
 		if ( ! $customer_id ) {
@@ -137,10 +138,11 @@ class TradeAccountController extends BaseController {
 				self::QUERY_NOTICE_TYPE  => esc_attr( $notice['type'] ),
 				self::QUERY_BUYER_STATUS => esc_attr( $redirect_status ),
 			],
-			wc_get_checkout_url(),
+			$return_url,
 		);
 
 		wp_safe_redirect( $redirect_url );
+
 		exit;
 	}
 
