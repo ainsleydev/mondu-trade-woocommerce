@@ -1,7 +1,6 @@
 name: Composer Diff
 on:
   pull_request:
-    branches: [ main ]
     paths:
       - 'composer.lock'
 jobs:
