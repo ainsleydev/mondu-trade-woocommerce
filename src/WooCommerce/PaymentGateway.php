@@ -158,7 +158,8 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 * Process payment.
 	 *
 	 * Buyer States:
-	 * Unknown  -> The customer will be redirected to create a trade account.
+	 * Unknown  -> The customer will be redirected to create a Trade Account.
+	 * Applied  -> The customer has been redirected to the hosted Trade Account application form.
 	 * Pending  -> The buyer will be displayed a message to indicate they will be notified within 48 hours.
 	 * Declined -> The buyer will be displayed a message to show they cannot purchase with a Trade Account.
 	 * Accepted -> Spending limit is checked and displayed, and then redirected to Mondu's self-hosted checkout.
@@ -195,8 +196,6 @@ class PaymentGateway extends WC_Payment_Gateway {
 			Logger::info( 'Redirecting user to hosted checkout page', [
 				'url' => $redirect_url,
 			] );
-
-			$customer->set_mondu_trade_account_status(BuyerStatus::APPLIED);
 
 			return [
 				'result'   => 'success',

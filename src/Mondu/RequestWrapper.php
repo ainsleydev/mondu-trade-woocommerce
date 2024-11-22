@@ -74,7 +74,12 @@ class RequestWrapper extends MonduRequestWrapper {
 			$trade_data['applicant'] = $applicant_details;
 		}
 
-		return $this->wrap_with_mondu_log_event( 'create_trade_account', [ $trade_data ] );
+		$response = $this->wrap_with_mondu_log_event( 'create_trade_account', [ $trade_data ] );
+
+		$customer = new Customer( $user_id );
+		$customer->set_mondu_trade_account_status(BuyerStatus::APPLIED);
+
+		return $response;
 	}
 
 	/**
