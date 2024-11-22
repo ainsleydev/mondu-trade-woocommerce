@@ -356,3 +356,24 @@ redistributed in any form, except with explicit written permission from ainsley.
 ## Licence
 
 Code Copyright 2024 ainsley.dev LTD. Code released under the [GPL-3.0](LICENSE).
+
+## TODO:
+
+- Email Regex
+
+Buyer accepted, Order accepted: accepted.good.9wiq62u7h7d@example.com
+Buyer set to Pending, Order set to pending: pending.pending-brc.0qdxhe3ij97c@example.com
+Buyer set to Declined, Order set to declined: declined.bad.s3zwckzoln@example.com
+
+- When emails will be sent.
+
+After the buyer authorises the onboairding process in hosted checkout page. On Demo we send the emails to the internal inbox.
+When an application is pending, do you email the customer informing them of the decision?
+Status change to accepted triggers webhook attempt buyer accepted and the email communication. Status change to declined on webhook buyer declined is sent out.
+
+- Webhooks
+
+We send buyer accepted, declined or pending.
+If successfully received we do not repeat the webhooks attemts otherwise we send several attamts is increasing intervals.
+
+- Explanation of buyer states:
