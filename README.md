@@ -274,10 +274,6 @@ add_action('mondu_trade_buyer_declined', function ($customer_id, $buyer) {
 });
 ```
 
----
-
-## Screenshots
-
 ## Development
 
 Below are the steps to install the plugin on your local machine for development.
