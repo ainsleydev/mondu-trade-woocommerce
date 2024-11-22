@@ -81,6 +81,6 @@ jobs:
                 with:
                     files: mondu-trade-account.zip
                     draft: false
-                    make_latest: true
+                    prerelease: false
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
