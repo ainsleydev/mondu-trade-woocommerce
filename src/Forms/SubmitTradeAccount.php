@@ -44,7 +44,7 @@ class SubmitTradeAccount extends Form {
 
 		add_shortcode( 'mondu_trade_account_form', [ $this, 'output_trade_account_form' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-		add_filter( 'woocommerce_login_redirect', [ $this, 'handle_login_redirect' ], 10, 1 );
+
 
 		parent::__construct();
 	}
@@ -74,11 +74,15 @@ class SubmitTradeAccount extends Form {
 			exit;
 		}
 
-		// User ID is required for the external reference.
-		$user_id = get_current_user_id();
+		$user_id    = get_current_user_id();
+		$return_url = home_url() . wp_get_referer();
 
 		try {
-			$response = $this->mondu_request_wrapper->create_trade_account( $user_id, $this->get_applicant_details( $user_id ) );
+			$response = $this->mondu_request_wrapper->create_trade_account(
+				$user_id,
+				$return_url,
+				$this->get_applicant_details( $user_id ),
+			);
 
 			$this->respond( 200, $response, 'Trade account submitted' );
 		} catch ( \Exception $e ) {
@@ -103,8 +107,8 @@ class SubmitTradeAccount extends Form {
 	 * @return void
 	 */
 	public function output_trade_account_form(): void {
-		$query_buyer_status = isset( $_GET[TradeAccountController::QUERY_BUYER_STATUS] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
-			sanitize_text_field( wp_unslash( $_GET[TradeAccountController::QUERY_BUYER_STATUS] ) ) : '';
+		$query_buyer_status = isset( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
+			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ) : '';
 
 		if ( ! empty( $query_buyer_status ) ) {
 			return;
@@ -160,23 +164,5 @@ class SubmitTradeAccount extends Form {
 		$id = 'mondu-trade-account-form';
 		wp_register_script( $id, MONDU_TRADE_ASSETS_PATH . '/js/form.js', [ 'jquery' ], false, true );
 		wp_enqueue_script( $id );
-	}
-
-	/**
-	 * Handle redirection after login to the original page with the banner.
-	 *
-	 * @param string $redirect
-	 * @return string
-	 */
-	public function handle_login_redirect( $redirect ): string {
-		// Check if the query parameter 'mondu_trade_redirect_to' is set.
-		if ( isset( $_GET['mondu_trade_redirect_to'] ) ) { // phpcs:disable WordPress.Security.NonceVerification.Recommended
-			$redirect_to = sanitize_text_field( wp_unslash( $_GET['mondu_trade_redirect_to'] ) );
-
-			return esc_url( $redirect_to );
-		}
-
-		// Default redirect URL if the parameter is not set.
-		return $redirect;
 	}
 }

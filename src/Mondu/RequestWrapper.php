@@ -10,20 +10,18 @@
 
 namespace MonduTrade\Mondu;
 
-use MonduTrade\Controllers\TradeAccountController;
-use MonduTrade\Controllers\WebhooksController;
-use MonduTrade\Exceptions\MonduTradeResponseException;
 use WC_Order;
 use Exception;
 use Mondu\Plugin;
 use WC_Data_Exception;
 use MonduTrade\Util\Logger;
-use MonduTrade\Util\Environment;
 use Mondu\Mondu\Support\OrderData;
 use Mondu\Mondu\MonduRequestWrapper;
 use MonduTrade\WooCommerce\Customer;
-use Mondu\Exceptions\ResponseException;
+use MonduTrade\Controllers\WebhooksController;
 use MonduTrade\Exceptions\MonduTradeException;
+use MonduTrade\Controllers\TradeAccountController;
+use MonduTrade\Exceptions\MonduTradeResponseException;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -55,18 +53,19 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * Creates a new trade account.
 	 *
 	 * @param int $user_id
+	 * @param string $return_url
 	 * @param array $applicant_details
 	 * @return array
 	 * @throws MonduTradeResponseException
 	 * @see https://docs.mondu.ai/reference/post_api-v1-trade-account
 	 */
-	public function create_trade_account( int $user_id, array $applicant_details ): array {
+	public function create_trade_account( int $user_id, string $return_url, array $applicant_details ): array {
 		$trade_data = [
 			"external_reference_id" => (string) $user_id,
 			"redirect_urls"         => [
-				"success_url"  => $this->get_trade_redirect_url( $user_id, 'succeeded' ),
-				"cancel_url"   => $this->get_trade_redirect_url( $user_id, 'cancelled' ),
-				"declined_url" => $this->get_trade_redirect_url( $user_id, 'declined' ),
+				"success_url"  => $this->get_trade_redirect_url( $user_id, $return_url, 'succeeded' ),
+				"cancel_url"   => $this->get_trade_redirect_url( $user_id, $return_url, 'cancelled' ),
+				"declined_url" => $this->get_trade_redirect_url( $user_id, $return_url, 'declined' ),
 			],
 		];
 
@@ -186,15 +185,16 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * Generate the redirect URL with a specified status and user ID.
 	 *
 	 * @param int $user_id
+	 * @param string $return_url
 	 * @param string $status
 	 * @return string
 	 */
-	private function get_trade_redirect_url( int $user_id, string $status ): string {
+	private function get_trade_redirect_url( int $user_id, string $return_url, string $status ): string {
 		return add_query_arg(
 			[
 				'redirect_status' => $status,
 				'customer_id'     => $user_id,
-				'return_url'      => rawurlencode( wp_get_referer() ),
+				'return_url'      => rawurlencode( $return_url ),
 			],
 			TradeAccountController::get_full_rest_url(),
 		);

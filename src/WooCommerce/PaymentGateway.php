@@ -173,12 +173,20 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$customer_id = $order->get_customer_id();
 		$customer    = new Customer( $customer_id );
 		$status      = $customer->get_mondu_trade_account_status();
+		$return_url  = is_wc_endpoint_url( 'order-pay' ) ? $order->get_checkout_payment_url() : wc_get_checkout_url();
+
+		// Applied means we haven't received the webhook, so we
+		// need to wait for them to send us the info.
+		if ( $status === BuyerStatus::APPLIED ) {
+			wc_add_notice( "We're just waiting to hear back from Mondu, please wait and refresh the page. If this issue persists, please reach out to support", 'notice' );
+		}
 
 		// If the buyer status is unknown, it would indicate we need to
 		// create the trade account as the webhook hasn't fired for this
 		// customer yet.
 		if ( $status === BuyerStatus::UNKNOWN ) {
-			$response = $this->mondu_request_wrapper->create_trade_account( $customer_id, [
+
+			$response = $this->mondu_request_wrapper->create_trade_account( $customer_id, $return_url, [
 				'first_name' => $order->get_billing_first_name(),
 				'last_name'  => $order->get_billing_last_name(),
 				'email'      => $order->get_billing_email(),
