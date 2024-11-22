@@ -2,22 +2,22 @@ name: Release
 on:
     push:
         tags:
-            - 'v*'
+            - '*'
     workflow_dispatch:
 jobs:
     version-check:
         runs-on: ubuntu-latest
 
         steps:
-            # Checkout the repository
+            # Checkout the repository.
             -   name: Checkout Code
-                uses: actions/checkout@v3
+                uses: actions/checkout@v4
 
-            # Install dependencies (if Makefile is used)
+            # Install dependencies (if Makefile is used).
             -   name: Set Up Environment
                 run: sudo apt-get update && sudo apt-get install -y make
 
-            # Extract and compare versions
+            # Extract and compare versions.
             -   name: Check Version Bump
                 id: version-check
                 run: |
@@ -25,9 +25,8 @@ jobs:
                     CURRENT_VERSION=$(make version)
                     echo "Current Version: $CURRENT_VERSION"
 
-                    # Extract the tag version from the GitHub tag (strip the 'v' prefix)
-                    TAG_VERSION=${GITHUB_REF##*/} # Extract the tag name (e.g., 'refs/tags/v1.2.3' -> 'v1.2.3')
-                    TAG_VERSION=${TAG_VERSION#v} # Remove 'v' prefix (e.g., 'v1.2.3' -> '1.2.3')
+                    # Extract the tag version from the GitHub tag
+                    TAG_VERSION=${GITHUB_REF##*/} # Extract the tag name (e.g., 'refs/tags/1.2.3' -> '1.2.3')
                     echo "Git Tag Version: $TAG_VERSION"
 
                     # Compare the two versions
@@ -41,9 +40,9 @@ jobs:
         runs-on: ubuntu-latest
         needs: version-check
         steps:
-            # Checkout the repository
+            # Checkout the repository.
             -   name: Checkout Code
-                uses: actions/checkout@v3
+                uses: actions/checkout@v4
 
             # Setup PHP on the runner.
             -   name: Set up PHP
@@ -59,7 +58,8 @@ jobs:
             # Generates the ZIP file using the WP CLI
             -   name: Generate ZIP file
                 run: |
-                    wp dist-archive ./ "mondu-trade-account.zip" --allow-root
+                    wp dist-archive ./ "$(pwd)/mondu-trade-account.zip" --allow-root
+                    ls -la $(pwd) # Verify ZIP file location
 
             # Deploy action to generate the ZIP file
             #            -   name: Generate Plugin
@@ -72,7 +72,7 @@ jobs:
             #                    SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
             #                    SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
 
-            # Create a release
+            # Create a release.
             -   name: Create GitHub Release
                 uses: softprops/action-gh-release@v1
                 with:
