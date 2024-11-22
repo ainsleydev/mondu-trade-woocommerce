@@ -116,7 +116,7 @@ class TradeAccountController extends BaseController {
 		}
 
 		// Momentary sleep, so we can ensure the webhook as fired.
-		sleep(1);
+		sleep(2);
 
 		$customer = new Customer( $customer_id );
 
