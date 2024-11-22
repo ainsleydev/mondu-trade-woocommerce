@@ -2,6 +2,9 @@
 <img width="100" height="25" src="res/logo.svg" alt="Errors Logo"/>
 <h3 align="center">Mondu Trade Account - WooCommerce</h3>
 
+[![Release](https://github.com/ainsleydev/mondu-trade-woocommerce/actions/workflows/release.yaml/badge.svg)](https://github.com/ainsleydev/mondu-trade-woocommerce/actions/workflows/release.yaml)
+[![WP CS Check](https://github.com/ainsleydev/mondu-trade-woocommerce/actions/workflows/lint.yaml/badge.svg?branch=main)](https://github.com/ainsleydev/mondu-trade-woocommerce/actions/workflows/lint.yaml)
+[![Security Check](https://github.com/ainsleydev/mondu-trade-woocommerce/actions/workflows/security.yaml/badge.svg?branch=main)](https://github.com/ainsleydev/mondu-trade-woocommerce/actions/workflows/security.yaml)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![GNU General Public License 3.0](https://img.shields.io/github/license/ainsleyclark/squidge.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 [![Twitter](https://img.shields.io/twitter/follow/ainsleydev)](https://twitter.com/ainsleydev)
