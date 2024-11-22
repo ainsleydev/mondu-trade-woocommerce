@@ -2,6 +2,7 @@
 #
 # tag.sh
 #
+# Creates a new GitHub tag and pushes it to remote.
 
 # Set variables
 version=$1

@@ -1,7 +1,10 @@
 # Constants
-PORT=8000
-DOCKER_COMPOSE_FILE=docker-compose.yml
-ZIP_FILE_NAME=mondu-trade-account.zip
+PORT := 8000
+REPO_OWNER := ainsleydev
+REPO_NAME := mondu-trade-woocommerce
+GITHUB_API := https://api.github.com/repos/$(REPO_OWNER)/$(REPO_NAME)
+DOCKER_COMPOSE_FILE := docker-compose.yml
+ZIP_FILE_NAME := mondu-trade-account.zip
 
 # Functions
 setup: # Setup Dependencies
@@ -26,6 +29,13 @@ zip: # Zips the contents of the plugin under /dist
 version: # Extracts the version from mondu-trade-account.php
 	@grep -i "^[[:space:]]*\* Version:[[:space:]]*" ./mondu-trade-account.php | sed -E 's/\*[[:space:]]*Version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/' | tr -d '[:space:]' && echo ""
 .PHONY: version
+
+remote-version: # Gets the remote version from GitHub.
+	@curl -s $(GITHUB_API)/releases/latest | jq -r '.tag_name'
+
+bump-version: # Asks for release type and bumps version
+	sh ./bin/bump-wp-version.sh
+.PHONY: bump-version
 
 lint: # Runs Linter
 	@composer lint

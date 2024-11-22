@@ -7,7 +7,7 @@
  * Author:          ainsley.dev LTD
  * Author URI:      https://ainsley.dev
  * Text Domain:     mondu-trade-account
- * Version:         0.0.5
+ * Version:			0.0.5
  *
  * Requires at least: 6.7
  * Requires PHP: 7.4
