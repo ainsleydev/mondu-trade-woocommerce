@@ -16,7 +16,7 @@ setup: # Setup Dependencies
 serve: # Serve Wordpress & Local Tunnel
 	@export $(shell sed 's/^/export /' .env); \
 	cd ../../../ && concurrently --names "wordpress,localtunnel,logs" --prefix-colors "blue,green,yellow" \
- 		"APP_ENV=dev php -S localhost:$(PORT)" \
+ 		"MONDU_TRADE_ENV=dev php -S localhost:$(PORT)" \
  		"lt --port $(PORT) --subdomain mondu-trade-account-woocommerce-ainsleydev" \
  		"tail -n 0 -f ./wp-content/debug.log"
 .PHONY: serve
