@@ -44,23 +44,23 @@ final class Environment {
 
 	/**
 	 * Check if the current environment is development.
-	 * Returns true if APP_ENV is set to 'dev', false otherwise.
+	 * Returns true if MONDU_TRADE_ENV is set to 'dev', false otherwise.
 	 *
 	 * @return bool
 	 */
 	public static function is_development(): bool {
-		return self::get( 'APP_ENV' ) === 'dev';
+		return self::get( 'MONDU_TRADE_ENV' ) === 'dev';
 	}
 
 	/**
 	 * Check if the current environment is production.
-	 * Returns true if APP_ENV is set to 'production' or an
+	 * Returns true if MONDU_TRADE_ENV is set to 'production' or an
 	 * empty string, false otherwise.
 	 *
 	 * @return bool
 	 */
 	public static function is_production(): bool {
-		$env = self::get( 'APP_ENV' );
+		$env = self::get( 'MONDU_TRADE_ENV' );
 		if ( $env === '' ) {
 			return true;
 		}

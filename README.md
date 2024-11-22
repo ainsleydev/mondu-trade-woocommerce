@@ -311,7 +311,7 @@ make setup
 Create a `.env` file by copying `.env.example`:
 
 ```dotenv
-APP_ENV=dev
+MONDU_TRADE_ENV=dev
 MONDU_WEBHOOKS_URL=https://mondu-trade-account-woocommerce-ainsleydev.loca.lt
 ```
 
