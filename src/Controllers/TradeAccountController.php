@@ -13,6 +13,7 @@ namespace MonduTrade\Controllers;
 use WP_REST_Request;
 use WP_REST_Response;
 use MonduTrade\Util\Logger;
+use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\WooCommerce\Customer;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -28,16 +29,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 class TradeAccountController extends BaseController {
 
 	/**
-	 * Query param for where Mondu has redirected us.
-	 * It can be one of three states:
-	 *
-	 * - succeeded
-	 * - cancelled
-	 * - declined
+	 * Query param for the message after a customer has
+	 * applied for a Trade Account.
 	 *
 	 * @var string
 	 */
-	const QUERY_REDIRECT_STATUS = 'trade_account_redirect_status';
+	const QUERY_MESSAGE = 'trade_account_message';
+
+	/**
+	 * Query param for the type of notice message.
+	 *
+	 * @var string
+	 */
+	const QUERY_NOTICE_TYPE = 'trade_account_notice_type';
 
 	/**
 	 * Query param for the buyer status, this is for
@@ -46,14 +50,6 @@ class TradeAccountController extends BaseController {
 	 * @var string
 	 */
 	const QUERY_BUYER_STATUS = 'trade_account_buyer_status';
-
-	/**
-	 * Query param for when the customer ID could not
-	 * be retrieved from the URL.
-	 *
-	 * @var string
-	 */
-	const QUERY_ERROR = 'trade_account_error';
 
 	/***
 	 * The route of the controller.
@@ -102,10 +98,13 @@ class TradeAccountController extends BaseController {
 	public function index( WP_REST_Request $request ): WP_REST_Response {
 		$redirect_status = $request->get_param( 'redirect_status' );
 		$customer_id     = $request->get_param( 'customer_id' );
+		$return_url      = urldecode( $request->get_param( 'return_url' ) ) ?? wc_get_checkout_url();
 
 		// Bail if there's no customer, as we can't process the request.
 		if ( ! $customer_id ) {
-			$this->handle_error( 'Customer ID is missing from request parameters.' );
+			Logger::error( 'Customer ID is missing from request parameters.', [
+				'request' => $request,
+			] );
 
 			return $this->respond( 'No customer found.', 400 );
 		}
@@ -114,7 +113,9 @@ class TradeAccountController extends BaseController {
 
 		// Bail if the customer couldn't be retrieved.
 		if ( ! $customer->is_valid() ) {
-			$this->handle_error( 'Unable to retrieve Mondu Trade customer from redirect controller.' );
+			Logger::error( 'Unable to retrieve Mondu Trade customer from redirect controller.', [
+				'request' => $request,
+			] );
 
 			return $this->respond( 'No customer found.', 400 );
 		}
@@ -128,30 +129,73 @@ class TradeAccountController extends BaseController {
 			'uuid'   => $uuid,
 		] );
 
+		$notice = $this->get_notice_message( $redirect_status, $customer->get_mondu_trade_account_status() );
+
 		// Redirect to the checkout page with both query parameters.
 		$redirect_url = add_query_arg(
 			[
-				self::QUERY_REDIRECT_STATUS => esc_attr( $redirect_status ),
-				self::QUERY_BUYER_STATUS    => esc_attr( $customer->get_mondu_trade_account_status() ),
+				self::QUERY_MESSAGE      => esc_attr( $notice['message'] ),
+				self::QUERY_NOTICE_TYPE  => esc_attr( $notice['type'] ),
+				self::QUERY_BUYER_STATUS => esc_attr( $redirect_status ),
 			],
-			wc_get_checkout_url()
+			$return_url,
 		);
 
 		wp_safe_redirect( $redirect_url );
+
 		exit;
 	}
 
 	/**
-	 * Handle error coming back from Mondu (with no status)
+	 * Returns the notice messages to redirect too.
 	 *
-	 * @param string $log_message
-	 * @return void
+	 * @param string $redirect_status
+	 * @param string $buyer_status
+	 * @return array
 	 */
-	private function handle_error( string $log_message ): void {
-		Logger::error( $log_message );
+	private function get_notice_message( string $redirect_status, string $buyer_status ): array {
+		// Redirect status handling.
+		if ( $redirect_status === 'cancelled' ) {
+			return [
+				'type'    => 'error',
+				'message' => 'Your Trade Account application was cancelled, please try again or select a different payment method.'
+			];
+		}
 
-		$redirect_url = add_query_arg( self::QUERY_ERROR, esc_attr( 'true' ), wc_get_checkout_url() );
+		if ( $redirect_status === 'declined' ) {
+			return [
+				'type'    => 'error',
+				'message' => 'Your trade account has been declined, please use an alternative payment method.',
+			];
+		}
 
-		wp_safe_redirect( $redirect_url );
+		// Buyer status handling.
+		switch ( $buyer_status ) {
+			case BuyerStatus::ACCEPTED:
+				return [
+					'type'    => 'success',
+					'message' => 'Your trade account has been approved.',
+				];
+			case BuyerStatus::PENDING:
+				return [
+					'type'    => 'notice',
+					'message' => 'Your trade account is pending. You will hear back in 48 hours.',
+				];
+			case BuyerStatus::DECLINED:
+				return [
+					'type'    => 'error',
+					'message' => 'Your trade account has been declined, please use an alternative payment method.',
+				];
+			case BuyerStatus::APPLIED:
+				return [
+					'type'    => 'notice',
+					'message' => "We're just waiting to hear back from Mondu, please wait and refresh the page.",
+				];
+			default:
+				return [
+					'type'    => 'error',
+					'message' => 'An unexpected error occurred. Please try again.',
+				];
+		}
 	}
 }

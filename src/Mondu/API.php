@@ -141,7 +141,7 @@ class API extends \Mondu\Mondu\Api {
 			Logger::info( 'Result from Mondu API', [
 				'code'     => esc_html( $result['response']['code'] ?? '' ),
 				'url'      => esc_url( $url ),
-				'response' => esc_html( $result['body'] ?? '' ),
+				'response' => wp_json_encode($result['body'] ?? ''),
 			] );
 		}
 

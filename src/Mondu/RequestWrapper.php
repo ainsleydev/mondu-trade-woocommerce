@@ -74,7 +74,12 @@ class RequestWrapper extends MonduRequestWrapper {
 			$trade_data['applicant'] = $applicant_details;
 		}
 
-		return $this->wrap_with_mondu_log_event( 'create_trade_account', [ $trade_data ] );
+		$response = $this->wrap_with_mondu_log_event( 'create_trade_account', [ $trade_data ] );
+
+		$customer = new Customer( $user_id );
+		$customer->set_mondu_trade_account_status( BuyerStatus::APPLIED );
+
+		return $response;
 	}
 
 	/**
@@ -119,7 +124,7 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * @throws MonduTradeException
 	 * @see https://docs.mondu.ai/reference/get_api-v1-buyers-uuid-purchasing-limit
 	 */
-	public function get_buyer_limit(int $user_id) {
+	public function get_buyer_limit( int $user_id ) {
 		try {
 			$customer = new Customer( $user_id );
 		} catch ( Exception $e ) {
@@ -189,6 +194,7 @@ class RequestWrapper extends MonduRequestWrapper {
 			[
 				'redirect_status' => $status,
 				'customer_id'     => $user_id,
+				'return_url'      => rawurlencode( wp_get_referer() ),
 			],
 			TradeAccountController::get_full_rest_url(),
 		);
