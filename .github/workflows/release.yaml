@@ -49,11 +49,13 @@ jobs:
                 uses: shivammathur/setup-php@v2
                 with:
                     php-version: 7.4
-                    tools: wp-cli
+                    tools: composer,wp-cli
 
-            # Install WP Deps.
+            # Install WP & Composer.
             -   name: Install Dependencies
-                run: wp package install wp-cli/dist-archive-command:@stable --allow-root
+                run: |
+                    composer install --no-dev --prefer-dist --optimize-autoloader
+                    wp package install wp-cli/dist-archive-command:@stable --allow-root
 
             # Generates the ZIP file using the WP CLI
             -   name: Generate ZIP file
