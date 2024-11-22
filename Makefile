@@ -40,7 +40,7 @@ docker-build: # Rebuild Docker images
 .PHONY: docker-build
 
 docker-up: # Start Docker containers
-	docker-compose -f $(DOCKER_COMPOSE_FILE) up
+	docker-compose -f $(DOCKER_COMPOSE_FILE) up --build
 .PHONY: docker-up
 
 docker-down: # Stop Docker containers
