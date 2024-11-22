@@ -10,6 +10,7 @@
 
 namespace MonduTrade\Forms;
 
+use MonduTrade\Mondu\BuyerStatus;
 use WC_Customer;
 use MonduTrade\Util\Logger;
 use MonduTrade\Mondu\RequestWrapper;
@@ -73,6 +74,8 @@ class SubmitTradeAccount extends Form {
 
 		try {
 			$response = $this->mondu_request_wrapper->create_trade_account( $user_id, $this->get_applicant_details( $user_id ) );
+
+			// TODO: Do we need to make sure the buyer status is APPLIED here?
 
 			$this->respond( 200, $response, 'Trade account submitted' );
 		} catch ( \Exception $e ) {

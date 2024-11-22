@@ -10,6 +10,8 @@
 
 namespace MonduTrade\Mondu;
 
+use MonduTrade\Controllers\TradeAccountController;
+use MonduTrade\Controllers\WebhooksController;
 use MonduTrade\Exceptions\MonduTradeResponseException;
 use WC_Order;
 use Exception;
@@ -112,13 +114,12 @@ class RequestWrapper extends MonduRequestWrapper {
 	/**
 	 * Obtains the Buyer Limit for a given user.
 	 *
+	 * @param int $user_id
 	 * @return mixed
 	 * @throws MonduTradeException
 	 * @see https://docs.mondu.ai/reference/get_api-v1-buyers-uuid-purchasing-limit
 	 */
-	public function get_buyer_limit() {
-		$user_id = get_current_user_id();
-
+	public function get_buyer_limit(int $user_id) {
 		try {
 			$customer = new Customer( $user_id );
 		} catch ( Exception $e ) {
@@ -146,11 +147,9 @@ class RequestWrapper extends MonduRequestWrapper {
 	 * @throws MonduTradeResponseException
 	 */
 	public function register_buyer_webhooks() {
-		$base = Environment::get( 'MONDU_WEBHOOKS_URL', get_home_url() );
-
 		$params = [
 			'topic'   => 'buyer',
-			'address' => $base . '/?rest_route=/mondu-trade/v1/webhooks/index',
+			'address' => WebhooksController::get_full_rest_url(),
 		];
 
 		$response = $this->wrap_with_mondu_log_event( 'register_webhook', [ $params ] );
@@ -191,7 +190,7 @@ class RequestWrapper extends MonduRequestWrapper {
 				'redirect_status' => $status,
 				'customer_id'     => $user_id,
 			],
-			rest_url( 'mondu-trade/v1/trade-account' )
+			TradeAccountController::get_full_rest_url(),
 		);
 	}
 }

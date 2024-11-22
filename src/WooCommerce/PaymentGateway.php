@@ -196,6 +196,8 @@ class PaymentGateway extends WC_Payment_Gateway {
 				'url' => $redirect_url,
 			] );
 
+			$customer->set_mondu_trade_account_status(BuyerStatus::APPLIED);
+
 			return [
 				'result'   => 'success',
 				'redirect' => $redirect_url,
@@ -214,7 +216,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 		// we can't process the payment. We do this by comparing the
 		// current balance in Mondu and the WooCommerce total amount.
 		try {
-			$response = $this->mondu_request_wrapper->get_buyer_limit();
+			$response = $this->mondu_request_wrapper->get_buyer_limit( $customer_id );
 
 			$max_purchase_value_cents = $response['purchasing_limit']['max_purchase_value_cents'];
 			$order_total              = $order->get_total();

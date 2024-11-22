@@ -57,9 +57,9 @@ class Checkout {
 			return;
 		}
 
-		// If we've got this far, it means we've received the webhook
-		// from Mondu and can accurately determine where the buyer
-		// is in their application.
+		// If we've got this far, it means we've (probably) received
+		// the webhook from Mondu and can accurately determine where
+		// the buyer is in their application.
 		switch ( $buyer_status ) {
 			case BuyerStatus::ACCEPTED:
 				wc_add_notice( __( 'Your trade account has been approved.', 'mondu-trade-account' ), 'success' );
@@ -70,8 +70,8 @@ class Checkout {
 			case BuyerStatus::DECLINED:
 				wc_add_notice( __( 'Your trade account has been declined, please use an alternative payment method.', 'mondu-trade-account' ), 'error' );
 				break;
-			default:
-				wc_add_notice( __( "We couldn't process your trade account application, please try again or reach out to support.", 'mondu-trade-account' ), 'error' );
+			case BuyerStatus::APPLIED:
+				wc_add_notice( __( "We're just waiting to hear back from Mondu, please refresh the page.", 'mondu-trade-account' ), 'notice' );
 				break;
 		}
 

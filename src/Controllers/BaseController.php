@@ -25,12 +25,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * for common REST functionality.
  */
 abstract class BaseController extends WP_REST_Controller {
+
 	/**
 	 * API namespace for REST routes.
 	 *
 	 * @var string
 	 */
-	protected $namespace = 'mondu-trade/v1';
+	protected static string $base_namespace = 'mondu-trade/v1';
 
 	/**
 	 * Utility function to send a JSON response with a message.

@@ -27,6 +27,8 @@ final class BuyerStatus
 	const PENDING = 'pending';
 	const DECLINED = 'declined';
 
+	const APPLIED = 'applied';
+
 	/**
 	 * Obtains the Buyer Status values.
 	 *

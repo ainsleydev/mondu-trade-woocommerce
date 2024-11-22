@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the Mondu Trade Account.
  */
 class Settings {
+
 	/**
 	 * Webhook Register.
 	 *

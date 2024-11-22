@@ -58,7 +58,7 @@ class WebhookRegister {
 	public function register() {
 		Util::validate_user_permissions();
 
-		$is_nonce_valid = wp_verify_nonce( 'mondu_trade_register_webhooks_nonce', 'mondu_trade_register_webhooks' );
+		$is_nonce_valid = wp_verify_nonce( wp_unslash( $_POST['mondu_trade_register_webhooks_nonce'] ), 'mondu_trade_register_webhooks' );
 		if ( ! $is_nonce_valid ) {
 			Util::die_after_security_check();
 		}
@@ -118,7 +118,7 @@ class WebhookRegister {
 
 		$uuid = isset( $_POST['uuid'] ) ? sanitize_text_field( wp_unslash( $_POST['uuid'] ) ) : '';
 
-		$is_nonce_valid = wp_verify_nonce( 'mondu_trade_delete_webhook_nonce', 'mondu_trade_delete_webhook_' . $uuid, );
+		$is_nonce_valid = wp_verify_nonce( wp_unslash( $_POST['mondu_trade_delete_webhook_nonce'] ), 'mondu_trade_delete_webhook_' . $uuid, );
 		if ( ! $is_nonce_valid ) {
 			Util::die_after_security_check();
 

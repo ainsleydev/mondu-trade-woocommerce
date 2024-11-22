@@ -29,7 +29,7 @@
   },
   "scripts": {
     "check-cs": [
-      "vendor/bin/phpcs -ps ./src --standard=WordPress"
+      "vendor/bin/phpcs -ps ./src --standard=phpcs.xml"
     ]
   }
 }

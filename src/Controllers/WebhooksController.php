@@ -13,6 +13,7 @@ namespace MonduTrade\Controllers;
 use WP_REST_Request;
 use WP_REST_Response;
 use MonduTrade\Util\Logger;
+use MonduTrade\Util\Environment;
 use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\WooCommerce\Customer;
 use MonduTrade\Mondu\RequestWrapper;
@@ -30,6 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Example URL: POST /wp-json/mondu-trade/v1/webhooks
  */
 class WebhooksController extends BaseController {
+
 	/**
 	 * Mondu Request Wrapper.
 	 *
@@ -44,17 +46,39 @@ class WebhooksController extends BaseController {
 		$this->mondu_request_wrapper = new RequestWrapper();
 	}
 
+	/***
+	 * The route of the controller.
+	 *
+	 * @var string
+	 */
+	public static string $route = '/webhooks';
+
 	/**
 	 * Register routes.
 	 */
 	public function register_routes() {
-		register_rest_route( $this->namespace, '/webhooks/index', [
+		register_rest_route( self::$base_namespace, self::$route, [
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'index' ],
 				'permission_callback' => '__return_true',
 			],
 		] );
+	}
+
+	/**
+	 * Get the full REST URL for the Webhooks endpoint.
+	 *
+	 * @return string
+	 */
+	public static function get_full_rest_url(): string {
+		if ( Environment::is_production() ) {
+			return rest_url( self::$base_namespace . self::$route );
+		}
+
+		$base = Environment::get( 'MONDU_WEBHOOKS_URL', get_home_url() );
+
+		return $base . '/wp-json/' . self::$base_namespace . self::$route;
 	}
 
 	/**
@@ -161,7 +185,7 @@ class WebhooksController extends BaseController {
 		if ( ! is_numeric( $woocommerce_customer_number ) ) {
 			return $this->respond(
 				sprintf(
-					// translators: %s is the customer number that is invalid.
+				// translators: %s is the customer number that is invalid.
 					__( 'Invalid customer number provided: %s', 'mondu-trade-account' ),
 					$woocommerce_customer_number
 				),
@@ -172,7 +196,7 @@ class WebhooksController extends BaseController {
 		if ( ! $woocommerce_customer_number ) {
 			return $this->respond(
 				sprintf(
-					// translators: %s is the customer number that was not found.
+				// translators: %s is the customer number that was not found.
 					__( 'Customer not found: %s', 'mondu-trade-account' ),
 					$woocommerce_customer_number
 				),
@@ -192,8 +216,7 @@ class WebhooksController extends BaseController {
 		$customer->save();
 
 		Logger::info( 'Successfully updated customer status from buyer webhook', [
-			'topic' => $params['topic'],
-			'uuid'  => $buyer_uuid,
+			'params' => $params,
 			'state' => $state,
 		] );
 

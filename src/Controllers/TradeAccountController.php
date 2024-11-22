@@ -55,17 +55,33 @@ class TradeAccountController extends BaseController {
 	 */
 	const QUERY_ERROR = 'trade_account_error';
 
+	/***
+	 * The route of the controller.
+	 *
+	 * @var string
+	 */
+	private static string $route = '/trade-account';
+
 	/**
 	 * Register routes
 	 */
 	public function register_routes() {
-		register_rest_route( $this->namespace, '/trade-account', [
+		register_rest_route( self::$base_namespace, self::$route, [
 			[
 				'methods'             => 'GET',
 				'callback'            => [ $this, 'index' ],
 				'permission_callback' => '__return_true',
 			],
 		] );
+	}
+
+	/**
+	 * Get the full REST URL for the Webhooks endpoint.
+	 *
+	 * @return string
+	 */
+	public static function get_full_rest_url(): string {
+		return rest_url( self::$base_namespace . self::$route );
 	}
 
 	/**

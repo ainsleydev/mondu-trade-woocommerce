@@ -18,7 +18,7 @@ $purchasing_limit = [];
 
 // Obtain the buyer purchasing limit from the API.
 try {
-	$buyer_limit = $this->mondu_request_wrapper->get_buyer_limit();
+	$buyer_limit = $this->mondu_request_wrapper->get_buyer_limit( get_current_user_id() );
 	if ( ! isset( $buyer_limit['purchasing_limit'] ) ) {
 		throw new Exception( 'Undefined purchasing limit' );
 	}
