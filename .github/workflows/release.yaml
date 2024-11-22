@@ -45,23 +45,34 @@ jobs:
             -   name: Checkout Code
                 uses: actions/checkout@v3
 
-            # Deploy action to generate the ZIP file
-            -   name: Generate Plugin
-                uses: 10up/action-wordpress-plugin-deploy@stable
+            # Setup PHP on the runner.
+            -   name: Set up PHP
+                uses: shivammathur/setup-php@v2
                 with:
-                    dry-run: true
-                    generate-zip: true
-                env:
-                    SLUG: squidge # Temporary
-                    #SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-                    #SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-                    SVN_USERNAME: TEMP
-                    SVN_PASSWORD: TEMP
+                    php-version: 7.4
+                    tools: wp-cli
+
+            # Generates the ZIP file using the WP CLI
+            -   name: Generate ZIP file
+                run: |
+                    wp dist-archive ./ "mondu-trade-account.zip" --allow-root
+
+
+            # Deploy action to generate the ZIP file
+            #            -   name: Generate Plugin
+            #                uses: 10up/action-wordpress-plugin-deploy@stable
+            #                with:
+            #                    dry-run: true
+            #                    generate-zip: true
+            #                env:
+            #                    SLUG: mondu-trade-account
+            #                    SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+            #                    SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
 
             # Create a release
             -   name: Create GitHub Release
                 uses: softprops/action-gh-release@v1
                 with:
-                    files: ${{github.workspace}}/${{ github.event.repository.name }}.zip
+                    files: mondu-trade-account.zip
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
