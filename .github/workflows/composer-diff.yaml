@@ -1,12 +1,11 @@
 name: Composer Diff
 on:
   pull_request:
-    branches: [ main ]
     paths:
       - 'composer.lock'
 jobs:
   composer-diff:
-    name: Composer Diff
+    name: diff
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

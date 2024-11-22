@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
     security:
-        name: 'Security check'
+        name: check
         runs-on: ubuntu-latest
 
         steps:
