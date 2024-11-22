@@ -74,11 +74,15 @@ class SubmitTradeAccount extends Form {
 			exit;
 		}
 
-		// User ID is required for the external reference.
-		$user_id = get_current_user_id();
+		$user_id    = get_current_user_id();
+		$return_url = home_url() . wp_get_referer();
 
 		try {
-			$response = $this->mondu_request_wrapper->create_trade_account( $user_id, $this->get_applicant_details( $user_id ) );
+			$response = $this->mondu_request_wrapper->create_trade_account(
+				$user_id,
+				$return_url,
+				$this->get_applicant_details( $user_id ),
+			);
 
 			$this->respond( 200, $response, 'Trade account submitted' );
 		} catch ( \Exception $e ) {
@@ -103,8 +107,8 @@ class SubmitTradeAccount extends Form {
 	 * @return void
 	 */
 	public function output_trade_account_form(): void {
-		$query_buyer_status = isset( $_GET[TradeAccountController::QUERY_BUYER_STATUS] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
-			sanitize_text_field( wp_unslash( $_GET[TradeAccountController::QUERY_BUYER_STATUS] ) ) : '';
+		$query_buyer_status = isset( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
+			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ) : '';
 
 		if ( ! empty( $query_buyer_status ) ) {
 			return;
