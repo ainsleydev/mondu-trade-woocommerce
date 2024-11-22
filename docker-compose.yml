@@ -4,6 +4,7 @@ services:
     build: .
     volumes:
       - wordpress_data:/var/www/html
+      - ./docker/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     links:
       - mariadb
       - mailcatcher
