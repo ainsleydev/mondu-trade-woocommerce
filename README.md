@@ -328,6 +328,7 @@ To create a new release, follow the following steps:
 
 - Run the following command to choose the type of release (patch, minor, or major) and update the version
   in `mondu-trade-account.php`. You should merge this into `main` before creating a release.
+
   ```shell
   make version-bump
   ```
@@ -336,6 +337,7 @@ To create a new release, follow the following steps:
 
 - Run this command to compare the local version with the remote version and create a new tag if they differ. It will
   then create a new tag which will trigger the pipeline which creates a new zip file on GitHub.
+
   ```shell
   make release
   ```
