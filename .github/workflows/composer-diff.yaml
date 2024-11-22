@@ -6,7 +6,7 @@ on:
       - 'composer.lock'
 jobs:
   composer-diff:
-    name: Composer Diff
+    name: diff
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
