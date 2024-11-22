@@ -115,12 +115,15 @@ class TradeAccountController extends BaseController {
 			return $this->respond( 'No customer found.', 400 );
 		}
 
+		// Momentary sleep, so we can ensure the webhook as fired.
+		sleep(1);
+
 		$customer = new Customer( $customer_id );
 
 		// Bail if the customer couldn't be retrieved.
 		if ( ! $customer->is_valid() ) {
 			Logger::error( 'Unable to retrieve Mondu Trade customer from redirect controller.', [
-				'request' => $request,
+				'params' => $request->get_params(),
 			] );
 
 			return $this->respond( 'No customer found.', 400 );
@@ -130,7 +133,7 @@ class TradeAccountController extends BaseController {
 		$status = $customer->get_mondu_trade_account_status();
 		$uuid   = $customer->get_mondu_trade_account_uuid();
 
-		if ( $status === BuyerStatus::UNKNOWN || $status !== BuyerStatus::APPLIED ) {
+		if ( $status === BuyerStatus::UNKNOWN || $status === BuyerStatus::APPLIED ) {
 			Logger::error( 'Customer has been redirected before a webhook as fired', [
 				'request' => $request,
 				'uuid'    => $uuid,
