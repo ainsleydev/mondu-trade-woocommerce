@@ -1,0 +1,40 @@
+#name: Check WP Version Sync
+#
+#on:
+#    pull_request:
+#        paths:
+#            - README.txt
+#            - mondu-trade-account.php
+#
+#jobs:
+#    wp-version-check:
+#        name: Verify WP Version Sync
+#        runs-on: ubuntu-latest
+#
+#        steps:
+#            - name: Checkout code
+#              uses: actions/checkout@v3
+#
+#            - name: Extract and compare WP versions
+#              id: check_sync
+#              run: |
+#                  # Extract versions using grep and sed
+#                  README_VERSION=$(grep -E "^Version:" README.txt | sed -E 's/Version: (.+)/\1/')
+#                  PHP_VERSION=$(grep -E "^Version:" mondu-trade-account.php | sed -E 's/Version: (.+)/\1/')
+#
+#                  echo "README.txt version: $README_VERSION"
+#                  echo "PHP version: $PHP_VERSION"
+#
+#                  # Compare versions
+#                  if [ "$README_VERSION" != "$PHP_VERSION" ]; then
+#                    echo "WordPress versions are out of sync."
+#                    echo "::set-output name=comment_body::WordPress versions are out of sync. README.txt has $README_VERSION, but mondu-trade-account.php has $PHP_VERSION."
+#                    exit 1
+#                  else
+#                    echo "Versions are synchronized."
+#                  fi
+#            - name: Comment on PR
+#              uses: marocchino/sticky-pull-request-comment@v2
+#              if: failure()
+#              with:
+#                  message: ${{ steps.check_sync.outputs.comment_body }}
