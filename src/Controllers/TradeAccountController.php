@@ -100,6 +100,12 @@ class TradeAccountController extends BaseController {
 		$customer_id     = $request->get_param( 'customer_id' );
 		$return_url      = urldecode( $request->get_param( 'return_url' ) ) ?? wc_get_checkout_url();
 
+		Logger::debug( 'Received request to process Trade Account', [
+			'customer_id'     => $customer_id,
+			'return_url'      => $return_url,
+			'redirect_status' => $redirect_status,
+		] );
+
 		// Bail if there's no customer, as we can't process the request.
 		if ( ! $customer_id ) {
 			Logger::error( 'Customer ID is missing from request parameters.', [
@@ -129,14 +135,14 @@ class TradeAccountController extends BaseController {
 			'uuid'   => $uuid,
 		] );
 
-		$notice = $this->get_notice_message( $redirect_status, $customer->get_mondu_trade_account_status() );
+		$notice = $this->get_notice_message( $redirect_status, $status );
 
 		// Redirect to the checkout page with both query parameters.
 		$redirect_url = add_query_arg(
 			[
 				self::QUERY_MESSAGE      => esc_attr( $notice['message'] ),
 				self::QUERY_NOTICE_TYPE  => esc_attr( $notice['type'] ),
-				self::QUERY_BUYER_STATUS => esc_attr( $redirect_status ),
+				self::QUERY_BUYER_STATUS => esc_attr( $status ),
 			],
 			$return_url,
 		);
@@ -154,47 +160,33 @@ class TradeAccountController extends BaseController {
 	 * @return array
 	 */
 	private function get_notice_message( string $redirect_status, string $buyer_status ): array {
-		// Redirect status handling.
-		if ( $redirect_status === 'cancelled' ) {
+		if ( $buyer_status === BuyerStatus::PENDING ) {
 			return [
-				'type'    => 'error',
-				'message' => 'Your Trade Account application was cancelled, please try again or select a different payment method.'
+				'type'    => 'notice',
+				'message' => 'Your trade account is pending. You will hear back in 48 hours.',
 			];
 		}
 
-		if ( $redirect_status === 'declined' ) {
-			return [
-				'type'    => 'error',
-				'message' => 'Your trade account has been declined, please use an alternative payment method.',
-			];
-		}
-
-		// Buyer status handling.
-		switch ( $buyer_status ) {
-			case BuyerStatus::ACCEPTED:
+		switch ( $redirect_status ) {
+			case 'cancelled':
 				return [
-					'type'    => 'success',
-					'message' => 'Your trade account has been approved.',
+					'type'    => 'error',
+					'message' => 'Your Trade Account application was cancelled, please try again or select a different payment method.',
 				];
-			case BuyerStatus::PENDING:
-				return [
-					'type'    => 'notice',
-					'message' => 'Your trade account is pending. You will hear back in 48 hours.',
-				];
-			case BuyerStatus::DECLINED:
+			case 'declined':
 				return [
 					'type'    => 'error',
 					'message' => 'Your trade account has been declined, please use an alternative payment method.',
 				];
-			case BuyerStatus::APPLIED:
+			case 'succeeded':
 				return [
-					'type'    => 'notice',
-					'message' => "We're just waiting to hear back from Mondu, please wait and refresh the page.",
+					'type'    => 'success',
+					'message' => 'Your trade account has been approved.',
 				];
 			default:
 				return [
 					'type'    => 'error',
-					'message' => 'An unexpected error occurred. Please try again.',
+					'message' => 'An unknown error occurred. Please try again later.',
 				];
 		}
 	}

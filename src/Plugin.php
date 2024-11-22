@@ -67,6 +67,13 @@ class Plugin {
 	const OPTION_WEBHOOKS_SECRET = '_mondu_trade_webhooks_secret';
 
 	/**
+	 * The query parameter name for redirecting the user/
+	 *
+	 * @var string
+	 */
+	const QUERY_PARAM_REDIRECT = 'mondu_trade_redirect_to';
+
+	/**
 	 * Initialises Mondu Trade.
 	 *
 	 * @return void
@@ -134,6 +141,11 @@ class Plugin {
 		 * Pre-selects the Trade Account if it's succeeded.
 		 */
 		add_filter( 'woocommerce_available_payment_gateways', [ Checkout::class, 'select_default_gateway' ] );
+
+		/**
+		 * Redirects the user in certain circumstances
+		 */
+		add_filter( 'woocommerce_login_redirect', [ $this, 'handle_login_redirect' ], 10, 1 );
 	}
 
 	/**
@@ -211,6 +223,24 @@ class Plugin {
 		];
 
 		return array_merge( $links, $row_meta );
+	}
+
+	/**
+	 * Handle redirection after login to the original page with the banner.
+	 *
+	 * @param string $redirect
+	 * @return string
+	 */
+	public function handle_login_redirect( $redirect ): string {
+		// Check if the query parameter 'mondu_trade_redirect_to' is set.
+		if ( isset( $_GET[self::QUERY_PARAM_REDIRECT] ) ) { // phpcs:disable WordPress.Security.NonceVerification.Recommended
+			$redirect_to = sanitize_text_field( wp_unslash( $_GET[self::QUERY_PARAM_REDIRECT] ) );
+
+			return esc_url( $redirect_to );
+		}
+
+		// Default redirect URL if the parameter is not set.
+		return $redirect;
 	}
 }
 

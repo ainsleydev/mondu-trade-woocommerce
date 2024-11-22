@@ -8,7 +8,11 @@
  * @author      ainsley.dev
  */
 
+use MonduTrade\Plugin;
+
+$account_url  = get_permalink( wc_get_page_id( 'myaccount' ) );
 $current_url  = esc_url( home_url( add_query_arg( null, null ) ) );
+$redirect_url = add_query_arg( Plugin::QUERY_PARAM_REDIRECT, $current_url, $account_url );
 $is_logged_in = is_user_logged_in();
 
 ?>
@@ -25,7 +29,7 @@ $is_logged_in = is_user_logged_in();
 	<!-- Redirect To Login -->
 	<?php if ( ! $is_logged_in ) : ?>
 		<p>You are not currently logged in, please register or login to apply for a Mondu Trade Account.</p>
-		<a href="<?php echo esc_url( add_query_arg( 'mondu_trade_redirect_to', $current_url, get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ) ) ); ?>"
+		<a href="<?php echo esc_url( $redirect_url ); ?>"
 		   class="button alt">
 			Register/Login
 		</a>

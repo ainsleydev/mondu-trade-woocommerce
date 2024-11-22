@@ -127,7 +127,6 @@ class WebhooksController extends BaseController {
 			$buyer = $params['buyer'];
 			switch ( $topic ) {
 				case 'buyer/accepted':
-
 					$result = $this->update_customer_state( BuyerStatus::ACCEPTED, $buyer );
 					break;
 				case 'buyer/pending':
@@ -145,6 +144,7 @@ class WebhooksController extends BaseController {
 		} catch ( \Exception $e ) {
 			Logger::error( 'Webhook error from Mondu', [
 				'params' => $params,
+				'error' => $e->getMessage(),
 			] );
 			$this->mondu_request_wrapper->log_plugin_event( $e, 'webhooks', $params );
 
