@@ -47,7 +47,7 @@ jobs:
 
             # Deploy action to generate the ZIP file
             -   name: Generate Plugin ZIP
-                uses: 10up/action-wordpress-plugin-deploy@v2
+                uses: 10up/action-wordpress-plugin-deploy@stable
                 with:
                     slug: mondu-trade-account
                     dry-run: true
