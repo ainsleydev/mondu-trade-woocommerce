@@ -1,4 +1,5 @@
 # Constants
+PORT=8000
 DOCKER_COMPOSE_FILE=docker-compose.yml
 ZIP_FILE_NAME=mondu-trade-account.zip
 
@@ -12,8 +13,8 @@ setup: # Setup Dependencies
 serve: # Serve Wordpress & Local Tunnel
 	@export $(shell sed 's/^/export /' .env); \
 	cd ../../../ && concurrently --names "wordpress,localtunnel,logs" --prefix-colors "blue,green,yellow" \
- 		"APP_ENV=dev php -S localhost:8000" \
- 		"lt --port 8000 --subdomain mondu-trade-account-woocommerce-ainsleydev" \
+ 		"APP_ENV=dev php -S localhost:$(PORT)" \
+ 		"lt --port $(PORT) --subdomain mondu-trade-account-woocommerce-ainsleydev" \
  		"tail -n 0 -f ./wp-content/debug.log"
 .PHONY: serve
 
