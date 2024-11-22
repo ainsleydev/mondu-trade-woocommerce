@@ -1,11 +1,9 @@
 name: Release
-
 on:
     push:
         tags:
             - 'v*'
     workflow_dispatch:
-
 jobs:
     version-check:
         runs-on: ubuntu-latest
