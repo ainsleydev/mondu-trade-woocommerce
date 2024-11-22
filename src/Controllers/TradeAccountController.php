@@ -170,7 +170,7 @@ class TradeAccountController extends BaseController {
 		if ( $buyer_status === BuyerStatus::PENDING ) {
 			return [
 				'type'    => 'notice',
-				'message' => 'Your trade account is pending. You will hear back in 48 hours.',
+				'message' => 'Your Trade Account is pending. You will hear back in 48 hours.',
 			];
 		}
 
@@ -183,12 +183,12 @@ class TradeAccountController extends BaseController {
 			case 'declined':
 				return [
 					'type'    => 'error',
-					'message' => 'Your trade account has been declined, please use an alternative payment method.',
+					'message' => 'Your Trade Account has been declined, please use an alternative payment method.',
 				];
 			case 'succeeded':
 				return [
 					'type'    => 'success',
-					'message' => 'Your trade account has been approved.',
+					'message' => 'Your Trade Account has been approved.',
 				];
 			default:
 				return [
