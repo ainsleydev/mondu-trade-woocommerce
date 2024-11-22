@@ -130,10 +130,12 @@ class TradeAccountController extends BaseController {
 		$status = $customer->get_mondu_trade_account_status();
 		$uuid   = $customer->get_mondu_trade_account_uuid();
 
-		Logger::info( 'Customer has signed up via Mondu, redirecting...', [
-			'status' => $status,
-			'uuid'   => $uuid,
-		] );
+		if ( $status === BuyerStatus::UNKNOWN || $status !== BuyerStatus::APPLIED ) {
+			Logger::error( 'Customer has been redirected before a webhook as fired', [
+				'request' => $request,
+				'uuid'    => $uuid,
+			] );
+		}
 
 		$notice = $this->get_notice_message( $redirect_status, $status );
 
@@ -146,6 +148,11 @@ class TradeAccountController extends BaseController {
 			],
 			$return_url,
 		);
+
+		Logger::info( 'Customer has signed up via Mondu, redirecting...', [
+			'status' => $status,
+			'uuid'   => $uuid,
+		] );
 
 		wp_safe_redirect( $redirect_url );
 
