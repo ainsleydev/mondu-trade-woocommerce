@@ -59,9 +59,9 @@ jobs:
                     SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
 
             # Create a release
-            - name: Create GitHub release
-              uses: softprops/action-gh-release@v1
-              with:
-                  files: ${{github.workspace}}/${{ github.event.repository.name }}.zip
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            -   name: Create GitHub release
+                uses: softprops/action-gh-release@v1
+                with:
+                    files: ${{github.workspace}}/${{ github.event.repository.name }}.zip
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
