@@ -1,5 +1,4 @@
 name: Lint
-
 on:
     push:
         branches:
@@ -7,7 +6,7 @@ on:
     pull_request:
         branches:
             - main
-
+    workflow_dispatch:
 jobs:
     phpcs:
         runs-on: ubuntu-latest
