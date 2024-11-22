@@ -80,6 +80,7 @@ echo do_shortcode('[mondu_trade_account_form]');
 Alternatively, you can crate the form from scratch as shown below:
 
 ```html
+
 <form id="trade-account-signup" method="POST" action="<?php echo admin_url('admin-ajax.php'); ?>">
   <input type="hidden" name="action" value="trade_account_submit">
   <?php wp_nonce_field('trade_account_submit', 'trade_account_submit_nonce'); ?>
@@ -322,6 +323,28 @@ free to edit this script to suit your needs.
 ```shell
 make serve
 ```
+
+## Release
+
+To create a new release, follow the following steps:
+
+1. **Bump Version**
+
+- Run the following command to choose the type of release (patch, minor, or major) and update the version
+  in `mondu-trade-account.php`. You should merge this into `main` before creating a release.
+  ```shell
+  make version-bump
+  ```
+
+2. **Release**
+
+- Run this command to compare the local version with the remote version and create a new tag if they differ. It will
+  then create a new tag which will trigger the pipeline which creates a new zip file on GitHub.
+  ```shell
+  make release
+  ```
+
+These steps will bump the version locally, and then create and push a new release tag to GitHub.
 
 ## Copyright
 
