@@ -54,14 +54,14 @@ Useful Links:
 There are a total of 6 buyer states that a user can be in. If you are admin of the WordPress install, you can change
 these states, but it's recommended not to.
 
-| State        | : Explanation                                                                                         |
-|--------------|-------------------------------------------------------------------------------------------------------|
-| `unknown`    | The default status, when no the customer hasn't signed up yet.                                        |
-| `applied`    | Customer has tried to apply for a Trade Account, but the webhook hasn't been triggered.               |
-| `accepted`   | Customer has been approved a Trade Account and should have a buyer limit.                             |
-| `pending`    | Customer is waiting to hear from Mondu if their account has been accepted (Maximum of 48 hours).      |
-| `declined`   | Customer has been flat-out refused credit from Mondu.                                                 |
-| `cancelled`  | Customer exited out of the Mondu Trade Application form.                                              |
+| State       | Explanation                                                                                      |
+|-------------|--------------------------------------------------------------------------------------------------|
+| `unknown`   | The default status, when no the customer hasn't signed up yet.                                   |
+| `applied`   | Customer has tried to apply for a Trade Account, but the webhook hasn't been triggered.          |
+| `accepted`  | Customer has been approved a Trade Account and should have a buyer limit.                        |
+| `pending`   | Customer is waiting to hear from Mondu if their account has been accepted (Maximum of 48 hours). |
+| `declined`  | Customer has been flat-out refused credit from Mondu.                                            |
+| `cancelled` | Customer exited out of the Mondu Trade Application form.                                         |
 
 ## Sandbox
 
