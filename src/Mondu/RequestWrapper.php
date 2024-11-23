@@ -63,9 +63,9 @@ class RequestWrapper extends MonduRequestWrapper {
 		$trade_data = [
 			"external_reference_id" => (string) $user_id,
 			"redirect_urls"         => [
-				"success_url"  => $this->get_trade_redirect_url( $user_id, $return_url, 'succeeded' ),
-				"cancel_url"   => $this->get_trade_redirect_url( $user_id, $return_url, 'cancelled' ),
-				"declined_url" => $this->get_trade_redirect_url( $user_id, $return_url, 'declined' ),
+				"success_url"  => $this->get_trade_redirect_url( $user_id, $return_url, RedirectStatus::SUCCEEDED ),
+				"cancel_url"   => $this->get_trade_redirect_url( $user_id, $return_url, RedirectStatus::CANCELLED ),
+				"declined_url" => $this->get_trade_redirect_url( $user_id, $return_url, RedirectStatus::DECLINED ),
 			],
 		];
 

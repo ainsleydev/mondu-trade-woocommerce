@@ -105,6 +105,9 @@ class PaymentGateway extends WC_Payment_Gateway {
 
 		// Get different views dependant on the buyer status.
 		switch ( $status ):
+			case BuyerStatus::CANCELLED:
+				include MONDU_TRADE_VIEW_PATH . '/checkout/sign-up.php';
+				break;
 			case BuyerStatus::APPLIED:
 				include MONDU_TRADE_VIEW_PATH . '/checkout/applied.php';
 				break;
@@ -162,11 +165,12 @@ class PaymentGateway extends WC_Payment_Gateway {
 	 * Process payment.
 	 *
 	 * Buyer States:
-	 * Unknown  -> The customer will be redirected to create a Trade Account.
-	 * Applied  -> The customer has been redirected to the hosted Trade Account application form.
-	 * Pending  -> The buyer will be displayed a message to indicate they will be notified within 48 hours.
-	 * Declined -> The buyer will be displayed a message to show they cannot purchase with a Trade Account.
-	 * Accepted -> Spending limit is checked and displayed, and then redirected to Mondu's self-hosted checkout.
+	 * Unknown   -> The customer will be redirected to create a Trade Account.
+	 * Applied   -> The customer has been redirected to the hosted Trade Account application form.
+	 * Pending   -> The customer will be displayed a message to indicate they will be notified within 48 hours.
+	 * Declined  -> The customer will be displayed a message to show they cannot purchase with a Trade Account.
+	 * Accepted  -> Spending limit is checked and displayed, and then redirected to Mondu's self-hosted checkout.
+	 * Cancelled -> The customer has cancelled the transaction.
 	 *
 	 * @param $order_id
 	 * @return array|void
@@ -183,12 +187,16 @@ class PaymentGateway extends WC_Payment_Gateway {
 		// need to wait for them to send us the info.
 		if ( $status === BuyerStatus::APPLIED ) {
 			wc_add_notice( "We're just waiting to hear back from Mondu, please wait and refresh the page. If this issue persists, please reach out to support", 'notice' );
+
+			return;
 		}
 
 		// If the buyer status is unknown, it would indicate we need to
 		// create the trade account as the webhook hasn't fired for this
 		// customer yet.
-		if ( $status === BuyerStatus::UNKNOWN ) {
+		//
+		// If it's cancelled, they should be able to retry.
+		if ( $status === BuyerStatus::UNKNOWN || $status === BuyerStatus::CANCELLED ) {
 
 			$response = $this->mondu_request_wrapper->create_trade_account( $customer_id, $return_url, [
 				'first_name' => $order->get_billing_first_name(),
