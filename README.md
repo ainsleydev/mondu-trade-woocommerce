@@ -55,7 +55,7 @@ There are a total of 6 buyer states that a user can be in. If you are admin of t
 these states, but it's recommended not to.
 
 | State       | Explanation                                                                                      |
-|-------------|--------------------------------------------------------------------------------------------------|
+|:------------|:-------------------------------------------------------------------------------------------------|
 | `unknown`   | The default status, when no the customer hasn't signed up yet.                                   |
 | `applied`   | Customer has tried to apply for a Trade Account, but the webhook hasn't been triggered.          |
 | `accepted`  | Customer has been approved a Trade Account and should have a buyer limit.                        |
