@@ -118,9 +118,6 @@ class User {
 			'set_mondu_trade_account_status',
 			[ BuyerStatus::class, 'is_valid' ]
 		);
-
-		$this->update_uuid( $customer );
-		$this->update_uuid( $customer );
 	}
 
 	/**
