@@ -2,13 +2,14 @@
 #
 # bump-wp-version.sh
 #
-# This script increments the version number in mondu-trade-account.php
-# based on the type of release (patch, minor, or major).
+# This script increments the version number in both mondu-trade-account.php
+# and README.txt based on the type of release (patch, minor, or major).
 
 # Ensure the script is executed from the correct directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 PHP_FILE="$PROJECT_ROOT/mondu-trade-account.php"
+README_FILE="$PROJECT_ROOT/README.txt"
 
 # Function to extract the current version from mondu-trade-account.php
 get_current_version() {
@@ -18,9 +19,15 @@ get_current_version() {
 }
 
 # Function to update the version in mondu-trade-account.php
-update_version_in_file() {
+update_version_in_php() {
     local new_version=$1
     perl -pi -e 's/Version:\s*\d+\.\d+\.\d+/Version:\t\t\t'"$new_version"'/g' "$PHP_FILE"
+}
+
+# Function to update the version in README.txt
+update_version_in_readme() {
+    local new_version=$1
+    perl -pi -e 's/Stable tag: \d+\.\d+\.\d+/Stable tag: '"$new_version"'/g' "$README_FILE"
 }
 
 # Main script starts here
@@ -57,13 +64,26 @@ esac
 
 echo "New version: $new_version"
 
-# Update the version in mondu-trade-account.php
-update_version_in_file "$new_version"
+# Update the version in both files
+update_version_in_php "$new_version"
+update_version_in_readme "$new_version"
 
-# Verify the update
+# Verify the updates
+echo "Verifying updates..."
+
 if grep -q "$new_version" "$PHP_FILE"; then
-    echo "Version successfully updated to $new_version in $PHP_FILE."
+    echo "✅  Version successfully updated to $new_version in mondu-trade-account.php"
 else
-    echo "Error: Failed to update the version in $PHP_FILE."
+    echo "❌  Error: Failed to update the version in mondu-trade-account.php"
     exit 1
 fi
+
+if grep -q "$new_version" "$README_FILE"; then
+    echo "✅  Version successfully updated to $new_version in README.txt"
+else
+    echo "❌  Error: Failed to update the version in README.txt"
+    exit 1
+fi
+
+
+echo "Version bump completed successfully!"

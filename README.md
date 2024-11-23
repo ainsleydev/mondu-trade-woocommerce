@@ -49,6 +49,57 @@ Useful Links:
 - [Official GitHub Repository](https://github.com/mondu-ai/bnpl-checkout-woocommerce)
 - [Changelog](https://github.com/mondu-ai/bnpl-checkout-woocommerce/blob/main/changelog.txt)
 
+## Buyer States
+
+There are a total of 6 buyer states that a user can be in. If you are admin of the WordPress install, you can change
+these states, but it's recommended not to.
+
+| State       | Explanation                                                                                      |
+|:------------|:-------------------------------------------------------------------------------------------------|
+| `unknown`   | The default status, when no the customer hasn't signed up yet.                                   |
+| `applied`   | Customer has tried to apply for a Trade Account, but the webhook hasn't been triggered.          |
+| `accepted`  | Customer has been approved a Trade Account and should have a buyer limit.                        |
+| `pending`   | Customer is waiting to hear from Mondu if their account has been accepted (Maximum of 48 hours). |
+| `declined`  | Customer has been flat-out refused credit from Mondu.                                            |
+| `cancelled` | Customer exited out of the Mondu Trade Application form.                                         |
+
+## Sandbox
+
+If you have sandbox mode set on the `Mondu` plugin, you can test the following states with the email addresses listed
+below. Note that if an email does not follow this convention, the trade application will fail.
+
+- **`Accepted`**: accepted.good.{random-string}@example.com
+- **`Pending`**: pending.pending-brc.{random-string}@example.com
+- **`Declined`**: declined.bad.{random-string}@example.com
+
+Note that emails are sent via the Mondu internal inbox in sandbox mode, in order to see them, it's best to reach out to
+Mondu.
+
+## Webhooks
+
+Mondu send buyer webhooks when a user has applied for a Trade Account. The following payload will be provided via this
+webhook once buyer onboarding requested is processed. See [here](https://docs.mondu.ai/reference/webhooks-overview) for
+more details.
+
+If the webhook failed, Mondu will send the webhook in increasing intervals until the `WebhookController` returns an `OK`
+response.
+
+**Example Payload**:
+
+```json
+{
+  "topic": "buyer/{TOPIC_NAME}",
+  "buyer": {
+    "uuid": "66e8d234-23b5-1125-9592-d7390f20g01c",
+    "state": "accepted",
+    "external_reference_id": "DE-1-1000745773",
+    "company_name": "2023-02-07T15:14:22.301Z",
+    "first_name": "John",
+    "last_name": "Smith"
+  }
+}
+```
+
 ## FAQs
 
 ### Is the plugin compatible with the WP block editor?
@@ -147,7 +198,11 @@ see the following fields:
 
 ---
 
-### Will Mondu email the customer after a Trade Account has been applied for?
+### When will Mondu send emails to the customer?
+
+- After the buyer authorises the onboarding process in hosted checkout page.
+- Status change to accepted triggers webhook attempt buyer accepted and the email communication.
+- Status change to declined on webhook buyer declined is sent out.
 
 ---
 
@@ -356,24 +411,3 @@ redistributed in any form, except with explicit written permission from ainsley.
 ## Licence
 
 Code Copyright 2024 ainsley.dev LTD. Code released under the [GPL-3.0](LICENSE).
-
-## TODO:
-
-- Email Regex
-
-Buyer accepted, Order accepted: accepted.good.9wiq62u7h7d@example.com
-Buyer set to Pending, Order set to pending: pending.pending-brc.0qdxhe3ij97c@example.com
-Buyer set to Declined, Order set to declined: declined.bad.s3zwckzoln@example.com
-
-- When emails will be sent.
-
-After the buyer authorises the onboairding process in hosted checkout page. On Demo we send the emails to the internal inbox.
-When an application is pending, do you email the customer informing them of the decision?
-Status change to accepted triggers webhook attempt buyer accepted and the email communication. Status change to declined on webhook buyer declined is sent out.
-
-- Webhooks
-
-We send buyer accepted, declined or pending.
-If successfully received we do not repeat the webhooks attemts otherwise we send several attamts is increasing intervals.
-
-- Explanation of buyer states:

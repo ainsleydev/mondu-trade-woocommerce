@@ -11,10 +11,10 @@
 namespace MonduTrade\Admin;
 
 use WP_User;
+use MonduTrade\Util\Logger;
 use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\Mondu\RequestWrapper;
 use MonduTrade\WooCommerce\Customer;
-use MonduTrade\Util\Logger;
 
 /**
  * User allows admins to view information about the
@@ -41,8 +41,8 @@ class User {
 		add_action( 'edit_user_profile', [ $this, 'display_mondu_trade_account' ] );
 
 		// Add validation to prevent saving changes
-		add_action( 'personal_options_update', [ $this, 'trade_account_update' ] );
-		add_action( 'edit_user_profile_update', [ $this, 'trade_account_update' ] );
+		add_action( 'personal_options_update', [ $this, 'user_update_trade_account' ] );
+		add_action( 'edit_user_profile_update', [ $this, 'user_update_trade_account' ] );
 	}
 
 	/**
@@ -93,36 +93,91 @@ class User {
 	 *
 	 * @param int $user_id
 	 */
-	public function trade_account_update( int $user_id ) {
+	public function user_update_trade_account( int $user_id ) {
 		check_admin_referer( 'update-user_' . $user_id );
 
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to edit this user.', 'mondu-trade-account' ) );
 		}
 
-		// Fetch original customer data.
-		$customer        = new Customer( $user_id );
-		$original_uuid   = $customer->get_mondu_trade_account_uuid();
-		$original_status = $customer->get_mondu_trade_account_status();
+		$customer = new Customer( $user_id );
 
-		// Prevent UUID tampering.
-		if ( isset( $_POST['mondu_trade_uuid'] ) && $_POST['mondu_trade_uuid'] !== $original_uuid ) {
-			$_POST['mondu_trade_uuid'] = $original_uuid;
+		// Updates the Customer Status (if admin).
+		$this->update_customer_field(
+			$customer,
+			'mondu_trade_uuid',
+			'get_mondu_trade_account_uuid',
+			'set_mondu_trade_account_uuid'
+		);
+
+		// Updates the Customer UUID (if admin).
+		$this->update_customer_field(
+			$customer,
+			'mondu_trade_status',
+			'get_mondu_trade_account_status',
+			'set_mondu_trade_account_status',
+			[ BuyerStatus::class, 'is_valid' ]
+		);
+
+		$this->update_uuid( $customer );
+		$this->update_uuid( $customer );
+	}
+
+	/**
+	 * Updates a field in the Customer object.
+	 *
+	 * @param Customer $customer The customer object.
+	 * @param string $field The field name in the $_POST array.
+	 * @param string $getter The method name to get the current value.
+	 * @param string $setter The method name to set the new value.
+	 * @param callable|null $validation Optional validation callback for the new value.
+	 * @return void
+	 */
+	private function update_customer_field(
+		Customer $customer,
+		string $field,
+		string $getter,
+		string $setter,
+		callable $validation = null
+	): void {
+		$original_value = $customer->$getter();
+
+		// Prevent unauthorized changes.
+		if ( ! $this->is_admin() ) {
+			if ( isset( $_POST[ $field ] ) && $_POST[ $field ] !== $original_value ) {  // phpcs:disable WordPress.Security.NonceVerification.Missing
+				$_POST[ $field ] = $original_value;
+			}
+
+			return;
 		}
 
-		// Allow admins to update the status field.
-		if ( isset( $_POST['mondu_trade_status'] ) && current_user_can( 'administrator' ) ) {
-			$new_status = sanitize_text_field( wp_unslash( $_POST['mondu_trade_status'] ) );
-
-			// Ensure the new status is valid.
-			if ( BuyerStatus::is_valid( $new_status ) && $new_status !== $original_status ) {
-				$customer->set_mondu_trade_account_status( $new_status );
-			}
-		} else {
-			// Prevent unauthorized status change
-			if ( isset( $_POST['mondu_trade_status'] ) && $_POST['mondu_trade_status'] !== $original_status ) {
-				$_POST['mondu_trade_status'] = $original_status;
-			}
+		// Skip if the field is not set in the POST data.
+		if ( ! isset( $_POST[ $field ] ) ) {
+			return;
 		}
+
+		$new_value = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
+
+		// Skip if the value has not changed.
+		if ( $new_value === $original_value ) {
+			return;
+		}
+
+		// Validate the new value if a validation callback is provided.
+		if ( $validation && ! $validation( $new_value ) ) {
+			return;
+		}
+
+		// Update the field in the Customer object.
+		$customer->$setter( $new_value );
+	}
+
+	/**
+	 * Determines if the current user is an administrator.
+	 *
+	 * @return bool
+	 */
+	private function is_admin(): bool {
+		return current_user_can( 'administrator' );
 	}
 }

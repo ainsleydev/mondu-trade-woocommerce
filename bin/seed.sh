@@ -19,27 +19,46 @@ generate_random_number() {
 seed_users() {
   echo "Seeding users..."
 
-  for user in "${users[@]}"; do
-    # Split the user data into parts
-    username=$(echo "$user" | cut -d':' -f1)
-    email_base=$(echo "$user" | cut -d':' -f2)
+	for user in "${users[@]}"; do
+	# Split the user data into parts
+	username=$(echo "$user" | cut -d':' -f1)
+	email_base=$(echo "$user" | cut -d':' -f2)
 
-    # Generate random email
-    random_number=$(generate_random_number)
-    email="$email_base-$random_number@example.com"
+	# Generate random email
+	random_number=$(generate_random_number)
+	email="$email_base-$random_number@example.com"
 
-    # Capitalize first letter of the username for last name
-    last_name="$(echo "${username:0:1}" | tr '[:lower:]' '[:upper:]')${username:1}"
+	# Capitalize first letter of the username for last name
+	last_name="$(echo "${username:0:1}" | tr '[:lower:]' '[:upper:]')${username:1}"
 
-    # Create user
-    wp user create "$username" "$email" \
-      --user_pass="password" \
-      --role="administrator" \
-      --first_name="Mondu" \
-      --last_name="$last_name"
+	# Attempt to create the user and capture the output
+	user_create_output=$(wp user create "$username" "$email" \
+		--user_pass="password" \
+		--role="administrator" \
+		--first_name="Mondu" \
+		--last_name="$last_name" \
+		--porcelain 2>&1)
 
-    echo "Created user: $username, Email: $email"
-  done
+	# Extract the user ID if the command succeeded
+	user_id=$(echo "$user_create_output" | grep -Eo '^[0-9]+')
+
+	if [ -z "$user_id" ]; then
+		echo "Failed to create user: $username, Email: $email"
+		echo "Error: $user_create_output"
+		continue
+	fi
+
+	# Add WooCommerce billing details
+	wp user meta update "$user_id" billing_first_name "Mondu"
+	wp user meta update "$user_id" billing_last_name "$last_name"
+	wp user meta update "$user_id" billing_address_1 "1 Town Lane"
+	wp user meta update "$user_id" billing_city "London"
+	wp user meta update "$user_id" billing_postcode "NW1 9TY"
+	wp user meta update "$user_id" billing_country "GB"
+	wp user meta update "$user_id" billing_phone "07830465221"
+
+	echo "Created user: $username, Email: $email, ID: $user_id"
+	done
 }
 
 # Function to delete users
