@@ -112,7 +112,7 @@ class User {
 
 		// Allow admins to update the status field.
 		if ( isset( $_POST['mondu_trade_status'] ) && current_user_can( 'administrator' ) ) {
-			$new_status = sanitize_text_field( $_POST['mondu_trade_status'] );
+			$new_status = sanitize_text_field( wp_unslash( $_POST['mondu_trade_status'] ) );
 
 			// Ensure the new status is valid.
 			if ( BuyerStatus::is_valid( $new_status ) && $new_status !== $original_status ) {
