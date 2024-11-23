@@ -38,6 +38,15 @@ seed_users() {
       --first_name="Mondu" \
       --last_name="$last_name"
 
+	# Add WooCommerce billing details
+	wp user meta update "$user_id" billing_first_name "Mondu"
+	wp user meta update "$user_id" billing_last_name "$last_name"
+	wp user meta update "$user_id" billing_address_1 "1 Town Lane"
+	wp user meta update "$user_id" billing_city "London"
+	wp user meta update "$user_id" billing_postcode "NW1 9TY"
+	wp user meta update "$user_id" billing_country "GB"
+	wp user meta update "$user_id" billing_phone "07830465221"
+
     echo "Created user: $username, Email: $email"
   done
 }
