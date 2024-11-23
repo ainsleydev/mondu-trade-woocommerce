@@ -101,32 +101,16 @@ class User {
 		}
 
 		$customer = new Customer( $user_id );
-		$this->update_uuid( $customer );
-		$this->update_uuid( $customer );
-	}
 
-	/**
-	 * Updates the Customer UUID.
-	 *
-	 * @param Customer $customer
-	 * @return void
-	 */
-	private function update_uuid( Customer $customer ): void {
+		// Updates the Customer Status (if admin).
 		$this->update_customer_field(
 			$customer,
 			'mondu_trade_uuid',
 			'get_mondu_trade_account_uuid',
 			'set_mondu_trade_account_uuid'
 		);
-	}
 
-	/**
-	 * Updates the Customer Status.
-	 *
-	 * @param Customer $customer
-	 * @return void
-	 */
-	private function update_status( Customer $customer ): void {
+		// Updates the Customer UUID (if admin).
 		$this->update_customer_field(
 			$customer,
 			'mondu_trade_status',
@@ -134,6 +118,9 @@ class User {
 			'set_mondu_trade_account_status',
 			[ BuyerStatus::class, 'is_valid' ]
 		);
+
+		$this->update_uuid( $customer );
+		$this->update_uuid( $customer );
 	}
 
 	/**
