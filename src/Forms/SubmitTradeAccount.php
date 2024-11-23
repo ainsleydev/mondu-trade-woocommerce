@@ -10,10 +10,10 @@
 
 namespace MonduTrade\Forms;
 
-use MonduTrade\Controllers\TradeAccountController;
 use WC_Customer;
 use MonduTrade\Util\Logger;
 use MonduTrade\Mondu\RequestWrapper;
+use MonduTrade\Controllers\TradeAccountController;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -45,7 +45,6 @@ class SubmitTradeAccount extends Form {
 		add_shortcode( 'mondu_trade_account_form', [ $this, 'output_trade_account_form' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
-
 		parent::__construct();
 	}
 
@@ -71,7 +70,8 @@ class SubmitTradeAccount extends Form {
 		// Bail if there's no user.
 		if ( ! is_user_logged_in() ) {
 			$this->respond( 400, [], 'User must be logged in' );
-			exit;
+
+			return;
 		}
 
 		$user_id    = get_current_user_id();

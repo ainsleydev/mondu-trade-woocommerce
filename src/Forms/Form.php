@@ -23,6 +23,7 @@ use Rakit\Validation\Validator as Validator;
  * Inheritors must implement the process function.
  */
 abstract class Form {
+
 	/**
 	 * The action of the form
 	 *

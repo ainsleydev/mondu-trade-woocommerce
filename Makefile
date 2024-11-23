@@ -54,6 +54,14 @@ lint: # Runs Linter
 	@composer lint
 .PHONY: lint
 
+users-seed: # Seeds three users to the db (accepted, pending & declined)
+	sh bin/seed.sh seed
+.PHONY: users-seed
+
+users-delete: # Deletes the seeded users
+	sh bin/seed.sh delete
+.PHONY: users-delete
+
 lint-fix: # Runs Linter with auto-fix
 	@composer lint-fix
 .PHONY: lint-fix

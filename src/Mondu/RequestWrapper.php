@@ -63,9 +63,9 @@ class RequestWrapper extends MonduRequestWrapper {
 		$trade_data = [
 			"external_reference_id" => (string) $user_id,
 			"redirect_urls"         => [
-				"success_url"  => $this->get_trade_redirect_url( $user_id, $return_url, 'succeeded' ),
-				"cancel_url"   => $this->get_trade_redirect_url( $user_id, $return_url, 'cancelled' ),
-				"declined_url" => $this->get_trade_redirect_url( $user_id, $return_url, 'declined' ),
+				"success_url"  => $this->get_trade_redirect_url( $user_id, $return_url, RedirectStatus::SUCCEEDED ),
+				"cancel_url"   => $this->get_trade_redirect_url( $user_id, $return_url, RedirectStatus::CANCELLED ),
+				"declined_url" => $this->get_trade_redirect_url( $user_id, $return_url, RedirectStatus::DECLINED ),
 			],
 		];
 
@@ -97,12 +97,14 @@ class RequestWrapper extends MonduRequestWrapper {
 		// Set a temporary payment method to avoid PHP warning.
 		$order->set_payment_method( Plugin::PAYMENT_METHODS['invoice'] );
 
+		$uuid                         = $customer->get_mondu_trade_account_uuid();
 		$order_data                   = OrderData::create_order( $order, $success_url );
 		$order_data['payment_method'] = 'billing_statement';
-		$order_data['buyer']['uuid']  = $customer->get_mondu_trade_account_uuid();
+		$order_data['buyer']['uuid']  = $uuid;
 
 		Logger::debug( 'Sending order to Mondu', [
-			'order' => $order_data,
+			'customer_id' => $customer->get_id(),
+			'uuid'        => $uuid,
 		] );
 
 		$response = $this->wrap_with_mondu_log_event( 'create_order', [ $order_data ] );

@@ -233,14 +233,27 @@ class Plugin {
 	 */
 	public function handle_login_redirect( $redirect ): string {
 		// Check if the query parameter 'mondu_trade_redirect_to' is set.
-		if ( isset( $_GET[self::QUERY_PARAM_REDIRECT] ) ) { // phpcs:disable WordPress.Security.NonceVerification.Recommended
-			$redirect_to = sanitize_text_field( wp_unslash( $_GET[self::QUERY_PARAM_REDIRECT] ) );
+		if ( isset( $_GET[ self::QUERY_PARAM_REDIRECT ] ) ) { // phpcs:disable WordPress.Security.NonceVerification.Recommended
+			$redirect_to = sanitize_text_field( wp_unslash( $_GET[ self::QUERY_PARAM_REDIRECT ] ) );
 
 			return esc_url( $redirect_to );
 		}
 
 		// Default redirect URL if the parameter is not set.
 		return $redirect;
+	}
+
+	/**
+	 * Determines if the query Mondu Trade query param exists.
+	 *
+	 * @return bool
+	 */
+	public static function has_mondu_trade_query_param(): bool {
+		if ( ! isset( $_GET[ TradeAccountController::QUERY_APPLIED ] ) || $_GET[ TradeAccountController::QUERY_APPLIED ] !== "true" ) {
+			return false;
+		}
+
+		return true;
 	}
 }
 

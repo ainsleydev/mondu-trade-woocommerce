@@ -65,6 +65,14 @@ final class BuyerStatus {
 	const DECLINED = 'declined';
 
 	/**
+	 * Cancelled is when the customer exited out of the Mondu
+	 * Trade Application form.
+	 *
+	 * @var string
+	 */
+	const CANCELLED = 'cancelled';
+
+	/**
 	 * Obtains the Buyer Status values.
 	 *
 	 * @return string[]
@@ -76,6 +84,7 @@ final class BuyerStatus {
 			self::ACCEPTED,
 			self::PENDING,
 			self::DECLINED,
+			self::CANCELLED,
 		];
 	}
 

@@ -10,6 +10,7 @@
 
 namespace MonduTrade\Controllers;
 
+use MonduTrade\Mondu\RedirectStatus;
 use WP_REST_Request;
 use WP_REST_Response;
 use MonduTrade\Util\Logger;
@@ -29,27 +30,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class TradeAccountController extends BaseController {
 
 	/**
-	 * Query param for the message after a customer has
-	 * applied for a Trade Account.
+	 * Query param to determine if the user has signed
+	 * up for a Trade Account.
 	 *
 	 * @var string
 	 */
-	const QUERY_MESSAGE = 'trade_account_message';
-
-	/**
-	 * Query param for the type of notice message.
-	 *
-	 * @var string
-	 */
-	const QUERY_NOTICE_TYPE = 'trade_account_notice_type';
-
-	/**
-	 * Query param for the buyer status, this is for
-	 * when Mondu has sent a webhook.
-	 *
-	 * @var string
-	 */
-	const QUERY_BUYER_STATUS = 'trade_account_buyer_status';
+	const QUERY_APPLIED = 'mondu_trade_account_applied';
 
 	/***
 	 * The route of the controller.
@@ -100,7 +86,7 @@ class TradeAccountController extends BaseController {
 		$customer_id     = $request->get_param( 'customer_id' );
 		$return_url      = urldecode( $request->get_param( 'return_url' ) ) ?? wc_get_checkout_url();
 
-		Logger::debug( 'Received request to process Trade Account', [
+		Logger::debug( 'Received request in Trade Account Controller', [
 			'customer_id'     => $customer_id,
 			'return_url'      => $return_url,
 			'redirect_status' => $redirect_status,
@@ -115,9 +101,6 @@ class TradeAccountController extends BaseController {
 			return $this->respond( 'No customer found.', 400 );
 		}
 
-		// Momentary sleep, so we can ensure the webhook as fired.
-		sleep(2);
-
 		$customer = new Customer( $customer_id );
 
 		// Bail if the customer couldn't be retrieved.
@@ -129,75 +112,40 @@ class TradeAccountController extends BaseController {
 			return $this->respond( 'No customer found.', 400 );
 		}
 
+		// Update the status of the customer as best we can
+		// with no pending state.
+		switch ( $redirect_status ) {
+			case RedirectStatus::DECLINED:
+				$customer->set_mondu_trade_account_status( BuyerStatus::DECLINED );
+				break;
+			case RedirectStatus::CANCELLED:
+				$customer->set_mondu_trade_account_status( BuyerStatus::CANCELLED );
+		}
+
 		// Obtain the status and UUID so we can utilise it on the frontend.
 		$status = $customer->get_mondu_trade_account_status();
 		$uuid   = $customer->get_mondu_trade_account_uuid();
 
 		if ( $status === BuyerStatus::UNKNOWN || $status === BuyerStatus::APPLIED ) {
+			// Momentary sleep, so we can ensure the webhook as fired.
+			sleep( 2 );
+
 			Logger::error( 'Customer has been redirected before a webhook as fired', [
-				'request' => $request,
-				'uuid'    => $uuid,
+				'params' => $request->get_params(),
+				'uuid'   => $uuid,
 			] );
 		}
 
-		$notice = $this->get_notice_message( $redirect_status, $status );
-
-		// Redirect to the checkout page with both query parameters.
-		$redirect_url = add_query_arg(
-			[
-				self::QUERY_MESSAGE      => esc_attr( $notice['message'] ),
-				self::QUERY_NOTICE_TYPE  => esc_attr( $notice['type'] ),
-				self::QUERY_BUYER_STATUS => esc_attr( $status ),
-			],
-			$return_url,
-		);
+		$redirect_url = add_query_arg( [ self::QUERY_APPLIED => esc_attr( 'true' ), ], $return_url, );
 
 		Logger::info( 'Customer has signed up via Mondu, redirecting...', [
 			'status' => $status,
 			'uuid'   => $uuid,
+			'url'    => $redirect_url,
 		] );
 
 		wp_safe_redirect( $redirect_url );
 
 		exit;
-	}
-
-	/**
-	 * Returns the notice messages to redirect too.
-	 *
-	 * @param string $redirect_status
-	 * @param string $buyer_status
-	 * @return array
-	 */
-	private function get_notice_message( string $redirect_status, string $buyer_status ): array {
-		if ( $buyer_status === BuyerStatus::PENDING ) {
-			return [
-				'type'    => 'notice',
-				'message' => 'Your Trade Account is pending. You will hear back in 48 hours.',
-			];
-		}
-
-		switch ( $redirect_status ) {
-			case 'cancelled':
-				return [
-					'type'    => 'error',
-					'message' => 'Your Trade Account application was cancelled, please try again or select a different payment method.',
-				];
-			case 'declined':
-				return [
-					'type'    => 'error',
-					'message' => 'Your Trade Account has been declined, please use an alternative payment method.',
-				];
-			case 'succeeded':
-				return [
-					'type'    => 'success',
-					'message' => 'Your Trade Account has been approved.',
-				];
-			default:
-				return [
-					'type'    => 'error',
-					'message' => 'An unknown error occurred. Please try again later.',
-				];
-		}
 	}
 }
