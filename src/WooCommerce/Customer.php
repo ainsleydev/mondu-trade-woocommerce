@@ -109,7 +109,7 @@ class Customer extends WC_Customer {
 	 * @param string $uuid Trade Account UUID
 	 */
 	public function set_mondu_trade_account_uuid( string $uuid ) {
-		$this->update_meta_data( self::META_KEY_TRADE_ACCOUNT_UUID, sanitize_text_field( $uuid ) );
+		$this->upsert_mondu_trade_meta_data( self::META_KEY_TRADE_ACCOUNT_UUID, sanitize_text_field( $uuid ) );
 	}
 
 	/**
@@ -137,6 +137,54 @@ class Customer extends WC_Customer {
 		if ( ! BuyerStatus::is_valid( $status ) ) {
 			throw new InvalidArgumentException( 'Invalid status value provided.' );
 		}
-		$this->update_meta_data( self::META_KEY_TRADE_ACCOUNT_STATUS, sanitize_text_field( $status ) );
+		$this->upsert_mondu_trade_meta_data( self::META_KEY_TRADE_ACCOUNT_STATUS, sanitize_text_field( $status ) );
+	}
+
+	/**
+	 * Upsert metadata for a customer.
+	 *
+	 * Checks if the given meta key exists. If it does, updates it. Otherwise, inserts a new entry.
+	 *
+	 * @param string $key
+	 * @param mixed  $value
+	 */
+	public function upsert_mondu_trade_meta_data( string $key, $value ) {
+		try {
+			$value = sanitize_text_field( $value );
+
+			// Dont' run if the keys are the same.
+			if ($this->meta_exists($key) && $this->get_meta($key) === $value) {
+				return;
+			}
+
+			// Check if the meta key exists
+			if ( $this->meta_exists( $key ) ) {
+				// Update the meta value
+				$this->update_meta_data( $key, $value );
+				Logger::debug( 'Updated meta data', [
+					'key'   => $key,
+					'value' => $value,
+					'customer_id' => $this->get_id(),
+				] );
+			} else {
+				// Add a new meta value
+				$this->add_meta_data( $key, $value, true );
+				Logger::debug( 'Added new meta data', [
+					'key'   => $key,
+					'value' => $value,
+					'customer_id' => $this->get_id(),
+				] );
+			}
+
+			// Persist changes to the database
+			$this->save_meta_data();
+		} catch ( Exception $e ) {
+			Logger::error( 'Failed to upsert meta data', [
+				'key'         => $key,
+				'value'       => $value,
+				'customer_id' => $this->get_id(),
+				'error'       => $e->getMessage(),
+			] );
+		}
 	}
 }

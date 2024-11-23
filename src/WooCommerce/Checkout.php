@@ -67,7 +67,7 @@ class Checkout {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 
 		// Bail if it's a WC endpoint or the user isn't logged in/
-		if ( is_wc_endpoint_url() || ! is_user_logged_in() ) {
+		if ( is_wc_endpoint_url() || ! is_user_logged_in() || ! Plugin::has_mondu_trade_query_param() ) {
 			return;
 		}
 
@@ -77,10 +77,6 @@ class Checkout {
 				'customer' => $customer->get_id(),
 			] );
 
-			return;
-		}
-
-		if ( ! isset( $_GET[ TradeAccountController::QUERY_APPLIED ] ) || $_GET[ TradeAccountController::QUERY_APPLIED ] !== "true" ) {
 			return;
 		}
 
@@ -105,14 +101,7 @@ class Checkout {
 	 */
 	public static function select_default_gateway( $available_gateways ) {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( ! is_checkout() ) {
-			return $available_gateways;
-		}
-
-		$status = isset( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ?
-			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ) : '';
-
-		if ( $status !== 'succeeded' ) {
+		if ( ! is_checkout() || ! is_user_logged_in() || ! Plugin::has_mondu_trade_query_param() ) {
 			return $available_gateways;
 		}
 

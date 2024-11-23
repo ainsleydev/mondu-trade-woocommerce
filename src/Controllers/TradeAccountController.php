@@ -136,7 +136,7 @@ class TradeAccountController extends BaseController {
 			] );
 		}
 
-		$redirect_url = add_query_arg( [ self::QUERY_APPLIED => esc_attr( $customer_id ), ], $return_url, );
+		$redirect_url = add_query_arg( [ self::QUERY_APPLIED => esc_attr( 'true' ), ], $return_url, );
 
 		Logger::info( 'Customer has signed up via Mondu, redirecting...', [
 			'status' => $status,
