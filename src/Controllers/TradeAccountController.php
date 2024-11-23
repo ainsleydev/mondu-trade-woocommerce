@@ -30,12 +30,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class TradeAccountController extends BaseController {
 
 	/**
-	 * Query param for the WooCommerce customer ID when we
-	 * have been redirected from Mondu.
+	 * Query param to determine if the user has signed
+	 * up for a Trade Account.
 	 *
 	 * @var string
 	 */
-	const QUERY_CUSTOMER_ID = 'trade_account_customer_id';
+	const QUERY_APPLIED = 'mondu_trade_account_applied';
 
 	/***
 	 * The route of the controller.
@@ -86,7 +86,7 @@ class TradeAccountController extends BaseController {
 		$customer_id     = $request->get_param( 'customer_id' );
 		$return_url      = urldecode( $request->get_param( 'return_url' ) ) ?? wc_get_checkout_url();
 
-		Logger::debug( 'Received request to process Trade Account', [
+		Logger::debug( 'Received request in Trade Account Controller', [
 			'customer_id'     => $customer_id,
 			'return_url'      => $return_url,
 			'redirect_status' => $redirect_status,
@@ -116,37 +116,32 @@ class TradeAccountController extends BaseController {
 		// with no pending state.
 		switch ( $redirect_status ) {
 			case RedirectStatus::DECLINED:
-				$customer->set_mondu_trade_account_status(BuyerStatus::DECLINED);
+				$customer->set_mondu_trade_account_status( BuyerStatus::DECLINED );
 				break;
 			case RedirectStatus::CANCELLED:
-				$customer->set_mondu_trade_account_status(BuyerStatus::CANCELLED);
+				$customer->set_mondu_trade_account_status( BuyerStatus::CANCELLED );
 		}
 
 		// Obtain the status and UUID so we can utilise it on the frontend.
 		$status = $customer->get_mondu_trade_account_status();
-		$uuid = $customer->get_mondu_trade_account_uuid();
+		$uuid   = $customer->get_mondu_trade_account_uuid();
 
 		if ( $status === BuyerStatus::UNKNOWN || $status === BuyerStatus::APPLIED ) {
 			// Momentary sleep, so we can ensure the webhook as fired.
-			sleep(2);
+			sleep( 2 );
 
 			Logger::error( 'Customer has been redirected before a webhook as fired', [
 				'params' => $request->get_params(),
-				'uuid'    => $uuid,
+				'uuid'   => $uuid,
 			] );
 		}
 
-		// Redirect to the checkout page with both query parameters.
-		$redirect_url = add_query_arg(
-			[
-				self::QUERY_CUSTOMER_ID => esc_attr( $customer_id ),
-			],
-			$return_url,
-		);
+		$redirect_url = add_query_arg( [ self::QUERY_APPLIED => esc_attr( $customer_id ), ], $return_url, );
 
 		Logger::info( 'Customer has signed up via Mondu, redirecting...', [
 			'status' => $status,
 			'uuid'   => $uuid,
+			'url'    => $redirect_url,
 		] );
 
 		wp_safe_redirect( $redirect_url );

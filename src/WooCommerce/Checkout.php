@@ -31,11 +31,11 @@ class Checkout {
 	 * @var array-key
 	 */
 	const buyer_status_notices = [
-		BuyerStatus::UNKNOWN => [
+		BuyerStatus::UNKNOWN   => [
 			'type'    => 'error',
 			'message' => 'An unknown error occurred. Please try again later.',
 		],
-		BuyerStatus::APPLIED => [
+		BuyerStatus::APPLIED   => [
 			'type'    => 'notice',
 			'message' => "Were just waiting to hear back from Mondu on your application, feel free to refresh the page or get in contact with support if the issue persists.",
 		],
@@ -43,15 +43,15 @@ class Checkout {
 			'type'    => 'error',
 			'message' => 'Your Trade Account application was cancelled, please try again or select a different payment method.',
 		],
-		BuyerStatus::DECLINED => [
+		BuyerStatus::DECLINED  => [
 			'type'    => 'error',
 			'message' => 'Your Trade Account has been declined, please use an alternative payment method.',
 		],
-		BuyerStatus::ACCEPTED => [
+		BuyerStatus::ACCEPTED  => [
 			'type'    => 'success',
 			'message' => 'Your Trade Account has been approved.',
 		],
-		BuyerStatus::PENDING => [
+		BuyerStatus::PENDING   => [
 			'type'    => 'notice',
 			'message' => 'Your Trade Account is pending. You will hear back in 48 hours.',
 		]
@@ -66,17 +66,21 @@ class Checkout {
 	public static function notices(): void {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 
-		// Bail if it's a WC endpoint.
-		if ( is_wc_endpoint_url() ) {
+		// Bail if it's a WC endpoint or the user isn't logged in/
+		if ( is_wc_endpoint_url() || ! is_user_logged_in() ) {
 			return;
 		}
 
-		// TODO: do we need query params?
 		$customer = new Customer( get_current_user_id() );
-		if ( !$customer->is_valid() ) {
-			Logger::error('Unable to retrieve customer in checkout', [
-				'customer' => $customer, // TODO should be id;
-			]);
+		if ( ! $customer->is_valid() ) {
+			Logger::error( 'Unable to retrieve customer in checkout', [
+				'customer' => $customer->get_id(),
+			] );
+
+			return;
+		}
+
+		if ( ! isset( $_GET[ TradeAccountController::QUERY_APPLIED ] ) || $_GET[ TradeAccountController::QUERY_APPLIED ] !== "true" ) {
 			return;
 		}
 
@@ -87,7 +91,7 @@ class Checkout {
 			'message' => 'An unexpected error occurred. Please contact support or try again later.',
 		];
 
-		wc_add_notice($notice['message'], $notice['type']);
+		wc_add_notice( $notice['message'], $notice['type'] );
 
 		// phpcs:enable
 	}
