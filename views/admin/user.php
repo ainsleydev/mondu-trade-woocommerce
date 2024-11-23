@@ -14,6 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
 }
 
+$is_admin = current_user_can( 'administrator' );
+
 ?>
 
 <!-- =====================
@@ -30,7 +32,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<td>
 			<input type="text"
 				   id="mondu_trade_uuid"
-				   readonly
+				   name="mondu_trade_uuid"
+				<?php if ( ! $is_admin ) {
+					echo 'readonly';
+				} ?>
 				   class="regular-text"
 				   value="<?php echo isset( $uuid ) ? esc_attr( $uuid ) : ''; ?>"
 			/>
@@ -40,23 +45,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<tr>
 		<th><label for="mondu_trade_status">Status</label></th>
 		<td>
-			<?php if ( current_user_can( 'administrator' ) ) : ?>
-				<select id="mondu_trade_status" name="mondu_trade_status" class="regular-text">
-					<?php foreach ( BuyerStatus::get_values() as $buyer_status ) : ?>
-						<option
-							value="<?php echo $buyer_status; ?>" <?php echo ( $status ?? '' ) === $buyer_status ? 'selected' : ''; ?>>
-							<?php echo ucfirst( $buyer_status ); ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
-			<?php else : ?>
-				<input type="text"
-					   id="mondu_trade_status"
-					   readonly
-					   class="regular-text"
-					   value="<?php echo esc_attr( isset( $status ) ? ucfirst( $status ) : '' ); ?>"
-				/>
-			<?php endif; ?>
+			<select id="mondu_trade_status" name="mondu_trade_status"
+					class="regular-text" <?php echo ! $is_admin ? 'disabled' : ''; ?>>
+				<?php foreach ( BuyerStatus::get_values() as $buyer_status ) : ?>
+					<option
+						value="<?php echo $buyer_status; ?>" <?php echo ( $status ?? '' ) === $buyer_status ? 'selected' : ''; ?>>
+						<?php echo ucfirst( $buyer_status ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
 		</td>
 	</tr>
 	<!-- Buyer Limit -->
