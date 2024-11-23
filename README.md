@@ -75,6 +75,31 @@ below. Note that if an email does not follow this convention, the trade applicat
 Note that emails are sent via the Mondu internal inbox in sandbox mode, in order to see them, it's best to reach out to
 Mondu.
 
+## Webhooks
+
+Mondu send buyer webhooks when a user has applied for a Trade Account. The following payload will be provided via this
+webhook once buyer onboarding requested is processed. See [here](https://docs.mondu.ai/reference/webhooks-overview) for
+more details.
+
+If the webhook failed, Mondu will send the webhook in increasing intervals until the `WebhookController` returns an `OK`
+response.
+
+**Example Payload**:
+
+```json
+{
+  "topic": "buyer/{TOPIC_NAME}",
+  "buyer": {
+    "uuid": "66e8d234-23b5-1125-9592-d7390f20g01c",
+    "state": "accepted",
+    "external_reference_id": "DE-1-1000745773",
+    "company_name": "2023-02-07T15:14:22.301Z",
+    "first_name": "John",
+    "last_name": "Smith"
+  }
+}
+```
+
 ## FAQs
 
 ### Is the plugin compatible with the WP block editor?
@@ -386,11 +411,3 @@ redistributed in any form, except with explicit written permission from ainsley.
 ## Licence
 
 Code Copyright 2024 ainsley.dev LTD. Code released under the [GPL-3.0](LICENSE).
-
-## TODO:
-
-- Webhooks
-
-We send buyer accepted, declined or pending.
-If successfully received we do not repeat the webhooks attemts otherwise we send several attamts is increasing
-intervals.
