@@ -46,7 +46,7 @@ release: # Creates a new tag
 		exit 0; \
 	else \
 		echo "Local version ($$local_version) and remote version ($$remote_version) differ. Proceeding with the release..."; \
-		sh ./bin/tag $$local_version "Mondu Trade Release: $$local_version"; \
+		sh ./bin/tag.sh $$local_version "Mondu Trade Release: $$local_version"; \
 	fi
 .PHONY: release
 
