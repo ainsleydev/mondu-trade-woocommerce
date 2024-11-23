@@ -11,10 +11,10 @@
 namespace MonduTrade\Admin;
 
 use WP_User;
+use MonduTrade\Util\Logger;
 use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\Mondu\RequestWrapper;
 use MonduTrade\WooCommerce\Customer;
-use MonduTrade\Util\Logger;
 
 /**
  * User allows admins to view information about the
