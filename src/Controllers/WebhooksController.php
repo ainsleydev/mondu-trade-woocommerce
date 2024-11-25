@@ -116,8 +116,7 @@ class WebhooksController extends BaseController {
 		$signature         = $verifier->create_hmac( $body );
 
 		Logger::info( 'Webhook received from Mondu', [
-			'webhook_topic' => $topic,
-			'params'        => $params,
+			'payload'        => $params,
 		] );
 
 		try {
@@ -204,8 +203,6 @@ class WebhooksController extends BaseController {
 			return $this->return_not_found();
 		}
 
-		$this->perform_action( $state, (int) $woocommerce_customer_number, $params );
-
 		$customer->set_mondu_trade_account_uuid( $buyer_uuid );
 		$customer->set_mondu_trade_account_status( $state );
 		$customer->save();
@@ -215,6 +212,15 @@ class WebhooksController extends BaseController {
 			'uuid'        => $params['uuid'],
 			'customer_id' => $woocommerce_customer_number,
 		] );
+
+		try {
+			$this->perform_action( $state, (int) $woocommerce_customer_number, $params );
+		} catch (\Exception $e ) {
+			Logger::error('Error performing action (triggering user defined hook)', [
+				'state'       => $state,
+				'params'      => $params,
+			]);
+		}
 
 		return $this->return_success();
 	}
