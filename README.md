@@ -245,6 +245,91 @@ the [Mondu Webhooks Overview](https://docs.mondu.ai/reference/webhooks-overview)
 }
 ```
 
+---
+
+### How can I get a buyer status of a user?
+
+You can use the `mondu_trade_get_buyer_status` function to fetch the current status of a customer. This function will
+throw a `MonduTradeException` if the provided customer ID is invalid. Ensure to handle exceptions properly when calling
+this function.
+
+**Parameters:**
+
+- `$customer_id (int)`: The ID of the customer whose status you want to retrieve.
+
+**Returns**:
+
+- `string`: The current Mondu Trade Account status of the customer, see above for possible values.
+
+**Throws**:
+
+- `MonduTradeException`: If the customer ID is not valid.
+
+**Example**:
+
+Here’s an example of how to call the `mondu_trade_get_buyer_status` function and handle possible exceptions:
+
+```php
+try {
+    $customer_id = 123; // Replace with the actual customer ID
+    $status = mondu_trade_get_buyer_status($customer_id);
+
+    echo "Customer Status: " . $status;
+} catch (MonduTradeException $e) {
+    echo "Error: " . $e->getMessage();
+}
+```
+
+---
+
+### How can I get a buyer limit of a user?
+
+You can use the `mondu_trade_get_buyer_limit` function to fetch the buyer limit for a customer. This function will
+throw a `MonduTradeException` if the provided customer ID is invalid or if the buyer status is not `accepted`. Ensure to
+handle exceptions properly when calling this function.
+
+**Parameters:**
+
+- `$customer_id (int)`: The ID of the customer whose buyer limit you want to retrieve.
+
+**Returns**:
+
+- `array`: An associative array containing the buyer limit details (see sample below).
+
+**Throws**:
+
+- `MonduTradeException`: If the customer ID is not valid or the buyer status is not `accepted`.
+
+**Example**:
+
+Here’s an example of how to call the `mondu_trade_get_buyer_limit` function and handle possible exceptions:
+
+```php
+try {
+    $customer_id = 123; // Replace with the actual customer ID
+    $buyer_limit = mondu_trade_get_buyer_limit($customer_id);
+
+    print_r($buyer_limit);
+} catch (MonduTradeException $e) {
+    echo "Error: " . $e->getMessage();
+}
+````
+
+**Sample Output**:
+
+```php
+Array (
+    [purchasing_limit] => Array (
+        [purchasing_limit_cents] => 100000
+        [balance_cents] => 10000
+        [max_purchase_value_cents] => 90000
+        [max_collections_state] => no
+    )
+)
+```
+
+---
+
 ### General Webhook Action
 
 `mondu_trade_buyer_webhook_received`
@@ -257,7 +342,7 @@ Triggered when a webhook related to a buyer is received from Mondu.
 - `$customer_id (int)`: The WooCommerce customer ID.
 - `$buyer (array)`:     The buyer object, see above for an example.
 
-**Usage**
+**Example**:
 
 ```php
 add_action('mondu_trade_buyer_webhook_received', function ($state, $customer_id, $buyer) {
@@ -280,6 +365,8 @@ Triggered when a buyer has been accepted for a Trade Account.
 - `$customer_id (int)`: The WooCommerce customer ID.
 - `$buyer (array)`:     The buyer object, see above for an example.
 
+**Example**:
+
 ```php
 add_action('mondu_trade_buyer_accepted', function ($customer_id, $buyer) {
    print_r([
@@ -300,6 +387,8 @@ Triggered when a buyer is in a pending state (maximum 48 hours).
 - `$customer_id (int)`: The WooCommerce customer ID.
 - `$buyer (array)`:     The buyer object, see above for an example.
 
+**Example**:
+
 ```php
 add_action('mondu_trade_buyer_pending', function ($customer_id, $buyer) {
    print_r([
@@ -319,6 +408,8 @@ Triggered when a buyer has been declined for a Trade Account.
 
 - `$customer_id (int)`: The WooCommerce customer ID.
 - `$buyer (array)`:     The buyer object, see above for an example.
+
+**Example**:
 
 ```php
 add_action('mondu_trade_buyer_declined', function ($customer_id, $buyer) {

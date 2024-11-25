@@ -118,6 +118,11 @@ class Plugin {
 		} );
 
 		/**
+		 * Include helper functions for theme development.
+		 */
+		require_once MONDU_TRADE_PLUGIN_PATH . '/src/Functions/functions.php';
+
+		/**
 		 * Load the main Mondu Trade Gateway.
 		 */
 		add_filter( 'woocommerce_payment_gateways', [ PaymentGateway::class, 'add' ] );
