@@ -221,32 +221,6 @@ add_filter('mondu_trade_account_checkout_class', function ($class) {
 
 ---
 
-### How can I run actions when a buyer status has changed?
-
-There are 4 different actions you can latch onto when Mondu replies with an update after a customer has applied for a
-Digital Trade Account. Below is a list of available actions.
-
-**Example Payload**
-
-Below is an example of a buyer and topic sent via the actions, see
-the [Mondu Webhooks Overview](https://docs.mondu.ai/reference/webhooks-overview) for more information
-
-```json
-{
-  "topic": "buyer/{TOPIC_NAME}",
-  "buyer": {
-    "uuid": "66e8d234-23b5-1125-9592-d7390f20g01c",
-    "state": "accepted",
-    "external_reference_id": "DE-1-1000745773",
-    "company_name": "2023-02-07T15:14:22.301Z",
-    "first_name": "John",
-    "last_name": "Smith"
-  }
-}
-```
-
----
-
 ### How can I get a buyer status of a user?
 
 You can use the `mondu_trade_get_buyer_status` function to fetch the current status of a customer. This function will
@@ -329,6 +303,30 @@ Array (
 ```
 
 ---
+
+### How can I run actions when a buyer status has changed?
+
+There are 4 different actions you can latch onto when Mondu replies with an update after a customer has applied for a
+Digital Trade Account. Below is a list of available actions.
+
+**Example Payload**
+
+Below is an example of a buyer and topic sent via the actions, see
+the [Mondu Webhooks Overview](https://docs.mondu.ai/reference/webhooks-overview) for more information
+
+```json
+{
+  "topic": "buyer/{TOPIC_NAME}",
+  "buyer": {
+    "uuid": "66e8d234-23b5-1125-9592-d7390f20g01c",
+    "state": "accepted",
+    "external_reference_id": "DE-1-1000745773",
+    "company_name": "2023-02-07T15:14:22.301Z",
+    "first_name": "John",
+    "last_name": "Smith"
+  }
+}
+```
 
 ### General Webhook Action
 
