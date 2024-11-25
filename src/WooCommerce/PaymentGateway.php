@@ -186,7 +186,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 		// Applied means we haven't received the webhook, so we
 		// need to wait for them to send us the info.
 		if ( $status === BuyerStatus::APPLIED ) {
-			wc_add_notice( "We're just waiting to hear back from Mondu, please wait and refresh the page. If this issue persists, please reach out to support", 'notice' );
+			wc_add_notice( "We're just waiting to hear back from Mondu, please wait and refresh the page.", 'notice' );
 
 			return;
 		}
