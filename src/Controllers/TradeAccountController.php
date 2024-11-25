@@ -82,9 +82,19 @@ class TradeAccountController extends BaseController {
 	 * @return WP_REST_Response
 	 */
 	public function index( WP_REST_Request $request ): WP_REST_Response {
+		$params          = $request->get_json_params();
 		$redirect_status = $request->get_param( 'redirect_status' );
 		$customer_id     = $request->get_param( 'customer_id' );
 		$return_url      = urldecode( $request->get_param( 'return_url' ) ) ?? wc_get_checkout_url();
+
+		// The referer needs to be in the valid IP range.
+		if ( ! $this->validate_mondu_ip( $request ) ) {
+			Logger::error( 'Unauthorised: Mondu IP is not valid', [
+				'params' => $params,
+			] );
+
+			return $this->respond( 'Unauthorised', 403 );
+		}
 
 		Logger::debug( 'Received request in Trade Account Controller', [
 			'customer_id'     => $customer_id,

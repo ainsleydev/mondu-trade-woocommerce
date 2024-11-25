@@ -88,11 +88,16 @@ class WebhooksController extends BaseController {
 	 * @return WP_REST_Response
 	 */
 	public function index( WP_REST_Request $request ): WP_REST_Response {
+		$params = $request->get_json_params();
+
+		// The referer needs to be in the valid IP range.
 		if ( ! $this->validate_mondu_ip( $request ) ) {
+			Logger::error( 'Unauthorised: Mondu IP is not valid', [
+				'params' => $params,
+			] );
+
 			return $this->respond( 'Unauthorised', 403 );
 		}
-
-		$params = $request->get_json_params();
 
 		// Handle case where params are null (i.e. empty JSON payload).
 		if ( is_null( $params ) ) {
