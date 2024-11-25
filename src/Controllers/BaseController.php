@@ -12,9 +12,9 @@ namespace MonduTrade\Controllers;
 
 use WP_REST_Request;
 use WP_REST_Response;
-use MonduTrade\Plugin;
 use WP_REST_Controller;
 use MonduTrade\Util\Environment;
+use MonduTrade\Util\Logger;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -96,6 +96,16 @@ abstract class BaseController extends WP_REST_Controller {
 
 		$ip = $request->get_header( 'X-Forwarded-For' ) ?? $request->get_header( 'REMOTE_ADDR' );
 
-		return in_array( $ip, $allowed_ips, true );
+		$ok = in_array( $ip, $allowed_ips, true );
+
+		if ( ! $ok ) {
+			Logger::error( 'Unauthorised: Mondu IP is not valid', [
+				'params' => $request->get_params(),
+			] );
+
+			return false;
+		}
+
+		return true;
 	}
 }

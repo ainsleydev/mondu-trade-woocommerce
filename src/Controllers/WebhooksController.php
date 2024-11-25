@@ -92,10 +92,6 @@ class WebhooksController extends BaseController {
 
 		// The referer needs to be in the valid IP range.
 		if ( ! $this->validate_mondu_ip( $request ) ) {
-			Logger::error( 'Unauthorised: Mondu IP is not valid', [
-				'params' => $params,
-			] );
-
 			return $this->respond( 'Unauthorised', 403 );
 		}
 
