@@ -98,7 +98,7 @@ class Settings {
 		}
 
 		$message = $this->webhook_register->get_message();
-		$webhooks_registered = get_option( '_mondu_trade_webhooks_registered' );
+		$webhooks_registered = get_option( Plugin::OPTION_WEBHOOKS_REGISTERED );
 
 		include MONDU_TRADE_VIEW_PATH . '/admin/settings.php';
 	}

@@ -7,7 +7,7 @@
  * Author:          ainsley.dev LTD
  * Author URI:      https://ainsley.dev
  * Text Domain:     mondu-trade-account
- * Version:			0.0.8
+ * Version:			0.0.9
  *
  * Requires at least: 6.7
  * Requires PHP: 7.4
@@ -48,3 +48,11 @@ add_action( 'before_woocommerce_init', function () {
 		FeaturesUtil::declare_compatibility( 'remote_logging', __FILE__, true );
 	}
 } );
+
+// Ensure options are deleted when deactivated.
+function mondu_trade_deactivate() {
+	delete_option( \MonduTrade\Plugin::OPTION_WEBHOOKS_REGISTERED );
+	delete_option( \MonduTrade\Plugin::OPTION_WEBHOOKS_SECRET );
+}
+
+register_deactivation_hook( MONDU_TRADE_PLUGIN_FILE, 'mondu_trade_deactivate' );
