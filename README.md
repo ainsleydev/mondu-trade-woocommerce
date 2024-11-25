@@ -373,6 +373,9 @@ add_action('mondu_trade_buyer_accepted', function ($customer_id, $buyer) {
         'customer_id' => $customer_id,
         'buyer' => $buyer,
     ]);
+
+    // You can now retrieve the buyer limit by using the
+    // mondu_trade_get_buyer_limit($customer_id) function.
 });
 ```
 
