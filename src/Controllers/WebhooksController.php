@@ -121,6 +121,7 @@ class WebhooksController extends BaseController {
 
 		try {
 			if ( $signature !== $signature_payload ) {
+				Logger::error( 'Signature mismatch in Webhooks Controller' );
 				throw new MonduTradeException( __( 'Signature mismatch.', 'mondu-trade-account' ) );
 			}
 
@@ -144,7 +145,7 @@ class WebhooksController extends BaseController {
 		} catch ( \Exception $e ) {
 			Logger::error( 'Webhook error from Mondu', [
 				'params' => $params,
-				'error' => $e->getMessage(),
+				'error'  => $e->getMessage(),
 			] );
 			$this->mondu_request_wrapper->log_plugin_event( $e, 'webhooks', $params );
 
@@ -182,7 +183,9 @@ class WebhooksController extends BaseController {
 		$buyer_uuid                  = $params['uuid'];
 		$state                       = $params['state'];
 
-		if ( ! is_numeric( $woocommerce_customer_number ) ) {
+		if ( ! $woocommerce_customer_number || ! is_numeric( $woocommerce_customer_number ) ) {
+			Logger::error( 'Invalid customer number in webhook request, external reference ID: ' . $woocommerce_customer_number );
+
 			return $this->respond(
 				sprintf(
 				// translators: %s is the customer number that is invalid.
@@ -193,19 +196,10 @@ class WebhooksController extends BaseController {
 			);
 		}
 
-		if ( ! $woocommerce_customer_number ) {
-			return $this->respond(
-				sprintf(
-				// translators: %s is the customer number that was not found.
-					__( 'Customer not found: %s', 'mondu-trade-account' ),
-					$woocommerce_customer_number
-				),
-				404
-			);
-		}
-
 		$customer = $this->get_customer( (int) $woocommerce_customer_number );
 		if ( ! $customer ) {
+			Logger::error( 'Customer ID not found from external reference ID: ' . $woocommerce_customer_number );
+
 			return $this->return_not_found();
 		}
 
@@ -216,8 +210,8 @@ class WebhooksController extends BaseController {
 		$customer->save();
 
 		Logger::info( 'Successfully updated customer status from buyer webhook', [
-			'state' => $state,
-			'uuid' => $params['uuid'],
+			'state'       => $state,
+			'uuid'        => $params['uuid'],
 			'customer_id' => $woocommerce_customer_number,
 		] );
 
