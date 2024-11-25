@@ -55,4 +55,4 @@ function mondu_trade_deactivate() {
 	delete_option( \MonduTrade\Plugin::OPTION_WEBHOOKS_SECRET );
 }
 
-register_deactivation_hook( MONDU_PLUGIN_FILE, 'mondu_trade_deactivate' );
+register_deactivation_hook( MONDU_TRADE_PLUGIN_FILE, 'mondu_trade_deactivate' );
