@@ -263,13 +263,13 @@ class WebhooksController extends BaseController {
 
 		switch ( $state ) {
 			case BuyerStatus::ACCEPTED:
-				do_action( 'mondu_trade_buyer_accepted', $buyer, $customer_id );
+				do_action( 'mondu_trade_buyer_accepted', $customer_id, $buyer );
 				break;
 			case BuyerStatus::PENDING:
-				do_action( 'mondu_trade_buyer_pending', $buyer, $customer_id );
+				do_action( 'mondu_trade_buyer_pending', $customer_id, $buyer );
 				break;
 			case BuyerStatus::DECLINED:
-				do_action( 'mondu_trade_buyer_declined', $buyer, $customer_id );
+				do_action( 'mondu_trade_buyer_declined', $customer_id, $buyer );
 				break;
 		}
 	}
