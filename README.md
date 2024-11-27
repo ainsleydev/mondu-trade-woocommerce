@@ -344,6 +344,14 @@ Triggered when a webhook related to a buyer is received from Mondu.
 **Example**:
 
 ```php
+/**
+ * Handles general webhook actions when a buyer webhook is received from Mondu.
+ *
+ * @param string $state       The current state of the buyer (e.g., accepted, pending, declined).
+ * @param int    $customer_id The WooCommerce customer ID.
+ * @param array  $buyer       The buyer object containing buyer details.
+ * @return void
+ */
 function handle_mondu_trade_buyer_webhook($state, $customer_id, $buyer) {
     print_r([
         'state' => $state,
@@ -369,6 +377,13 @@ Triggered when a buyer has been accepted for a Trade Account.
 **Example**:
 
 ```php
+/**
+ * Handles the "accepted" webhook when a buyer is approved for a Trade Account.
+ *
+ * @param int   $customer_id The WooCommerce customer ID.
+ * @param array $buyer       The buyer object containing buyer details.
+ * @return void
+ */
 function handle_mondu_trade_buyer_accepted($customer_id, $buyer) {
     print_r([
         'customer_id' => $customer_id,
@@ -396,6 +411,13 @@ Triggered when a buyer is in a pending state (maximum 48 hours).
 **Example**:
 
 ```php
+/**
+ * Handles the "pending" webhook when a buyer is in a pending state.
+ *
+ * @param int   $customer_id The WooCommerce customer ID.
+ * @param array $buyer       The buyer object containing buyer details.
+ * @return void
+ */
 function handle_mondu_trade_buyer_pending($customer_id, $buyer) {
     print_r([
         'customer_id' => $customer_id,
@@ -420,6 +442,13 @@ Triggered when a buyer has been declined for a Trade Account.
 **Example**:
 
 ```php
+/**
+ * Handles the "declined" webhook when a buyer is declined for a Trade Account.
+ *
+ * @param int   $customer_id The WooCommerce customer ID.
+ * @param array $buyer       The buyer object containing buyer details.
+ * @return void
+ */
 function handle_mondu_trade_buyer_declined($customer_id, $buyer) {
     print_r([
         'customer_id' => $customer_id,
