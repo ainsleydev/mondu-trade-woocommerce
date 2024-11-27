@@ -343,13 +343,15 @@ Triggered when a webhook related to a buyer is received from Mondu.
 **Example**:
 
 ```php
-add_action('mondu_trade_buyer_webhook_received', function ($state, $customer_id, $buyer) {
-   print_r([
+function handle_mondu_trade_buyer_webhook($state, $customer_id, $buyer) {
+    print_r([
         'state' => $state,
         'customer_id' => $customer_id,
         'buyer' => $buyer,
     ]);
-});
+}
+
+add_action('mondu_trade_buyer_webhook_received', 'handle_mondu_trade_buyer_webhook', 10, 3);
 ```
 
 ### Accepted
@@ -366,15 +368,17 @@ Triggered when a buyer has been accepted for a Trade Account.
 **Example**:
 
 ```php
-add_action('mondu_trade_buyer_accepted', function ($customer_id, $buyer) {
-   print_r([
+function handle_mondu_trade_buyer_accepted($customer_id, $buyer) {
+    print_r([
         'customer_id' => $customer_id,
         'buyer' => $buyer,
     ]);
 
     // You can now retrieve the buyer limit by using the
     // mondu_trade_get_buyer_limit($customer_id) function.
-});
+}
+
+add_action('mondu_trade_buyer_accepted', 'handle_mondu_trade_buyer_accepted', 10, 2);
 ```
 
 ### Pending
@@ -391,12 +395,14 @@ Triggered when a buyer is in a pending state (maximum 48 hours).
 **Example**:
 
 ```php
-add_action('mondu_trade_buyer_pending', function ($customer_id, $buyer) {
-   print_r([
+function handle_mondu_trade_buyer_pending($customer_id, $buyer) {
+    print_r([
         'customer_id' => $customer_id,
         'buyer' => $buyer,
     ]);
-});
+}
+
+add_action('mondu_trade_buyer_pending', 'handle_mondu_trade_buyer_pending', 10, 2);
 ```
 
 ### Declined
@@ -413,12 +419,14 @@ Triggered when a buyer has been declined for a Trade Account.
 **Example**:
 
 ```php
-add_action('mondu_trade_buyer_declined', function ($customer_id, $buyer) {
-   print_r([
+function handle_mondu_trade_buyer_declined($customer_id, $buyer) {
+    print_r([
         'customer_id' => $customer_id,
         'buyer' => $buyer,
     ]);
-});
+}
+
+add_action('mondu_trade_buyer_declined', 'handle_mondu_trade_buyer_declined', 10, 2);
 ```
 
 ## Development
