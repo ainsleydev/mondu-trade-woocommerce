@@ -131,11 +131,9 @@ class WebhooksController extends BaseController {
 					$result = $this->update_customer_state( BuyerStatus::ACCEPTED, $buyer );
 					break;
 				case 'buyer/pending':
-					do_action( 'mondu_trade_buyer_pending', $buyer );
 					$result = $this->update_customer_state( BuyerStatus::PENDING, $buyer );
 					break;
 				case 'buyer/declined':
-					do_action( 'mondu_trade_buyer_accepted', $buyer );
 					$result = $this->update_customer_state( BuyerStatus::DECLINED, $buyer );
 					break;
 				default:
