@@ -430,6 +430,67 @@ function handle_mondu_trade_buyer_declined($customer_id, $buyer) {
 add_action('mondu_trade_buyer_declined', 'handle_mondu_trade_buyer_declined', 10, 2);
 ```
 
+---
+
+### How can I email a customer after their status has changed?
+
+In some circumstances, Mondu don't send emails to customers to update them. If you would like to send emails from
+WooCommerce, you can latch onto the `mondu_trade_buyer_webhook_received` webhook and use the `WC` mailer instance.
+
+An example of how you might do this is below.
+
+```php
+/**
+ * Sends an email to the customer when their status changes.
+ *
+ * @param string $state The buyer state, e.g., "accepted", "pending", or "declined".
+ * @param int $customer_id The WooCommerce customer ID.
+ * @param array $buyer The buyer object containing buyer details.
+ */
+function send_email_on_status_change($state, $customer_id, $buyer) {
+    // Retrieve customer data.
+    $customer = new WC_Customer($customer_id);
+    $email = $customer->get_email();
+
+    // Set email subject and email heading.
+    $subject = sprintf(__('Your Trade Account Status: %s', 'mondu-trade-account'), ucfirst($state));
+    $email_heading = __('Trade Account Status Update', 'mondu-trade-account');
+
+    // Prepare email content.
+    ob_start();
+    ?>
+
+    <!-- Intro -->
+    <p><?php printf(__('Dear %s,', 'mondu-trade-account'), esc_html($customer->get_first_name())); ?></p>
+    <p><?php _e('We would like to update you on the current status of your Mondu Digital Trade Account:', 'mondu-trade-account'); ?></p>
+    <p><strong><?php printf(__('Status: %s', 'mondu-trade-account'), ucfirst(esc_html($state))); ?></strong></p>
+
+    <!-- Status -->
+    <?php if ($state === 'accepted') : ?>
+        <p><?php _e('Congratulations! Your trade account has been approved. You can now enjoy extended purchasing limits and flexible payment terms.', 'mondu-trade-account'); ?></p>
+    <?php elseif ($state === 'pending') : ?>
+        <p><?php _e('Your application is under review. We will notify you once a decision has been made.', 'mondu-trade-account'); ?></p>
+    <?php elseif ($state === 'declined') : ?>
+        <p><?php _e('Unfortunately, your trade account application was not approved. Feel free to reach out to our support team for assistance.', 'mondu-trade-account'); ?></p>
+    <?php endif; ?>
+
+    <!-- Footer -->
+    <p><?php _e('Thank you for choosing us!', 'mondu-trade-account'); ?></p>
+
+    <?php
+    $email_body = ob_get_clean();
+
+    // Use WooCommerce mailer.
+    $mailer = WC()->mailer();
+    $email_content = $mailer->wrap_message($email_heading, $email_body);
+
+    // Send the email.
+    $mailer->send($email, $subject, $email_content);
+}
+
+add_action('mondu_trade_buyer_webhook_received', 'send_email_on_status_change', 10, 3);
+```
+
 ## Development
 
 Below are the steps to install the plugin on your local machine for development.
