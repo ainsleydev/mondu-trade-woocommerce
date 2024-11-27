@@ -131,11 +131,9 @@ class WebhooksController extends BaseController {
 					$result = $this->update_customer_state( BuyerStatus::ACCEPTED, $buyer );
 					break;
 				case 'buyer/pending':
-					do_action( 'mondu_trade_buyer_pending', $buyer );
 					$result = $this->update_customer_state( BuyerStatus::PENDING, $buyer );
 					break;
 				case 'buyer/declined':
-					do_action( 'mondu_trade_buyer_accepted', $buyer );
 					$result = $this->update_customer_state( BuyerStatus::DECLINED, $buyer );
 					break;
 				default:
@@ -173,12 +171,12 @@ class WebhooksController extends BaseController {
 	 *  }
 	 *
 	 *
-	 * @param string $state
+	 * @param string $buyer_status
 	 * @param array $params
 	 * @return WP_REST_Response
 	 * @see: https://docs.mondu.ai/reference/webhooks-overview#buyer--accepted--pending--declined
 	 */
-	private function update_customer_state( string $state, array $params ): WP_REST_Response {
+	private function update_customer_state( string $buyer_status, array $params ): WP_REST_Response {
 		$woocommerce_customer_number = $params['external_reference_id'];
 		$buyer_uuid                  = $params['uuid'];
 		$state                       = $params['state'];
@@ -214,12 +212,12 @@ class WebhooksController extends BaseController {
 		] );
 
 		try {
-			$this->perform_action( $state, (int) $woocommerce_customer_number, $params );
+			$this->perform_action( $buyer_status, (int) $woocommerce_customer_number, $params );
 		} catch ( \Exception $e ) {
 			Logger::error( 'Error performing action (triggering user defined hook)', [
-				'state'  => $state,
-				'params' => $params,
-				'error'  => $e->getMessage(),
+				'buyer_status' => $buyer_status,
+				'params'       => $params,
+				'error'        => $e->getMessage(),
 			] );
 		}
 
