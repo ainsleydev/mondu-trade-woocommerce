@@ -215,9 +215,17 @@ the default class name `mondu-trade` or provide your own using a filter.
 An example of this is below:
 
 ```php
-add_filter('mondu_trade_account_checkout_class', function ($class) {
-	return $class . ' my-class-name';
-});
+/**
+ * Adds a custom class to the Mondu Trade Account checkout gateway.
+ *
+ * @param string $class The existing CSS class for the Mondu Trade Account checkout gateway.
+ * @return string The modified CSS class with the custom class name appended.
+ */
+function add_custom_mondu_trade_account_class($class) {
+    return $class . ' my-class-name';
+}
+
+add_filter('mondu_trade_account_checkout_class', 'add_custom_mondu_trade_account_class');
 ```
 
 ---
