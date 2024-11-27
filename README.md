@@ -82,7 +82,8 @@ webhook once buyer onboarding requested is processed. See [here](https://docs.mo
 more details.
 
 If the webhook failed, Mondu will send the webhook in increasing intervals until the `WebhookController` returns an `OK`
-response.
+response. Mondu will send `6` attempts every minute for all `buyer` and `order` topics until the handler responses with
+a OK status code.
 
 **Example Payload**:
 
