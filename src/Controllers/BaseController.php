@@ -96,6 +96,18 @@ abstract class BaseController extends WP_REST_Controller {
 
 		$ip = $request->get_header( 'X-Forwarded-For' ) ?? $request->get_header( 'REMOTE_ADDR' );
 
+		Logger::debug( 'Validating Mondu IP', [
+			'ip_obtained' => $ip,
+			'allowed_ips' => $allowed_ips,
+			'headers'     => $request->get_headers(),
+		] );
+
+		// Documentation for Mondu is currently wrong, and until we
+		// know all of their IP ranges, we have to return true here.
+		//
+		// TODO: Put the check back in once we know all of the ranges.
+		return true;
+
 		$ok = in_array( $ip, $allowed_ips, true );
 
 		if ( ! $ok ) {
