@@ -10,8 +10,8 @@
 
 namespace MonduTrade\Forms;
 
-use MonduTrade\Util\Assets;
 use WC_Customer;
+use MonduTrade\Util\Assets;
 use MonduTrade\Util\Logger;
 use MonduTrade\Mondu\RequestWrapper;
 use MonduTrade\Controllers\TradeAccountController;

@@ -14,9 +14,9 @@ namespace MonduTrade;
 
 use Dotenv\Dotenv;
 use MonduTrade\Admin\User;
+use MonduTrade\Util\Assets;
 use MonduTrade\Admin\Settings;
 use MonduTrade\Blocks\FormBlock;
-use MonduTrade\Util\Assets;
 use MonduTrade\WooCommerce\Checkout;
 use MonduTrade\Forms\SubmitTradeAccount;
 use MonduTrade\WooCommerce\PaymentGateway;
@@ -268,9 +268,6 @@ class Plugin {
 	 * @return void
 	 */
 	public function register_scripts(): void {
-
-
-
 
 		// Register admin specific scripts.
 		if (is_admin()) {
