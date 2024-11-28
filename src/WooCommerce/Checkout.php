@@ -13,7 +13,6 @@ namespace MonduTrade\WooCommerce;
 use MonduTrade\Plugin;
 use MonduTrade\Util\Logger;
 use MonduTrade\Mondu\BuyerStatus;
-use MonduTrade\Controllers\TradeAccountController;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' );
@@ -37,7 +36,7 @@ class Checkout {
 		],
 		BuyerStatus::APPLIED   => [
 			'type'    => 'notice',
-			'message' => "Were just waiting to hear back from Mondu on your application, feel free to refresh the page or get in contact with support if the issue persists.",
+			'message' => "Were just waiting to hear back from Mondu on your application, please refresh the page and try again.",
 		],
 		BuyerStatus::CANCELLED => [
 			'type'    => 'error',
