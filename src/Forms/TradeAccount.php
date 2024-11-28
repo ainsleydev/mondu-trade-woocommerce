@@ -101,20 +101,11 @@ class TradeAccount extends Form {
 	}
 
 	/**
-	 * Outputs the form as a shortcode, won't output if there
-	 * is a query param (indicating they've already signed)
-	 * up.
+	 * Outputs the form as a shortcode.
 	 *
 	 * @return void
 	 */
 	public function output_trade_account_form(): void {
-		$query_buyer_status = isset( $_GET[ TradeAccountController::QUERY_APPLIED ] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
-			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_APPLIED ] ) ) : '';
-
-		if ( ! empty( $query_buyer_status ) ) {
-			return;
-		}
-
 		TradeAccountView::render();
 	}
 

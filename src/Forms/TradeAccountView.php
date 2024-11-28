@@ -11,9 +11,9 @@
 namespace MonduTrade\Forms;
 
 use MonduTrade\Plugin;
+use MonduTrade\WooCommerce\Notices;
 use MonduTrade\Mondu\BuyerStatus;
 use MonduTrade\Exceptions\MonduTradeException;
-use MonduTrade\WooCommerce\Notices;
 
 /**
  * Renders the trade account view.
@@ -24,33 +24,25 @@ class TradeAccountView {
 	 * Render the trade account signup form
 	 */
 	public static function render() {
-		// Prepare URLs and login status
+		// Prepare URLs and login status.
 		$account_url  = get_permalink( wc_get_page_id( 'myaccount' ) );
 		$current_url  = esc_url( home_url( add_query_arg( null, null ) ) );
 		$redirect_url = add_query_arg( Plugin::QUERY_PARAM_REDIRECT, $current_url, $account_url );
 		$is_logged_in = is_user_logged_in();
 
-		// Start output
+		// Start output.
 		?>
 		<div class="mondu-trade-account-form woocommerce">
-			<?php self::render_header(); ?>
-
+			<!-- Header -->
+			<h3 class="form-title">Sign Up for the Mondu Trade Account</h3>
+			<p>Gain access to flexible payment options for your business via Mondu.</p>
+			<!-- Form -->
 			<?php if ( ! $is_logged_in ) : ?>
 				<?php self::render_login_prompt( $redirect_url ); ?>
 			<?php else : ?>
 				<?php self::render_signup_content(); ?>
 			<?php endif; ?>
 		</div>
-		<?php
-	}
-
-	/**
-	 * Render the page header and description
-	 */
-	private static function render_header() {
-		?>
-		<h3 class="form-title">Sign Up for the Mondu Trade Account</h3>
-		<p>Gain access to flexible payment options for your business via Mondu.</p>
 		<?php
 	}
 
