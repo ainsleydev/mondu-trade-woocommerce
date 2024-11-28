@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Mondu Trade Constants.
-define( 'MONDU_TRADE_VERSION', '0.1.1' );
+define( 'MONDU_TRADE_PLUGIN_VERSION', '0.1.1' );
 define( 'MONDU_TRADE_PLUGIN_FILE', __FILE__ );
 define( 'MONDU_TRADE_PLUGIN_PATH', __DIR__ );
 define( 'MONDU_TRADE_PLUGIN_BASENAME', plugin_basename( MONDU_TRADE_PLUGIN_FILE ) );
