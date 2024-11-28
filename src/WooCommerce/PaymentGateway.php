@@ -70,9 +70,17 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$this->enabled = $this->get_option( 'enabled' ) === 'yes' ? 'yes' : 'no';
 		$this->title   = $this->get_option( 'title' );
 
+		/**
+		 * Add default hooks.
+		 */
 		add_action( 'woocommerce_thankyou_' . $this->id, [ $this, 'thankyou_page' ] );
 		add_action( 'woocommerce_email_before_order_table', [ $this, 'email_instructions' ], 10, 3 );
 		add_action( 'mondu_trade_account_checkout_class', [ $this, 'view_class_filter' ] );
+
+		/**
+		 * Pre-selects the Trade Account if it's succeeded.
+		 */
+		add_filter( 'woocommerce_available_payment_gateways', [ $this, 'select_default_gateway' ] );
 
 		$this->supports = [
 			'products',
@@ -320,6 +328,32 @@ class PaymentGateway extends WC_Payment_Gateway {
 
 		// translators: %s is the error message displayed to the user.
 		wc_add_notice( sprintf( __( 'Error: %s', 'mondu-trade-account' ), esc_html( $notice_message ) ), 'error' );
+	}
+
+	/**
+	 * Selects the Trade Account gateway if the status
+	 * is succeeded.
+	 *
+	 * @param $available_gateways
+	 * @return mixed
+	 */
+	public static function select_default_gateway( $available_gateways ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		if ( ! is_checkout() || ! is_user_logged_in() || ! Plugin::has_mondu_trade_query_param() ) {
+			return $available_gateways;
+		}
+
+		foreach ( $available_gateways as $gateway_id => $gateway ) {
+			if ( $gateway_id === Plugin::PAYMENT_GATEWAY_NAME ) {
+				$gateway->chosen = true;
+				continue;
+			}
+			$gateway->chosen = false;
+		}
+
+		return $available_gateways;
+
+		// phpcs:enable
 	}
 
 	/**
