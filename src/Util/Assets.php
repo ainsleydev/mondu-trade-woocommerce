@@ -35,7 +35,7 @@ final class Assets {
 			$id,
 			MONDU_TRADE_ASSETS_PATH . $path,
 			$deps,
-			MONDU_TRADE_VERSION,
+			MONDU_TRADE_PLUGIN_VERSION,
 			true,
 		);
 
@@ -57,7 +57,7 @@ final class Assets {
 			$id,
 			MONDU_TRADE_ASSETS_PATH . $path,
 			$deps,
-			MONDU_TRADE_VERSION,
+			MONDU_TRADE_PLUGIN_VERSION,
 		);
 
 		wp_enqueue_style( $id );
