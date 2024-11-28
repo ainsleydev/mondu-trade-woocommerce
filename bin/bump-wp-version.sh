@@ -27,7 +27,7 @@ update_version_in_php_header() {
 # Function to update the MONDU_TRADE_PLUGIN_VERSION constant
 update_version_in_php_constant() {
     local new_version=$1
-    perl -pi -e "s/define\('MONDU_TRADE_PLUGIN_VERSION', '.*?'\)/define('MONDU_TRADE_PLUGIN_VERSION', '$new_version')/g" "$PHP_FILE"
+    perl -pi -e "s/define\(\s*'MONDU_TRADE_PLUGIN_VERSION'\s*,\s*'[^']*'\s*\)/define('MONDU_TRADE_PLUGIN_VERSION', '$new_version')/g" "$PHP_FILE"
 }
 
 # Function to update the version in README.txt
