@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * If successful, the caller will receive a redirect URL
  * to redirect to Mondu's hosted application form.
  */
-class SubmitTradeAccount extends Form {
+class TradeAccount extends Form {
 
 	/**
 	 * Mondu Request Wrapper.
@@ -115,7 +115,7 @@ class SubmitTradeAccount extends Form {
 			return;
 		}
 
-		include MONDU_TRADE_VIEW_PATH . '/forms/submit-trade-account.php';
+		TradeAccountView::render();
 	}
 
 	/**

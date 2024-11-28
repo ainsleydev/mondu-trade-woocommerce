@@ -18,7 +18,7 @@ use MonduTrade\Util\Assets;
 use MonduTrade\Admin\Settings;
 use MonduTrade\Blocks\FormBlock;
 use MonduTrade\WooCommerce\Notices;
-use MonduTrade\Forms\SubmitTradeAccount;
+use MonduTrade\Forms\TradeAccount;
 use MonduTrade\WooCommerce\PaymentGateway;
 use MonduTrade\Controllers\WebhooksController;
 use MonduTrade\Controllers\TradeAccountController;
@@ -84,7 +84,7 @@ class Plugin {
 		 */
 		add_action( 'init', function () {
 			// Register forms (actions).
-			new SubmitTradeAccount();
+			new TradeAccount();
 
 			// Add the admin options in the sidebar and display
 			// user information in the /user-edit page.
