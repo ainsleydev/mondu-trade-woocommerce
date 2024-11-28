@@ -14,9 +14,11 @@ namespace MonduTrade;
 
 use Dotenv\Dotenv;
 use MonduTrade\Admin\User;
+use MonduTrade\Util\Assets;
 use MonduTrade\Admin\Settings;
-use MonduTrade\Forms\SubmitTradeAccount;
+use MonduTrade\Blocks\FormBlock;
 use MonduTrade\WooCommerce\Checkout;
+use MonduTrade\Forms\SubmitTradeAccount;
 use MonduTrade\WooCommerce\PaymentGateway;
 use MonduTrade\Controllers\WebhooksController;
 use MonduTrade\Controllers\TradeAccountController;
@@ -30,13 +32,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Payment Gateway.
  */
 class Plugin {
-
-	/**
-	 * Text domain of the plugin.
-	 *
-	 * @var string
-	 */
-	const DOMAIN = 'mondu-trade-account';
 
 	/**
 	 * Name of the payment gateway for WooCommerce.
@@ -97,6 +92,9 @@ class Plugin {
 				new Settings();
 				new User();
 			}
+
+			// Registers scripts & styles
+			$this->register_scripts();
 		} );
 
 		/**
@@ -116,6 +114,9 @@ class Plugin {
 			$webhooks = new WebhooksController();
 			$webhooks->register_routes();
 		} );
+
+		// Register blocks.
+		new FormBlock();
 
 		/**
 		 * Include helper functions for theme development.
@@ -259,6 +260,26 @@ class Plugin {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Registers scripts for the plugin.
+	 *
+	 * @return void
+	 */
+	public function register_scripts(): void {
+
+		// Register admin specific scripts.
+		if (is_admin()) {
+
+			// Register the blocks JS.
+			Assets::register_script( 'blocks', '/js/blocks.js', [
+				'wp-blocks',
+				'wp-element',
+				'wp-components',
+				'wp-i18n'
+			] );
+		}
 	}
 }
 

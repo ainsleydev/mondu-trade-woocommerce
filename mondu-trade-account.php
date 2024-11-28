@@ -7,7 +7,7 @@
  * Author:          ainsley.dev LTD
  * Author URI:      https://ainsley.dev
  * Text Domain:     mondu-trade-account
- * Version:			0.0.13
+ * Version:			0.1.0
  *
  * Requires at least: 6.7
  * Requires PHP: 7.4
@@ -30,6 +30,7 @@ define( 'MONDU_TRADE_PLUGIN_FILE', __FILE__ );
 define( 'MONDU_TRADE_PLUGIN_PATH', __DIR__ );
 define( 'MONDU_TRADE_PLUGIN_BASENAME', plugin_basename( MONDU_TRADE_PLUGIN_FILE ) );
 define( 'MONDU_TRADE_PUBLIC_PATH', plugin_dir_url( MONDU_TRADE_PLUGIN_FILE ) );
+define( 'MONDU_TRADE_ASSETS_DIR', MONDU_TRADE_PLUGIN_PATH . '/assets' );
 define( 'MONDU_TRADE_ASSETS_PATH', plugins_url( 'assets', MONDU_TRADE_PLUGIN_FILE ) );
 define( 'MONDU_TRADE_VIEW_PATH', MONDU_TRADE_PLUGIN_PATH . '/views' );
 define( 'MONDU_TRADE_API_PRODUCTION_URL', 'https://api.mondu.ai/api/v1' );

@@ -11,6 +11,7 @@
 namespace MonduTrade\Forms;
 
 use WC_Customer;
+use MonduTrade\Util\Assets;
 use MonduTrade\Util\Logger;
 use MonduTrade\Mondu\RequestWrapper;
 use MonduTrade\Controllers\TradeAccountController;
@@ -43,8 +44,7 @@ class SubmitTradeAccount extends Form {
 		$this->mondu_request_wrapper = new RequestWrapper();
 
 		add_shortcode( 'mondu_trade_account_form', [ $this, 'output_trade_account_form' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts_styles' ] );
 
 		parent::__construct();
 	}
@@ -157,24 +157,12 @@ class SubmitTradeAccount extends Form {
 	}
 
 	/**
-	 * Enqueue the JavaScript file for the trade account form
+	 * Enqueues JS and Styles for the form.
 	 *
 	 * @return void
 	 */
-	public function enqueue_scripts(): void {
-		$id = 'mondu-trade-account-form-js';
-		wp_register_script( $id, MONDU_TRADE_ASSETS_PATH . '/js/form.js', [ 'jquery' ], false, true );
-		wp_enqueue_script( $id );
-	}
-
-	/**
-	 * Enqueue the JavaScript file for the trade account form
-	 *
-	 * @return void
-	 */
-	public function enqueue_styles(): void {
-		$id = 'mondu-trade-account-form-css';
-		wp_register_style( $id, MONDU_TRADE_ASSETS_PATH . '/css/form.css' );
-		wp_enqueue_style( $id );
+	public function enqueue_scripts_styles(): void {
+		Assets::register_script('cta', '/js/form.js', ['jquery']);
+		Assets::register_style('cta', '/css/form.css', []);
 	}
 }
