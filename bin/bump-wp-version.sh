@@ -19,9 +19,15 @@ get_current_version() {
 }
 
 # Function to update the version in mondu-trade-account.php
-update_version_in_php() {
+update_version_in_php_header() {
     local new_version=$1
     perl -pi -e 's/Version:\s*\d+\.\d+\.\d+/Version:\t\t\t'"$new_version"'/g' "$PHP_FILE"
+}
+
+# Function to update the MONDU_TRADE_VERSION constant
+update_version_in_php_constant() {
+    local new_version=$1
+    perl -pi -e "s/define\('MONDU_TRADE_VERSION', '.*?'\)/define('MONDU_TRADE_VERSION', '$new_version')/g" "$PHP_FILE"
 }
 
 # Function to update the version in README.txt
@@ -65,25 +71,35 @@ esac
 echo "New version: $new_version"
 
 # Update the version in both files
-update_version_in_php "$new_version"
+update_version_in_php_header "$new_version"
+update_version_in_php_constant "$new_version"
 update_version_in_readme "$new_version"
 
 # Verify the updates
 echo "Verifying updates..."
 
-if grep -q "$new_version" "$PHP_FILE"; then
-    echo "✅  Version successfully updated to $new_version in mondu-trade-account.php"
+# Check if the 'Version' field was updated
+if grep -q "Version:[[:space:]]*$new_version" "$PHP_FILE"; then
+    echo "✅  'Version' field successfully updated to $new_version in mondu-trade-account.php"
 else
-    echo "❌  Error: Failed to update the version in mondu-trade-account.php"
+    echo "❌  Error: Failed to update the 'Version' field in mondu-trade-account.php"
     exit 1
 fi
 
-if grep -q "$new_version" "$README_FILE"; then
+# Check if the MONDU_TRADE_VERSION constant was updated
+if grep -q "define('MONDU_TRADE_VERSION', '$new_version')" "$PHP_FILE"; then
+    echo "✅  MONDU_TRADE_VERSION successfully updated to $new_version in mondu-trade-account.php"
+else
+    echo "❌  Error: Failed to update the MONDU_TRADE_VERSION constant in mondu-trade-account.php"
+    exit 1
+fi
+
+# Check if the README.txt was updated
+if grep -q "Stable tag: $new_version" "$README_FILE"; then
     echo "✅  Version successfully updated to $new_version in README.txt"
 else
     echo "❌  Error: Failed to update the version in README.txt"
     exit 1
 fi
-
 
 echo "Version bump completed successfully!"
