@@ -24,10 +24,10 @@ update_version_in_php_header() {
     perl -pi -e 's/Version:\s*\d+\.\d+\.\d+/Version:\t\t\t'"$new_version"'/g' "$PHP_FILE"
 }
 
-# Function to update the MONDU_TRADE_VERSION constant
+# Function to update the MONDU_TRADE_PLUGIN_VERSION constant
 update_version_in_php_constant() {
     local new_version=$1
-    perl -pi -e "s/define\('MONDU_TRADE_VERSION', '.*?'\)/define('MONDU_TRADE_VERSION', '$new_version')/g" "$PHP_FILE"
+    perl -pi -e "s/define\(\s*'MONDU_TRADE_PLUGIN_VERSION'\s*,\s*'[^']*'\s*\)/define('MONDU_TRADE_PLUGIN_VERSION', '$new_version')/g" "$PHP_FILE"
 }
 
 # Function to update the version in README.txt
@@ -86,11 +86,11 @@ else
     exit 1
 fi
 
-# Check if the MONDU_TRADE_VERSION constant was updated
-if grep -q "define('MONDU_TRADE_VERSION', '$new_version')" "$PHP_FILE"; then
-    echo "✅  MONDU_TRADE_VERSION successfully updated to $new_version in mondu-trade-account.php"
+# Check if the MONDU_TRADE_PLUGIN_VERSION constant was updated
+if grep -q "define('MONDU_TRADE_PLUGIN_VERSION', '$new_version')" "$PHP_FILE"; then
+    echo "✅  MONDU_TRADE_PLUGIN_VERSION successfully updated to $new_version in mondu-trade-account.php"
 else
-    echo "❌  Error: Failed to update the MONDU_TRADE_VERSION constant in mondu-trade-account.php"
+    echo "❌  Error: Failed to update the MONDU_TRADE_PLUGIN_VERSION constant in mondu-trade-account.php"
     exit 1
 fi
 
