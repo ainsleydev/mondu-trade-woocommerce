@@ -17,7 +17,9 @@
 function submitTradeAccountApplication(form, button) {
 	console.info('Submitting Trade Account form...');
 
+	// Disable the button and add the loading class
 	button.classList.add('loading');
+	button.disabled = true;
 
 	fetch(form.getAttribute('action'), {
 		method: 'POST',
@@ -37,7 +39,9 @@ function submitTradeAccountApplication(form, button) {
 			displayWooCommerceError(error.message);
 		})
 		.finally(() => {
+			// Re-enable the button and remove the loading class
 			button.classList.remove('loading');
+			button.disabled = false;
 		})
 }
 
