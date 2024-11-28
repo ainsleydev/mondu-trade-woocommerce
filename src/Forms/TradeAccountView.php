@@ -135,7 +135,7 @@ class TradeAccountView {
 			'message' => 'An unexpected error occurred. Please contact support or try again later.',
 		];
 
-		echo '<p class="' . esc_attr( $notice['type'] ) . '">' . esc_html( $notice['message'] ) . '</p>';
+		echo '<p class="mondu-trade-account-form-notice ' . esc_attr( $notice['type'] ) . '">' . esc_html( $notice['message'] ) . '</p>';
 	}
 
 	/**
