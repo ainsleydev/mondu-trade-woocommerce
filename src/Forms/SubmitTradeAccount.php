@@ -44,6 +44,7 @@ class SubmitTradeAccount extends Form {
 
 		add_shortcode( 'mondu_trade_account_form', [ $this, 'output_trade_account_form' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 
 		parent::__construct();
 	}
@@ -107,8 +108,8 @@ class SubmitTradeAccount extends Form {
 	 * @return void
 	 */
 	public function output_trade_account_form(): void {
-		$query_buyer_status = isset( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
-			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ) : '';
+		$query_buyer_status = isset( $_GET[ TradeAccountController::QUERY_APPLIED ] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
+			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_APPLIED ] ) ) : '';
 
 		if ( ! empty( $query_buyer_status ) ) {
 			return;
@@ -161,8 +162,19 @@ class SubmitTradeAccount extends Form {
 	 * @return void
 	 */
 	public function enqueue_scripts(): void {
-		$id = 'mondu-trade-account-form';
+		$id = 'mondu-trade-account-form-js';
 		wp_register_script( $id, MONDU_TRADE_ASSETS_PATH . '/js/form.js', [ 'jquery' ], false, true );
 		wp_enqueue_script( $id );
+	}
+
+	/**
+	 * Enqueue the JavaScript file for the trade account form
+	 *
+	 * @return void
+	 */
+	public function enqueue_styles(): void {
+		$id = 'mondu-trade-account-form-css';
+		wp_register_style( $id, MONDU_TRADE_ASSETS_PATH . '/css/form.css' );
+		wp_enqueue_style( $id );
 	}
 }

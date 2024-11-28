@@ -20,10 +20,10 @@ $is_logged_in = is_user_logged_in();
 <!-- =====================
 	Trade Account Form
 	===================== -->
-<div class="mondu-trade-account-form woocommerce" style="margin-bottom: 2rem;">
+<div class="mondu-trade-account-form woocommerce">
 	<!-- Title & Description -->
 	<h3 class="form-title">Sign Up for the Mondu Trade Account</h3>
-	<p class="form-description">
+	<p>
 		Gain access to flexible payment options for your business via Mondu.
 	</p>
 	<!-- Redirect To Login -->
@@ -40,8 +40,18 @@ $is_logged_in = is_user_logged_in();
 			<div class="form-wrapper">
 				<input type="hidden" name="action" value="trade_account_submit">
 				<?php wp_nonce_field( 'trade_account_submit', 'trade_account_submit_nonce' ); ?>
+				<p class="mondu-trade-account-form-gdpr">
+					<?php
+					printf( wp_kses( __( 'Information on the processing of your personal data by <strong>Mondu GmbH</strong> can be found <a href="https://mondu.ai/gdpr-notification-for-buyers" target="_blank">here</a>.', 'mondu-trade-account' ), [
+						'a' => [
+							'href'   => [],
+							'target' => [],
+						],
+					] ) );
+					?>
+				</p>
 				<div class="form-row">
-					<button type="submit" class="button alt">Submit</button>
+					<button type="submit" class="button alt">Sign Up</button>
 				</div>
 			</div>
 		</form>

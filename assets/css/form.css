@@ -1,0 +1,15 @@
+.mondu-trade-account-form {
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	padding: 1.6rem;
+	border-radius: 2px;
+	margin-bottom: 2rem;
+}
+
+.mondu-trade-account-form form {
+	margin: 0;
+}
+
+.mondu-trade-account-form-gdpr {
+	margin-top: -10px;
+}
+
