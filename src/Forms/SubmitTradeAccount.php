@@ -107,8 +107,8 @@ class SubmitTradeAccount extends Form {
 	 * @return void
 	 */
 	public function output_trade_account_form(): void {
-		$query_buyer_status = isset( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
-			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_BUYER_STATUS ] ) ) : '';
+		$query_buyer_status = isset( $_GET[ TradeAccountController::QUERY_APPLIED ] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
+			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_APPLIED ] ) ) : '';
 
 		if ( ! empty( $query_buyer_status ) ) {
 			return;
