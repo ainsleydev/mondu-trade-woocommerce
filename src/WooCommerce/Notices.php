@@ -19,10 +19,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Checkout provides utility functions for the WooCommerce
- * checkout frontend.
+ * Adds notices to pages if query param is set.
  */
-class Checkout {
+class Notices {
+
+	/**
+	 * Notices constructor.
+	 */
+	public function __construct() {
+		add_action('template_redirect', [$this, 'notices']);
+	}
 
 	/**
 	 * Buyer status messages.
@@ -87,32 +93,6 @@ class Checkout {
 		];
 
 		wc_add_notice( $notice['message'], $notice['type'] );
-
-		// phpcs:enable
-	}
-
-	/**
-	 * Selects the Trade Account gateway if the status
-	 * is succeeded.
-	 *
-	 * @param $available_gateways
-	 * @return mixed
-	 */
-	public static function select_default_gateway( $available_gateways ) {
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( ! is_checkout() || ! is_user_logged_in() || ! Plugin::has_mondu_trade_query_param() ) {
-			return $available_gateways;
-		}
-
-		foreach ( $available_gateways as $gateway_id => $gateway ) {
-			if ( $gateway_id === Plugin::PAYMENT_GATEWAY_NAME ) {
-				$gateway->chosen = true;
-				continue;
-			}
-			$gateway->chosen = false;
-		}
-
-		return $available_gateways;
 
 		// phpcs:enable
 	}

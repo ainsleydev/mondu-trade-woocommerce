@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * If successful, the caller will receive a redirect URL
  * to redirect to Mondu's hosted application form.
  */
-class SubmitTradeAccount extends Form {
+class TradeAccount extends Form {
 
 	/**
 	 * Mondu Request Wrapper.
@@ -101,21 +101,12 @@ class SubmitTradeAccount extends Form {
 	}
 
 	/**
-	 * Outputs the form as a shortcode, won't output if there
-	 * is a query param (indicating they've already signed)
-	 * up.
+	 * Outputs the form as a shortcode.
 	 *
 	 * @return void
 	 */
 	public function output_trade_account_form(): void {
-		$query_buyer_status = isset( $_GET[ TradeAccountController::QUERY_APPLIED ] ) ? // phpcs:disable WordPress.Security.NonceVerification.Recommended
-			sanitize_text_field( wp_unslash( $_GET[ TradeAccountController::QUERY_APPLIED ] ) ) : '';
-
-		if ( ! empty( $query_buyer_status ) ) {
-			return;
-		}
-
-		include MONDU_TRADE_VIEW_PATH . '/forms/submit-trade-account.php';
+		TradeAccountView::render();
 	}
 
 	/**

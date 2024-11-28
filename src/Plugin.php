@@ -17,8 +17,8 @@ use MonduTrade\Admin\User;
 use MonduTrade\Util\Assets;
 use MonduTrade\Admin\Settings;
 use MonduTrade\Blocks\FormBlock;
-use MonduTrade\WooCommerce\Checkout;
-use MonduTrade\Forms\SubmitTradeAccount;
+use MonduTrade\WooCommerce\Notices;
+use MonduTrade\Forms\TradeAccount;
 use MonduTrade\WooCommerce\PaymentGateway;
 use MonduTrade\Controllers\WebhooksController;
 use MonduTrade\Controllers\TradeAccountController;
@@ -84,7 +84,7 @@ class Plugin {
 		 */
 		add_action( 'init', function () {
 			// Register forms (actions).
-			new SubmitTradeAccount();
+			new TradeAccount();
 
 			// Add the admin options in the sidebar and display
 			// user information in the /user-edit page.
@@ -115,7 +115,14 @@ class Plugin {
 			$webhooks->register_routes();
 		} );
 
-		// Register blocks.
+		/**
+		 * Add notices if query param is set.
+		 */
+		new Notices();
+
+		/**
+		 * Register WP blocks.
+		 */
 		new FormBlock();
 
 		/**
@@ -137,16 +144,6 @@ class Plugin {
 		 * Adds meta information about the Mondu Trade Plugin.
 		 */
 		add_filter( 'plugin_row_meta', [ $this, 'add_row_meta' ], 10, 2 );
-
-		/**
-		 * Adds checkout notices when the buyer has submitted a Trade application.
-		 */
-		add_filter( 'template_redirect', [ Checkout::class, 'notices' ] );
-
-		/**
-		 * Pre-selects the Trade Account if it's succeeded.
-		 */
-		add_filter( 'woocommerce_available_payment_gateways', [ Checkout::class, 'select_default_gateway' ] );
 
 		/**
 		 * Redirects the user in certain circumstances
@@ -270,7 +267,7 @@ class Plugin {
 	public function register_scripts(): void {
 
 		// Register admin specific scripts.
-		if (is_admin()) {
+		if ( is_admin() ) {
 
 			// Register the blocks JS.
 			Assets::register_script( 'blocks', '/js/blocks.js', [

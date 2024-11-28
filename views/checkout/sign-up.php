@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="<?php echo esc_attr( apply_filters( 'mondu_trade_account_checkout_class', '' ) ); ?>">
 	<div class="form-row form-row-wide">
 		<p style="margin-bottom: 10px;">
-			You're not currently registered for a Trade Account, place the order and you will be redirected to Mondu, to create an account.
+			You're not currently registered for a Trade Account, place the order, and you will be redirected to Mondu, to create an account.
 		</p>
 		<p>
 			<?php
