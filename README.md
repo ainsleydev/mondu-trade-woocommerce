@@ -105,7 +105,7 @@ a OK status code.
 
 ### Is the plugin compatible with the WP block editor?
 
-Not at this time.
+The Payment Gateway is not compatible, but the form is, see below for more details.
 
 ### How do I allow for signups outside the checkout?
 
@@ -116,75 +116,17 @@ CTA's or banners.
 request, a customer ID is required. Before displaying the form below, ensure your users are logged in by using the
 WordPress `is_user_logged_in()` function.
 
-The only thing you need to send is a nonce, and the user details will be obtained progromatically from the WP user
-that's logged in.
+**Block**:
+
+You can add the `Mondu Trade Account Form Block` to the block editor, which will output a dynamic form the user can use
+to sign up to the Trade Account.
 
 **Shortcode**:
 
-If you don't fancy writing the form yourself, you can easily perform a shortcode as shown below.
+If you want to programmatically output the shortcode, you can do so by placing the following code in your page template.
 
 ```php
 echo do_shortcode('[mondu_trade_account_form]');
-```
-
-**HTML**:
-
-Alternatively, you can crate the form from scratch as shown below:
-
-```html
-
-<form id="trade-account-signup" method="POST" action="<?php echo admin_url('admin-ajax.php'); ?>">
-  <input type="hidden" name="action" value="trade_account_submit">
-  <?php wp_nonce_field('trade_account_submit', 'trade_account_submit_nonce'); ?>
-  <button type="submit">Submit</button>
-</form>
-```
-
-**JavaScript**:
-
-Below shows how you can send data to the form via JS.
-
-```js
-document.querySelector('form').addEventListener('submit', function (event) {
-  event.preventDefault();
-
-  const form = event.target;
-  const formData = new FormData(form);
-
-  fetch(form.action, {
-    method: 'POST',
-    body: formData,
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Server responded with status ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (!data.error) {
-        alert('Trade Account application submitted successfully.');
-      } else {
-        alert(`Error: ${data.message || 'An error occurred while submitting the application.'}`);
-      }
-    })
-    .catch((error) => {
-      alert(`An error occurred: ${error.message}`);
-    });
-});
-```
-
-**Response**:
-
-```json
-{
-  "status": 200,
-  "message": "Trade Account application submitted successfully.",
-  "data": {
-    "hosted_page_uri": "https://mondu.ai/checkout-page"
-  },
-  "error": false
-}
 ```
 
 ---
@@ -204,6 +146,8 @@ see the following fields:
 - After the buyer authorises the onboarding process in hosted checkout page.
 - Status change to accepted triggers webhook attempt buyer accepted and the email communication.
 - Status change to declined on webhook buyer declined is sent out.
+
+**It's recommended you still add email triggers for webhooks**, this is described below.
 
 ---
 
