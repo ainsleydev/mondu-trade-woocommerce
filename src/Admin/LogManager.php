@@ -42,6 +42,7 @@ class LogManager {
 
 		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'mondu_trade_download_logs' ) ) {
 			Util::die_after_security_check();
+
 			return;
 		}
 
@@ -80,8 +81,15 @@ class LogManager {
 	 * @return string|null
 	 */
 	private function get_file( string $date ): ?string {
-		$base_dir = WP_CONTENT_DIR . '/uploads/wc-logs/';
-		$dir      = opendir( $base_dir );
+		$upload_dir = wp_upload_dir();
+		$base_dir   = trailingslashit( $upload_dir['basedir'] ) . 'mondu-trade-account/';
+
+		// Ensure the directory exists before trying to read files.
+		if ( ! is_dir( $base_dir ) ) {
+			return null;
+		}
+
+		$dir = opendir( $base_dir );
 		if ( $dir ) {
 			while ( $file = readdir( $dir ) ) { //phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 				if ( str_starts_with( $file, Plugin::LOG_CONTEXT . '-' . $date ) && str_ends_with( $file, '.log' ) ) {
