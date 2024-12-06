@@ -134,7 +134,7 @@ abstract class Form {
 		// Sanitize only the expected fields.
 		$sanitized_data = [];
 		foreach ( $expected_fields as $field ) {
-			if ( isset( $_POST[ $field ] ) ) {
+			if ( isset( $_POST[ $field ] ) ) { // phpcs:disable WordPress.Security.NonceVerification.Missing
 				$sanitized_data[ $field ] = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
 			}
 		}
