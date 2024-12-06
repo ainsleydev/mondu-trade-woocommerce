@@ -59,7 +59,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 		$this->has_fields         = true;
 		$this->method_title       = 'Mondu Trade Account';
 		$this->method_description = 'Allows payments using Mondu Trade Account';
-		$this->icon               = 'https://checkout.mondu.ai/logo.svg';
+		$this->icon               = MONDU_TRADE_ASSETS_PATH . '/images/logo.svg';
 
 		$this->mondu_gateway         = new MonduGateway();
 		$this->mondu_request_wrapper = new RequestWrapper();
