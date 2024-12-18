@@ -82,7 +82,7 @@ class LogManager {
 	 */
 	private function get_file( string $date ): ?string {
 		$upload_dir = wp_upload_dir();
-		$base_dir   = trailingslashit( $upload_dir['basedir'] ) . 'mondu-trade-account/';
+		$base_dir   = trailingslashit( $upload_dir['basedir'] ) . 'mondu-digital-trade-account/';
 
 		// Ensure the directory exists before trying to read files.
 		if ( ! is_dir( $base_dir ) ) {

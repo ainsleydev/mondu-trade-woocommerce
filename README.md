@@ -506,7 +506,7 @@ Create a `.env` file by copying `.env.example`:
 
 ```dotenv
 MONDU_TRADE_ENV=dev
-MONDU_WEBHOOKS_URL=https://mondu-trade-account-woocommerce-ainsleydev.loca.lt
+MONDU_WEBHOOKS_URL=https://mondu-digital-trade-account-woocommerce-ainsleydev.loca.lt
 ```
 
 ### Running WordPress
@@ -525,7 +525,7 @@ To create a new release, follow the following steps:
 1. **Bump Version**
 
 - Run the following command to choose the type of release (patch, minor, or major) and update the version
-  in `mondu-trade-account.php`. You should merge this into `main` before creating a release.
+  in `mondu-digital-trade-account.php`. You should merge this into `main` before creating a release.
 
   ```shell
   make version-bump

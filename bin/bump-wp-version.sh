@@ -2,23 +2,23 @@
 #
 # bump-wp-version.sh
 #
-# This script increments the version number in both mondu-trade-account.php
+# This script increments the version number in both mondu-digital-trade-account.php
 # and README.txt based on the type of release (patch, minor, or major).
 
 # Ensure the script is executed from the correct directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
-PHP_FILE="$PROJECT_ROOT/mondu-trade-account.php"
+PHP_FILE="$PROJECT_ROOT/mondu-digital-trade-account.php"
 README_FILE="$PROJECT_ROOT/README.txt"
 
-# Function to extract the current version from mondu-trade-account.php
+# Function to extract the current version from mondu-digital-trade-account.php
 get_current_version() {
     grep -i "^[[:space:]]*\* Version:[[:space:]]*" "$PHP_FILE" | \
     sed -E 's/^[[:space:]]*\*[[:space:]]*Version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/' | \
     tr -d '[:space:]'
 }
 
-# Function to update the version in mondu-trade-account.php
+# Function to update the version in mondu-digital-trade-account.php
 update_version_in_php_header() {
     local new_version=$1
     perl -pi -e 's/Version:\s*\d+\.\d+\.\d+/Version:\t\t\t'"$new_version"'/g' "$PHP_FILE"
@@ -80,17 +80,17 @@ echo "Verifying updates..."
 
 # Check if the 'Version' field was updated
 if grep -q "Version:[[:space:]]*$new_version" "$PHP_FILE"; then
-    echo "✅  'Version' field successfully updated to $new_version in mondu-trade-account.php"
+    echo "✅  'Version' field successfully updated to $new_version in mondu-digital-trade-account.php"
 else
-    echo "❌  Error: Failed to update the 'Version' field in mondu-trade-account.php"
+    echo "❌  Error: Failed to update the 'Version' field in mondu-digital-trade-account.php"
     exit 1
 fi
 
 # Check if the MONDU_TRADE_PLUGIN_VERSION constant was updated
 if grep -q "define('MONDU_TRADE_PLUGIN_VERSION', '$new_version')" "$PHP_FILE"; then
-    echo "✅  MONDU_TRADE_PLUGIN_VERSION successfully updated to $new_version in mondu-trade-account.php"
+    echo "✅  MONDU_TRADE_PLUGIN_VERSION successfully updated to $new_version in mondu-digital-trade-account.php"
 else
-    echo "❌  Error: Failed to update the MONDU_TRADE_PLUGIN_VERSION constant in mondu-trade-account.php"
+    echo "❌  Error: Failed to update the MONDU_TRADE_PLUGIN_VERSION constant in mondu-digital-trade-account.php"
     exit 1
 fi
 

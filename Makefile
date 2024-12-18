@@ -4,7 +4,7 @@ REPO_OWNER := ainsleydev
 REPO_NAME := mondu-trade-woocommerce
 GITHUB_API := https://api.github.com/repos/$(REPO_OWNER)/$(REPO_NAME)
 DOCKER_COMPOSE_FILE := docker-compose.yml
-ZIP_FILE_NAME := mondu-trade-account.zip
+ZIP_FILE_NAME := mondu-digital-trade-account.zip
 
 # Functions
 setup: # Setup Dependencies
@@ -17,7 +17,7 @@ serve: # Serve Wordpress & Local Tunnel
 	@export $(shell sed 's/^/export /' .env); \
 	cd ../../../ && concurrently --names "wordpress,localtunnel,logs" --prefix-colors "blue,green,yellow" \
  		"MONDU_TRADE_ENV=dev php -S localhost:$(PORT)" \
- 		"lt --port $(PORT) --subdomain mondu-trade-account-woocommerce-ainsleydev" \
+ 		"lt --port $(PORT) --subdomain mondu-digital-trade-account-woocommerce-ainsleydev" \
  		"tail -n 0 -f ./wp-content/debug.log"
 .PHONY: serve
 
@@ -26,8 +26,8 @@ zip: # Zips the contents of the plugin under /dist
 	wp dist-archive ./ dist/$(ZIP_FILE_NAME) --allow-root
 .PHONY: zip
 
-version: # Extracts the version from mondu-trade-account.php
-	@grep -i "^[[:space:]]*\* Version:[[:space:]]*" ./mondu-trade-account.php | sed -E 's/\*[[:space:]]*Version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/' | tr -d '[:space:]' && echo ""
+version: # Extracts the version from the php file.
+	@grep -i "^[[:space:]]*\* Version:[[:space:]]*" ./mondu-digital-trade-account.php | sed -E 's/\*[[:space:]]*Version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/' | tr -d '[:space:]' && echo ""
 .PHONY: version
 
 version-remote: # Gets the remote version from GitHub.

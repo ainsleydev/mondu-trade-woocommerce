@@ -6,7 +6,7 @@
  * Description:     WooCommerce Payment Gateway for integrating the Mondu Digital Trade Account.
  * Author:          ainsley.dev LTD
  * Author URI:      https://ainsley.dev
- * Text Domain:     mondu-trade-account
+ * Text Domain:     mondu-digital-trade-account
  * Version:			0.1.4
  *
  * Requires at least: 6.7

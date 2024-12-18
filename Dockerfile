@@ -28,8 +28,8 @@ COPY . /temp-build/
 # Compile plugin and move the zip to WordPress plugins directory
 RUN cd /temp-build && \
     make zip && \
-    unzip /temp-build/dist/mondu-trade-account.zip -d /usr/src/wordpress/wp-content/plugins/ && \
-   	mv /usr/src/wordpress/wp-content/plugins/temp-build/ /usr/src/wordpress/wp-content/plugins/mondu-trade-account/ && \
+    unzip /temp-build/dist/mondu-digital-trade-account.zip -d /usr/src/wordpress/wp-content/plugins/ && \
+   	mv /usr/src/wordpress/wp-content/plugins/temp-build/ /usr/src/wordpress/wp-content/plugins/mondu-digital-trade-account/ && \
     rm -rf /temp-build
 
 # Install WooCommerce
