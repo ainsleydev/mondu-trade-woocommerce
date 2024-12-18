@@ -1,6 +1,6 @@
 {
-  "name": "ainsleydev/resinbound-mondu-trade-account",
-  "description": "Wordpress Plugin for integrating trade accounts into the Resinbound.online Website via the Mondu API",
+  "name": "ainsleydev/mondu-digital-trade-account",
+  "description": "Wordpress Plugin for integrating Mondu Digital Trade Accounts into WooCommerce.",
   "license": "proprietary",
   "authors": [
     {
