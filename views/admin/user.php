@@ -50,7 +50,7 @@ $is_admin = current_user_can( 'administrator' );
 				<?php foreach ( BuyerStatus::get_values() as $buyer_status ) : ?>
 					<option
 						value="<?php echo $buyer_status; ?>" <?php echo ( $status ?? '' ) === $buyer_status ? 'selected' : ''; ?>>
-						<?php echo ucfirst( $buyer_status ); ?>
+						<?php echo esc_html( ucfirst( $buyer_status ) ); ?>
 					</option>
 				<?php endforeach; ?>
 			</select>
