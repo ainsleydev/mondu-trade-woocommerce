@@ -59,7 +59,7 @@ abstract class BaseController extends WP_REST_Controller {
 	 * @return WP_REST_Response
 	 */
 	protected function return_not_found(): WP_REST_Response {
-		return $this->respond( __( 'Not Found', 'mondu-trade-account' ), 404 );
+		return $this->respond( __( 'Not Found', 'mondu-digital-trade-account' ), 404 );
 	}
 
 	/**
@@ -68,7 +68,7 @@ abstract class BaseController extends WP_REST_Controller {
 	 * @return WP_REST_Response
 	 */
 	protected function return_internal_error(): WP_REST_Response {
-		return $this->respond( __( 'Something happened on our end.', 'mondu-trade-account' ), 500 );
+		return $this->respond( __( 'Something happened on our end.', 'mondu-digital-trade-account' ), 500 );
 	}
 
 	/**

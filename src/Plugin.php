@@ -38,7 +38,7 @@ class Plugin {
 	 *
 	 * @var string
 	 */
-	const PAYMENT_GATEWAY_NAME = 'mondu-trade-account';
+	const PAYMENT_GATEWAY_NAME = 'mondu-digital-trade-account';
 
 	/**
 	 * Log context  for the Woocommerce logger.
@@ -201,7 +201,7 @@ class Plugin {
 	 */
 	public static function add_action_links( $links ): array {
 		$action_links = [
-			'settings' => '<a href="' . admin_url( 'admin.php?page=mondu-trade-account' ) . '" aria-label="' . esc_attr__( 'View Mondu settings', 'mondu-trade-account' ) . '">' . esc_html__( 'Settings', 'mondu-trade-account' ) . '</a>',
+			'settings' => '<a href="' . admin_url( 'admin.php?page=mondu-trade-account' ) . '" aria-label="' . esc_attr__( 'View Mondu settings', 'mondu-digital-trade-account' ) . '">' . esc_html__( 'Settings', 'mondu-digital-trade-account' ) . '</a>',
 		];
 
 		return array_merge( $action_links, $links );
@@ -221,8 +221,8 @@ class Plugin {
 		}
 
 		$row_meta = [
-			'github' => '<a target="_blank" href="' . esc_url( 'https://github.com/ainsleydev/mondu-trade-woocommerce' ) . '" aria-label="' . esc_attr__( 'Visit Github Repo', 'mondu-trade-account' ) . '">' . esc_html__( 'GitHub', 'mondu-trade-account' ) . '</a>',
-			'faq'    => '<a target="_blank" href="' . esc_url( esc_attr__( 'https://mondu.ai/faq', 'mondu-trade-account' ) ) . '" aria-label="' . esc_attr__( 'View FAQ', 'mondu-trade-account' ) . '">' . esc_html__( 'FAQ', 'mondu-trade-account' ) . '</a>',
+			'github' => '<a target="_blank" href="' . esc_url( 'https://github.com/ainsleydev/mondu-trade-woocommerce' ) . '" aria-label="' . esc_attr__( 'Visit Github Repo', 'mondu-digital-trade-account' ) . '">' . esc_html__( 'GitHub', 'mondu-digital-trade-account' ) . '</a>',
+			'faq'    => '<a target="_blank" href="' . esc_url( esc_attr__( 'https://mondu.ai/faq', 'mondu-digital-trade-account' ) ) . '" aria-label="' . esc_attr__( 'View FAQ', 'mondu-digital-trade-account' ) . '">' . esc_html__( 'FAQ', 'mondu-digital-trade-account' ) . '</a>',
 		];
 
 		return array_merge( $links, $row_meta );

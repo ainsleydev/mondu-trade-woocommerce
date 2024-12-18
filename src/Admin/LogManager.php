@@ -56,14 +56,14 @@ class LogManager {
 
 		if ( null === $date ) {
 			status_header( 400 );
-			exit( esc_html__( 'Date is required.', 'mondu-trade-account' ) );
+			exit( esc_html__( 'Date is required.', 'mondu-digital-trade-account' ) );
 		}
 
 		$file = $this->get_file( $date );
 
 		if ( null === $file ) {
 			status_header( 404 );
-			exit( esc_html__( 'Log not found.', 'mondu-trade-account' ) );
+			exit( esc_html__( 'Log not found.', 'mondu-digital-trade-account' ) );
 		}
 
 		$filename = Plugin::LOG_CONTEXT . '-' . $date . '.log';

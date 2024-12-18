@@ -60,9 +60,9 @@ class Settings {
 		// Add a new section to the Mondu settings page
 		add_settings_section(
 			'mondu_trade_account_section',
-			__( 'Settings', 'mondu-trade-account' ),
+			__( 'Settings', 'mondu-digital-trade-account' ),
 			[ $this, 'section_callback' ],
-			'mondu-trade-account'
+			'mondu-digital-trade-account'
 		);
 	}
 
@@ -72,10 +72,10 @@ class Settings {
 	public function add_settings_section() {
 		add_submenu_page(
 			'mondu-settings-account',
-			__( 'Trade Account', 'mondu-trade-account' ),
-			__( 'Trade Account', 'mondu-trade-account' ),
+			__( 'Trade Account', 'mondu-digital-trade-account' ),
+			__( 'Trade Account', 'mondu-digital-trade-account' ),
 			'manage_options',
-			'mondu-trade-account',
+			'mondu-digital-trade-account',
 			[ $this, 'render' ],
 		);
 	}
@@ -123,6 +123,6 @@ class Settings {
 	 * Section callback
 	 */
 	public function section_callback() {
-		echo '<p>' . esc_html__( 'Configure the trade account settings for Mondu here.', 'mondu-trade-account' ) . '</p>';
+		echo '<p>' . esc_html__( 'Configure the trade account settings for Mondu here.', 'mondu-digital-trade-account' ) . '</p>';
 	}
 }

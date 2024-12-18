@@ -162,10 +162,10 @@ class WebhookRegister {
 	 */
 	public function get_message(): ?string {
 		$messages = [
-			'webhooks_registered'     => __( 'Webhooks registered successfully.', 'mondu-trade-account' ),
-			'webhook_register_failed' => __( 'Webhooks failed to register.', 'mondu-trade-account' ),
-			'webhook_deleted'         => __( 'Webhook deleted successfully.', 'mondu-trade-account' ),
-			'webhook_delete_failed'   => __( 'Failed to delete webhook.', 'mondu-trade-account' ),
+			'webhooks_registered'     => __( 'Webhooks registered successfully.', 'mondu-digital-trade-account' ),
+			'webhook_register_failed' => __( 'Webhooks failed to register.', 'mondu-digital-trade-account' ),
+			'webhook_deleted'         => __( 'Webhook deleted successfully.', 'mondu-digital-trade-account' ),
+			'webhook_delete_failed'   => __( 'Failed to delete webhook.', 'mondu-digital-trade-account' ),
 		];
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
