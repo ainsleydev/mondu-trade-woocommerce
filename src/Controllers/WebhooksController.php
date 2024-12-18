@@ -122,7 +122,7 @@ class WebhooksController extends BaseController {
 		try {
 			if ( $signature !== $signature_payload ) {
 				Logger::error( 'Signature mismatch in Webhooks Controller' );
-				throw new MonduTradeException( __( 'Signature mismatch.', 'mondu-trade-account' ) );
+				throw new MonduTradeException( __( 'Signature mismatch.', 'mondu-digital-trade-account' ) );
 			}
 
 			$buyer = $params['buyer'];
@@ -187,7 +187,7 @@ class WebhooksController extends BaseController {
 			return $this->respond(
 				sprintf(
 				// translators: %s is the customer number that is invalid.
-					__( 'Invalid customer number provided: %s', 'mondu-trade-account' ),
+					__( 'Invalid customer number provided: %s', 'mondu-digital-trade-account' ),
 					$woocommerce_customer_number
 				),
 				400

@@ -147,7 +147,7 @@ class API extends \Mondu\Mondu\Api {
 
 		if ( ! is_array( $result ) || ! isset( $result['response'], $result['body'] ) || ! isset( $result['response']['code'], $result['response']['message'] ) ) {
 			throw new MonduTradeException(
-				esc_html__( 'Unexpected API response format.', 'mondu-trade-account' )
+				esc_html__( 'Unexpected API response format.', 'mondu-digital-trade-account' )
 			);
 		}
 

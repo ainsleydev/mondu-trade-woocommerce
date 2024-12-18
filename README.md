@@ -434,29 +434,29 @@ function send_email_on_status_change($state, $customer_id, $buyer) {
     $email = $customer->get_email();
 
     // Set email subject and email heading.
-    $subject = sprintf(__('Your Trade Account Status: %s', 'mondu-trade-account'), ucfirst($state));
-    $email_heading = __('Trade Account Status Update', 'mondu-trade-account');
+    $subject = sprintf(__('Your Trade Account Status: %s', 'mondu-digital-trade-account'), ucfirst($state));
+    $email_heading = __('Trade Account Status Update', 'mondu-digital-trade-account');
 
     // Prepare email content.
     ob_start();
     ?>
 
     <!-- Intro -->
-    <p><?php printf(__('Dear %s,', 'mondu-trade-account'), esc_html($customer->get_first_name())); ?></p>
-    <p><?php _e('We would like to update you on the current status of your Mondu Digital Trade Account:', 'mondu-trade-account'); ?></p>
-    <p><strong><?php printf(__('Status: %s', 'mondu-trade-account'), ucfirst(esc_html($state))); ?></strong></p>
+    <p><?php printf(__('Dear %s,', 'mondu-digital-trade-account'), esc_html($customer->get_first_name())); ?></p>
+    <p><?php _e('We would like to update you on the current status of your Mondu Digital Trade Account:', 'mondu-digital-trade-account'); ?></p>
+    <p><strong><?php printf(__('Status: %s', 'mondu-digital-trade-account'), ucfirst(esc_html($state))); ?></strong></p>
 
     <!-- Status -->
     <?php if ($state === 'accepted') : ?>
-        <p><?php _e('Congratulations! Your trade account has been approved. You can now enjoy extended purchasing limits and flexible payment terms.', 'mondu-trade-account'); ?></p>
+        <p><?php _e('Congratulations! Your trade account has been approved. You can now enjoy extended purchasing limits and flexible payment terms.', 'mondu-digital-trade-account'); ?></p>
     <?php elseif ($state === 'pending') : ?>
-        <p><?php _e('Your application is under review. We will notify you once a decision has been made.', 'mondu-trade-account'); ?></p>
+        <p><?php _e('Your application is under review. We will notify you once a decision has been made.', 'mondu-digital-trade-account'); ?></p>
     <?php elseif ($state === 'declined') : ?>
-        <p><?php _e('Unfortunately, your trade account application was not approved. Feel free to reach out to our support team for assistance.', 'mondu-trade-account'); ?></p>
+        <p><?php _e('Unfortunately, your trade account application was not approved. Feel free to reach out to our support team for assistance.', 'mondu-digital-trade-account'); ?></p>
     <?php endif; ?>
 
     <!-- Footer -->
-    <p><?php _e('Thank you for choosing us!', 'mondu-trade-account'); ?></p>
+    <p><?php _e('Thank you for choosing us!', 'mondu-digital-trade-account'); ?></p>
 
     <?php
     $email_body = ob_get_clean();
@@ -506,7 +506,7 @@ Create a `.env` file by copying `.env.example`:
 
 ```dotenv
 MONDU_TRADE_ENV=dev
-MONDU_WEBHOOKS_URL=https://mondu-trade-account-woocommerce-ainsleydev.loca.lt
+MONDU_WEBHOOKS_URL=https://mondu-digital-trade-account-woocommerce-ainsleydev.loca.lt
 ```
 
 ### Running WordPress
@@ -525,7 +525,7 @@ To create a new release, follow the following steps:
 1. **Bump Version**
 
 - Run the following command to choose the type of release (patch, minor, or major) and update the version
-  in `mondu-trade-account.php`. You should merge this into `main` before creating a release.
+  in `mondu-digital-trade-account.php`. You should merge this into `main` before creating a release.
 
   ```shell
   make version-bump

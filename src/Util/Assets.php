@@ -70,6 +70,6 @@ final class Assets {
 	 * @return string
 	 */
 	private static function get_id( string $id ): string {
-		return 'mondu-trade-account-' . $id;
+		return 'mondu-digital-trade-account-' . $id;
 	}
 }

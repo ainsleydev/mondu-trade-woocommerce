@@ -327,7 +327,7 @@ class PaymentGateway extends WC_Payment_Gateway {
 		}
 
 		// translators: %s is the error message displayed to the user.
-		wc_add_notice( sprintf( __( 'Error: %s', 'mondu-trade-account' ), esc_html( $notice_message ) ), 'error' );
+		wc_add_notice( sprintf( __( 'Error: %s', 'mondu-digital-trade-account' ), esc_html( $notice_message ) ), 'error' );
 	}
 
 	/**

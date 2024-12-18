@@ -61,7 +61,7 @@ jobs:
             # Generates the ZIP file using the WP CLI
             -   name: Generate ZIP file
                 run: |
-                    wp dist-archive ./ "$(pwd)/mondu-trade-account.zip" --allow-root
+                    wp dist-archive ./ "$(pwd)/mondu-digital-trade-account.zip" --allow-root
                     ls -la $(pwd) # Verify ZIP file location
 
             # Deploy action to generate the ZIP file
@@ -79,7 +79,7 @@ jobs:
             -   name: Create GitHub Release
                 uses: softprops/action-gh-release@v1
                 with:
-                    files: mondu-trade-account.zip
+                    files: mondu-digital-trade-account.zip
                     draft: false
                     prerelease: false
                     generate_release_notes: true

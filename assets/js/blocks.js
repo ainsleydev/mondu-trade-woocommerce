@@ -2,8 +2,8 @@ const { registerBlockType } = wp.blocks;
 const { __ } = wp.i18n;
 
 registerBlockType('mondu-trade/trade-account-form', {
-	title: __('Mondu Trade Account Form', 'mondu-trade-account'),
-	description: __('Allows users to sign up for a Mondu Trade Account', 'mondu-trade-account'),
+	title: __('Mondu Trade Account Form', 'mondu-digital-trade-account'),
+	description: __('Allows users to sign up for a Mondu Trade Account', 'mondu-digital-trade-account'),
 	category: 'widgets',
 	icon: 'admin-users',
 	supports: {
