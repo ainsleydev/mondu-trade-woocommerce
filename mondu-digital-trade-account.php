@@ -7,7 +7,7 @@
  * Author:          ainsley.dev LTD
  * Author URI:      https://ainsley.dev
  * Text Domain:     mondu-digital-trade-account
- * Version:			0.2.1
+ * Version:			0.2.2
  *
  * Requires at least: 6.7
  * Requires PHP: 7.4
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Mondu Trade Constants.
-define('MONDU_TRADE_PLUGIN_VERSION', '0.2.1');
+define('MONDU_TRADE_PLUGIN_VERSION', '0.2.2');
 define( 'MONDU_TRADE_PLUGIN_FILE', __FILE__ );
 define( 'MONDU_TRADE_PLUGIN_PATH', __DIR__ );
 define( 'MONDU_TRADE_PLUGIN_BASENAME', plugin_basename( MONDU_TRADE_PLUGIN_FILE ) );
