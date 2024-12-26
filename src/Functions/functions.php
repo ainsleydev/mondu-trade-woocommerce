@@ -28,7 +28,7 @@ if ( ! function_exists( 'mondu_trade_get_buyer_status' ) ) {
 		$customer = new Customer( $customer_id );
 
 		if ( ! $customer->is_valid() ) {
-			throw new MonduTradeException( 'Invalid Mondu Trade customer ID: ' . $customer_id );
+			throw new MonduTradeException( 'Invalid Mondu Trade customer ID: ' . esc_html( $customer_id ) );
 		}
 
 		return $customer->get_mondu_trade_account_status();
@@ -52,12 +52,12 @@ if ( ! function_exists( 'mondu_trade_get_buyer_limit' ) ) {
 		$customer = new Customer( $customer_id );
 
 		if ( ! $customer->is_valid() ) {
-			throw new MonduTradeException( 'Invalid Mondu Trade customer ID: ' . $customer_id );
+			throw new MonduTradeException( 'Invalid Mondu Trade customer ID: ' . esc_html( $customer_id ) );
 		}
 
 		$status = $customer->get_mondu_trade_account_status();
 		if ( $status !== BuyerStatus::ACCEPTED ) {
-			throw new MonduTradeException( 'Customer has not been accepted by Mondu for a Digital Trade Account, customer ID: ' . $customer_id );
+			throw new MonduTradeException( 'Customer has not been accepted by Mondu for a Digital Trade Account, customer ID: ' . esc_html( $customer_id ) );
 		}
 
 		return $api->get_buyer_limit( $customer_id );
