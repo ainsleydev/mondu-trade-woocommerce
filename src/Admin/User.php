@@ -94,17 +94,10 @@ class User {
 	 * @param int $user_id
 	 */
 	public function user_update_trade_account( int $user_id ) {
-		check_admin_referer( 'update-user_' . $user_id );
-
-		if ( ! current_user_can( 'edit_user', $user_id ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to edit this user.', 'mondu-digital-trade-account' ) );
-		}
-
-		$customer = new Customer( $user_id );
 
 		// Updates the Customer Status (if admin).
 		$this->update_customer_field(
-			$customer,
+			$user_id,
 			'mondu_trade_uuid',
 			'get_mondu_trade_account_uuid',
 			'set_mondu_trade_account_uuid'
@@ -112,7 +105,7 @@ class User {
 
 		// Updates the Customer UUID (if admin).
 		$this->update_customer_field(
-			$customer,
+			$user_id,
 			'mondu_trade_status',
 			'get_mondu_trade_account_status',
 			'set_mondu_trade_account_status',
@@ -123,7 +116,7 @@ class User {
 	/**
 	 * Updates a field in the Customer object.
 	 *
-	 * @param Customer $customer The customer object.
+	 * @param int $user_id customer ID.
 	 * @param string $field The field name in the $_POST array.
 	 * @param string $getter The method name to get the current value.
 	 * @param string $setter The method name to set the new value.
@@ -131,17 +124,25 @@ class User {
 	 * @return void
 	 */
 	private function update_customer_field(
-		Customer $customer,
+		int $user_id,
 		string $field,
 		string $getter,
 		string $setter,
 		callable $validation = null
 	): void {
+		$customer = new Customer( $user_id );
+
+		check_admin_referer( 'update-user_' . $customer->get_id() );
+
+		if ( ! current_user_can( 'edit_user', $customer->get_id() ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to edit this user.', 'mondu-digital-trade-account' ) );
+		}
+
 		$original_value = $customer->$getter();
 
 		// Prevent unauthorized changes.
 		if ( ! $this->is_admin() ) {
-			if ( isset( $_POST[ $field ] ) && $_POST[ $field ] !== $original_value ) {  // phpcs:disable WordPress.Security.NonceVerification.Missing
+			if ( isset( $_POST[ $field ] ) && $_POST[ $field ] !== $original_value ) {
 				$_POST[ $field ] = $original_value;
 			}
 

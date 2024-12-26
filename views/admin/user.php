@@ -49,7 +49,7 @@ $is_admin = current_user_can( 'administrator' );
 					class="regular-text" <?php echo ! $is_admin ? 'disabled' : ''; ?>>
 				<?php foreach ( BuyerStatus::get_values() as $buyer_status ) : ?>
 					<option
-						value="<?php echo $buyer_status; ?>" <?php echo ( $status ?? '' ) === $buyer_status ? 'selected' : ''; ?>>
+						value="<?php echo esc_attr( $buyer_status ); ?>" <?php echo ( $status ?? '' ) === $buyer_status ? 'selected' : ''; ?>>
 						<?php echo esc_html( ucfirst( $buyer_status ) ); ?>
 					</option>
 				<?php endforeach; ?>

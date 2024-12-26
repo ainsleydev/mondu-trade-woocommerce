@@ -126,25 +126,27 @@ abstract class Form {
 
 	/**
 	 * Validate form fields with rules.
+	 *
+	 * Not currently used.
 	 */
-	protected function validate() {
-		// Extract the expected fields from the rules.
-		$expected_fields = array_keys( $this->rules );
-
-		// Sanitize only the expected fields.
-		$sanitized_data = [];
-		foreach ( $expected_fields as $field ) {
-			if ( isset( $_POST[ $field ] ) ) { // phpcs:disable WordPress.Security.NonceVerification.Missing
-				$sanitized_data[ $field ] = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
-			}
-		}
-
-		// Perform validation using sanitized data.
-		$validation = $this->validator->validate( $sanitized_data, $this->rules );
-		if ( $validation->fails() ) {
-			$this->respond( 400, $validation->errors()->toArray(), "Validation failed" );
-		}
-	}
+//	protected function validate() {
+//		// Extract the expected fields from the rules.
+//		$expected_fields = array_keys( $this->rules );
+//
+//		// Sanitize only the expected fields.
+//		$sanitized_data = [];
+//		foreach ( $expected_fields as $field ) {
+//			if ( isset( $_POST[ $field ] ) ) { // phpcs:disable WordPress.Security.NonceVerification.Missing
+//				$sanitized_data[ $field ] = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
+//			}
+//		}
+//
+//		// Perform validation using sanitized data.
+//		$validation = $this->validator->validate( $sanitized_data, $this->rules );
+//		if ( $validation->fails() ) {
+//			$this->respond( 400, $validation->errors()->toArray(), "Validation failed" );
+//		}
+//	}
 
 	/**
 	 * Strips variables
