@@ -68,7 +68,7 @@ jobs:
             -   name: Generate Plugin
                 uses: 10up/action-wordpress-plugin-deploy@stable
                 with:
-                    dry-run: true
+                    dry-run: false
                     generate-zip: false
                 env:
                     SLUG: mondu-trade-account
