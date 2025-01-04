@@ -78,7 +78,7 @@ jobs:
 
     deploy-to-wp:
         runs-on: ubuntu-latest
-        needs: deploy
+        needs: create-release
 
         steps:
             # Checkout the repository.
