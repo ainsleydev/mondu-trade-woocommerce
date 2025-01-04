@@ -56,13 +56,11 @@ jobs:
                 run: |
                     composer install --no-dev --prefer-dist --optimize-autoloader
                     wp package install wp-cli/dist-archive-command:@stable --allow-root
-                    ls -la # Check file contents
 
             # Generates the ZIP file using the WP CLI
             -   name: Generate ZIP file
                 run: |
                     wp dist-archive ./ "$(pwd)/mondu-digital-trade-account.zip" --allow-root
-                    ls -la $(pwd) # Verify ZIP file location
 
             # Create a release.
             -   name: Create GitHub Release
@@ -85,9 +83,19 @@ jobs:
             - name: Checkout Code
               uses: actions/checkout@v4
 
-            # Install Subversion (svn) dependency.
-            - name: Install Subversion
-              run: sudo apt-get update && sudo apt-get install -y subversion
+            # Setup PHP on the runner.
+            -   name: Set up PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.4
+                    tools: composer,wp-cli
+
+            # Install WP & Composer.
+            -   name: Install Dependencies
+                run: |
+                    sudo apt-get update && sudo apt-get install -y subversion
+                    composer install --no-dev --prefer-dist --optimize-autoloader
+                    wp package install wp-cli/dist-archive-command:@stable --allow-root
 
             # Deploy action to generate the ZIP file.
             - name: Generate Plugin
