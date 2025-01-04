@@ -105,5 +105,6 @@ jobs:
                   generate-zip: false
               env:
                   SLUG: mondu-digital-trade-account
+                  ASSETS_DIR: .wordpress-org
                   SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
                   SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
