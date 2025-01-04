@@ -36,7 +36,7 @@ jobs:
                     fi
 
     # Deploy & Release
-    deploy:
+    create-release:
         runs-on: ubuntu-latest
         needs: version-check
         steps:
@@ -64,17 +64,6 @@ jobs:
                     wp dist-archive ./ "$(pwd)/mondu-digital-trade-account.zip" --allow-root
                     ls -la $(pwd) # Verify ZIP file location
 
-            # Deploy action to generate the ZIP file
-            -   name: Generate Plugin
-                uses: 10up/action-wordpress-plugin-deploy@stable
-                with:
-                    dry-run: false
-                    generate-zip: false
-                env:
-                    SLUG: mondu-digital-trade-account
-                    SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-                    SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-
             # Create a release.
             -   name: Create GitHub Release
                 uses: softprops/action-gh-release@v1
@@ -86,3 +75,27 @@ jobs:
                     make_latest: true
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    deploy-to-wp:
+        runs-on: ubuntu-latest
+        needs: deploy
+
+        steps:
+            # Checkout the repository.
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            # Install Subversion (svn) dependency.
+            - name: Install Subversion
+              run: sudo apt-get update && sudo apt-get install -y subversion
+
+            # Deploy action to generate the ZIP file.
+            - name: Generate Plugin
+              uses: 10up/action-wordpress-plugin-deploy@stable
+              with:
+                  dry-run: false
+                  generate-zip: false
+              env:
+                  SLUG: mondu-digital-trade-account
+                  SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+                  SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
