@@ -71,7 +71,7 @@ jobs:
                     dry-run: false
                     generate-zip: false
                 env:
-                    SLUG: mondu-trade-account
+                    SLUG: mondu-digital-trade-account
                     SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
                     SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
 
