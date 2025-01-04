@@ -65,15 +65,15 @@ jobs:
                     ls -la $(pwd) # Verify ZIP file location
 
             # Deploy action to generate the ZIP file
-            #            -   name: Generate Plugin
-            #                uses: 10up/action-wordpress-plugin-deploy@stable
-            #                with:
-            #                    dry-run: true
-            #                    generate-zip: true
-            #                env:
-            #                    SLUG: mondu-trade-account
-            #                    SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-            #                    SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+            -   name: Generate Plugin
+                uses: 10up/action-wordpress-plugin-deploy@stable
+                with:
+                    dry-run: true
+                    generate-zip: false
+                env:
+                    SLUG: mondu-trade-account
+                    SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+                    SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
 
             # Create a release.
             -   name: Create GitHub Release
